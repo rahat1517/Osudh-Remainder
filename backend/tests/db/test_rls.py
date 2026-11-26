@@ -168,3 +168,27 @@ def test_dose_log_status_is_checked(db):
         med = _medicine(db, _prescription(db, "confirmed"))
         with fails_with(db, psycopg.errors.CheckViolation):
             _log(db, med, status="maybe")
+
+
+# --- Phase 7: account deletion ---------------------------------------------------------------
+
+
+def test_users_can_delete_their_own_account_only(db):
+    alice, bob = new_user(db), new_user(db)
+    with as_user(db, alice):
+        med = _medicine(db, _prescription(db, "confirmed"))
+        _log(db, med)
+    with as_user(db, bob):
+        db.execute("select delete_my_account()")
+    assert db.execute("select count(*) from auth.users where id = %s", (alice,)).fetchone()[0] == 1
+    assert db.execute("select count(*) from auth.users where id = %s", (bob,)).fetchone()[0] == 0
+    with as_user(db, alice):
+        db.execute("select delete_my_account()")
+    for table in ("profiles", "prescriptions", "medicines", "dose_logs"):
+        assert db.execute(f"select count(*) from {table}").fetchone()[0] == 0
+
+
+def test_anonymous_clients_cannot_delete_accounts(db):
+    new_user(db)
+    with as_user(db, None), fails_with(db, psycopg.errors.InsufficientPrivilege):
+        db.execute("select delete_my_account()")

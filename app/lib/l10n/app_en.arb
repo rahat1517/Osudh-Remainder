@@ -233,5 +233,14 @@
   "stateDue": "Due now",
   "stateUpcoming": "Upcoming",
   "addForPatient": "Add a prescription for them",
-  "dashboardEmpty": "No doses today."
+  "dashboardEmpty": "No doses today.",
+  "errAuthRequired": "Please sign in again.",
+  "errAuthInvalid": "Your session has expired. Please sign in again.",
+  "errRateLimited": "Too many scans in a short time. Try again a little later.",
+  "settingsTitle": "Settings",
+  "privacyPolicy": "Privacy policy",
+  "privacySummary": "Your prescriptions and medicines are visible only to you and the family members you invite. Prescription photos are never stored.",
+  "deleteAccount": "Delete my account",
+  "deleteAccountConfirm": "This permanently deletes your account, medicines, history and family links. This cannot be undone.",
+  "deleteAccountButton": "Delete permanently"
 }

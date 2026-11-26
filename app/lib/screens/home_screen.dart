@@ -8,6 +8,7 @@ import 'confirm_screen.dart';
 import 'family_screen.dart';
 import 'medicines_screen.dart';
 import 'scan_screen.dart';
+import 'settings_screen.dart';
 import 'setup_screen.dart';
 
 String formatClock(DateTime wall) =>
@@ -45,6 +46,13 @@ class HomeScreen extends StatelessWidget {
                 MaterialPageRoute<void>(builder: (_) => const FamilyScreen()),
               ),
             ),
+          IconButton(
+            tooltip: l.settingsTitle,
+            icon: const Icon(Icons.settings_outlined),
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(builder: (_) => const SettingsScreen()),
+            ),
+          ),
           IconButton(
             tooltip: l.myMedicines,
             icon: const Icon(Icons.medication_outlined),

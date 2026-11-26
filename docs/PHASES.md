@@ -17,7 +17,7 @@ Legend: ✅ done · ⏳ blocked on an external input · ⬜ not started
 | **4** | App: onboarding, scan and confirm | app | 2-3 weeks | ✅ (device test ⏳) |
 | **5** | Offline alarm engine and Bangla voice | app | 2 weeks | ✅ (device test ⏳) |
 | **6** | Caregiver mode | app, backend | 1-2 weeks | ✅ (Firebase setup ⏳) |
-| **7** | Testing, pilot and Play Store | all | 2-3 weeks | ⬜ |
+| **7** | Testing, pilot and Play Store | all | 2-3 weeks | ✅ (pilot and store ⏳) |
 | | **MVP launch** | | **~3-4 months** | |
 | **8** | Bangla AI assistant | backend, app | 2 weeks | ⬜ |
 | **9** | Learning, refills and Ramadan mode | backend, app | 2 weeks | ⬜ |
@@ -221,23 +221,30 @@ and `USE_FULL_SCREEN_INTENT`; both need a declaration in the Play Console (Phase
 
 ---
 
-## Phase 7: Testing, pilot and Play Store ⬜
+## Phase 7: Security, release readiness, pilot ✅ (pilot and store ⏳)
 
 **Goal:** validate with real users and release safely.
-**Depends on:** Phase 6
 
-- [ ] End-to-end tests of the full flow
-- [ ] Security review: RLS, API auth, rate limits, key management
-- [ ] Privacy policy and terms (Bangla and English); medical disclaimer
-- [ ] In-app account and data deletion
-- [ ] Crash reporting and privacy-preserving analytics
-- [ ] **Pilot:** 20-50 users (older patients and caregivers) for 2-3 weeks
-- [ ] Fixes from pilot feedback
-- [ ] Play Store: health app declaration, exact-alarm justification, Bangla listing
-- [ ] Internal → closed testing → production
+- [x] API authentication: Supabase JWTs verified (JWKS ES256/RS256 and legacy HS256; audience, issuer,
+      expiry); production refuses to start without auth
+- [x] Per-user sliding-window rate limits on the AI endpoint (`429 rate_limited` with `Retry-After`)
+- [x] Error monitoring (optional Sentry) with request bodies, query strings, cookies and auth headers
+      scrubbed; request IDs
+- [x] In-app account deletion (`delete_my_account`, cascades to all data; 2 database tests)
+- [x] Settings screen: privacy summary, sign out, delete account
+- [x] Privacy policy (English and Bangla) and terms of use: drafts for legal review (`docs/legal/`)
+- [x] Security review with threat model and controls (`docs/SECURITY.md`)
+- [x] Backend Docker image (non-root, health check) and CI job that builds and starts it
+- [x] Android release signing via git-ignored `key.properties`
+- [x] End-to-end API test: sign in → read → review → schedule
+- [x] Play Store guide: listing (bn/en), health/exact-alarm/full-screen declarations, data safety form,
+      release tracks (`docs/release/play-store.md`); deployment guide (`docs/DEPLOYMENT.md`)
+- [x] Pilot plan with metrics, procedure and stop criteria (`docs/release/pilot-plan.md`)
+- [ ] **Owner actions:** legal review, hosting, Supabase/Firebase production projects, Play Console
+      account, upload key, pilot with 20-50 users
 
-**Exit criteria:** alarm reliability ≥ 99% in the pilot · crash-free sessions ≥ 99% · Play Store
-review passed
+**Exit criteria:** ⏳ alarm reliability ≥ 99% in the pilot · ⏳ crash-free sessions ≥ 99% ·
+⏳ Play Store review passed (all require the pilot and a Play Console account)
 
 ---
 

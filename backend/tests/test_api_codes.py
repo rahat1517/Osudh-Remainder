@@ -9,7 +9,7 @@ CODES = json.loads((ROOT / "spec" / "api" / "codes.json").read_text(encoding="ut
 
 # Code literals passed to the error/notice constructors used in app/
 _PATTERNS = [
-    r'(?:ImageError|ReaderError|ScheduleError|fail|notice)\(\s*"([a-z_]+)"',
+    r'(?:ImageError|ReaderError|ScheduleError|AuthError|fail|notice)\(\s*"([a-z_]+)"',
     r'api_error\(\s*status\.\w+,\s*"([a-z_]+)"',
     r'super\(\)\.__init__\(\s*"([a-z_]+)"',
 ]

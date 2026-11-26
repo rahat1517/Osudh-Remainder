@@ -30,10 +30,26 @@ class Settings(BaseSettings):
     # Firebase Cloud Messaging: path to a service-account JSON file
     fcm_service_account_file: Path | None = None
 
-    # Needed in later phases
+    # Authentication (Phase 7). Tokens are verified with the project's signing keys
+    # (<supabase_url>/auth/v1/.well-known/jwks.json) and/or the legacy HS256 secret.
     supabase_url: str | None = None
-    supabase_anon_key: str | None = None
-    supabase_service_role_key: str | None = None
+    supabase_jwt_secret: str | None = None
+    # None = required in production, optional elsewhere. Production refuses to start without it.
+    require_auth: bool | None = None
+
+    # Prescription reads per user: (max, window seconds) pairs
+    ai_rate_limits: list[tuple[int, float]] = [(5, 60), (30, 3600), (100, 86400)]
+
+    # Optional error monitoring. Personal data is scrubbed before sending.
+    sentry_dsn: str | None = None
+
+    @property
+    def is_production(self) -> bool:
+        return self.environment == "production"
+
+    @property
+    def auth_required(self) -> bool:
+        return self.require_auth if self.require_auth is not None else self.is_production
 
 
 @lru_cache

@@ -955,6 +955,60 @@ abstract class AppLocalizations {
   /// In bn, this message translates to:
   /// **'আজ কোনো ডোজ নেই।'**
   String get dashboardEmpty;
+
+  /// No description provided for @errAuthRequired.
+  ///
+  /// In bn, this message translates to:
+  /// **'অনুগ্রহ করে আবার সাইন ইন করুন।'**
+  String get errAuthRequired;
+
+  /// No description provided for @errAuthInvalid.
+  ///
+  /// In bn, this message translates to:
+  /// **'আপনার সেশনের মেয়াদ শেষ। আবার সাইন ইন করুন।'**
+  String get errAuthInvalid;
+
+  /// No description provided for @errRateLimited.
+  ///
+  /// In bn, this message translates to:
+  /// **'অল্প সময়ে অনেকবার স্ক্যান করেছেন। একটু পরে আবার চেষ্টা করুন।'**
+  String get errRateLimited;
+
+  /// No description provided for @settingsTitle.
+  ///
+  /// In bn, this message translates to:
+  /// **'সেটিংস'**
+  String get settingsTitle;
+
+  /// No description provided for @privacyPolicy.
+  ///
+  /// In bn, this message translates to:
+  /// **'গোপনীয়তা নীতি'**
+  String get privacyPolicy;
+
+  /// No description provided for @privacySummary.
+  ///
+  /// In bn, this message translates to:
+  /// **'আপনার প্রেসক্রিপশন ও ওষুধের তথ্য শুধু আপনি এবং আপনার আমন্ত্রিত পরিবারের সদস্যরা দেখতে পারেন। প্রেসক্রিপশনের ছবি কখনো সংরক্ষণ করা হয় না।'**
+  String get privacySummary;
+
+  /// No description provided for @deleteAccount.
+  ///
+  /// In bn, this message translates to:
+  /// **'আমার অ্যাকাউন্ট মুছে দিন'**
+  String get deleteAccount;
+
+  /// No description provided for @deleteAccountConfirm.
+  ///
+  /// In bn, this message translates to:
+  /// **'এতে আপনার অ্যাকাউন্ট, ওষুধ, ইতিহাস ও পরিবারের সংযোগ চিরতরে মুছে যাবে। এটা আর ফেরানো যাবে না।'**
+  String get deleteAccountConfirm;
+
+  /// No description provided for @deleteAccountButton.
+  ///
+  /// In bn, this message translates to:
+  /// **'চিরতরে মুছে দিন'**
+  String get deleteAccountButton;
 }
 
 class _AppLocalizationsDelegate

@@ -123,8 +123,17 @@ class AppState extends ChangeNotifier {
     await refresh();
   }
 
+  Future<void> deleteAccount() async {
+    await auth.deleteAccount();
+    await _clearLocal();
+  }
+
   Future<void> signOut() async {
     await auth.signOut();
+    await _clearLocal();
+  }
+
+  Future<void> _clearLocal() async {
     await store?.clear();
     active = const [];
     scheduledAlarms = await alarms?.sync() ?? 0;

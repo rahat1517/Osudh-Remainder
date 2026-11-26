@@ -8,6 +8,7 @@ from app.prescriptions.errors import ImageError, NotAPrescriptionError, Prescrip
 from app.prescriptions.images import MAX_UPLOAD_BYTES
 from app.prescriptions.schemas import PrescriptionResult
 from app.prescriptions.service import PrescriptionService
+from app.security.dependencies import AiUser
 
 router = APIRouter(prefix="/prescriptions", tags=["prescriptions"])
 
@@ -29,12 +30,15 @@ ServiceDep = Annotated[PrescriptionService, Depends(get_service)]
 @router.post(
     "/extract",
     responses={
+        401: {"description": "auth_required or auth_invalid"},
         422: {"description": "image_* or not_a_prescription"},
+        429: {"description": "rate_limited (see Retry-After)"},
         502: {"description": "ai_refused, ai_failed or prescription_too_long"},
         503: {"description": "ai_not_configured, ai_rate_limited or ai_unavailable (retry)"},
     },
 )
 async def extract_prescription(
+    user: AiUser,
     service: ServiceDep,
     image: Annotated[UploadFile, File(description="Prescription photo (JPEG, PNG or WebP)")],
 ) -> PrescriptionResult:

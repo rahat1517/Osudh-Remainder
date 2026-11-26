@@ -12,6 +12,9 @@ abstract interface class AuthRepository {
   Future<void> verifyCode(String phoneE164, String code);
 
   Future<void> signOut();
+
+  /// Permanently deletes the account and all its data, then signs out.
+  Future<void> deleteAccount();
 }
 
 class AuthException implements Exception {
@@ -58,6 +61,12 @@ class SupabaseAuthRepository implements AuthRepository {
 
   @override
   Future<void> signOut() => _client.auth.signOut();
+
+  @override
+  Future<void> deleteAccount() async {
+    await _client.rpc('delete_my_account');
+    await _client.auth.signOut();
+  }
 }
 
 /// Development-only authentication: any valid number, code 123456.
@@ -82,4 +91,7 @@ class DemoAuthRepository implements AuthRepository {
 
   @override
   Future<void> signOut() async => _user = null;
+
+  @override
+  Future<void> deleteAccount() => signOut();
 }
