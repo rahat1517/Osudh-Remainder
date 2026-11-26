@@ -77,3 +77,20 @@ def test_export_writes_paddleocr_lists(tmp_path):
     assert (tmp_path / "images" / "e1_0.jpg").exists()
     assert "（+0+-" in (tmp_path / "skipped.tsv").read_text()
     assert "S" in (tmp_path / "dict.txt").read_text()
+
+
+def test_lines_are_only_drawn_with_fonts_that_have_every_character(tmp_path, monkeypatch):
+    import oshudh_ml.synth_rec as synth
+
+    latin_only, full = tmp_path / "latin.ttf", tmp_path / "full.ttf"
+    latin = set("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.+-½")
+    monkeypatch.setattr(
+        synth, "coverage", lambda p: latin if p == latin_only else {chr(c) for c in range(0x10000)}
+    )
+    monkeypatch.setattr(synth.ImageFont, "truetype", lambda path, size: path)
+    drawn = []
+    monkeypatch.setattr(synth, "render", lambda text, font, rng: drawn.append((text, font)))
+    assert len(list(synth.generate([latin_only, full], 80, seed=2))) == 80
+    bangla = [font for text, font in drawn if any("\u0980" <= ch <= "\u09ff" for ch in text)]
+    assert bangla and set(bangla) == {str(full)}
+    assert str(latin_only) in {font for _, font in drawn}

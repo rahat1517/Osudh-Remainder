@@ -100,14 +100,29 @@ def render(text: str, font: ImageFont.FreeTypeFont, rng: random.Random) -> Image
     return img.convert("RGB")
 
 
+def coverage(path: Path) -> set[str]:
+    """Characters the font can draw (a missing glyph would render as a box and teach wrong text)."""
+    from fontTools.ttLib import TTFont
+
+    with TTFont(str(path), lazy=True) as font:
+        return {chr(cp) for cp in font.getBestCmap()}
+
+
 def generate(
     fonts: list[Path], count: int, seed: int = 7, sizes: tuple[int, int] = (26, 44)
 ) -> Iterator[tuple[Image.Image, str]]:
     rng = random.Random(seed)
     loaded: dict[tuple[Path, int], ImageFont.FreeTypeFont] = {}
-    for _ in range(count):
+    covers = {path: coverage(path) for path in fonts}
+    made = 0
+    while made < count:
         text = sample_line(rng)
-        path, size = rng.choice(fonts), rng.randint(*sizes)
+        needed = set(text) - {" "}
+        usable = [p for p in fonts if needed <= covers[p]]
+        if not usable:
+            continue
+        made += 1
+        path, size = rng.choice(usable), rng.randint(*sizes)
         font = loaded.setdefault((path, size), ImageFont.truetype(str(path), size))
         yield render(text, font, rng), text
 
