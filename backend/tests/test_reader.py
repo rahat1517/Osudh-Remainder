@@ -5,8 +5,9 @@ import anthropic
 import httpx2
 import pytest
 
+from app.prescriptions.errors import ReaderError
 from app.prescriptions.images import prepare_image
-from app.prescriptions.reader import ClaudePrescriptionReader, ReaderError
+from app.prescriptions.reader import ClaudePrescriptionReader
 from app.prescriptions.schemas import PrescriptionExtraction
 
 from .prescription_factories import extraction, image_bytes, medicine
@@ -62,7 +63,7 @@ def test_success_sends_image_and_schema(image):
     block = call["messages"][0]["content"][0]
     assert block["type"] == "image"
     assert base64.standard_b64decode(block["source"]["data"]) == image.data
-    assert "temperature" not in call  # নতুন API-তে বাতিল
+    assert "temperature" not in call  # rejected by current API versions
 
 
 @pytest.mark.parametrize(
@@ -78,7 +79,7 @@ def test_bad_responses_raise_reader_error(image, result, retryable):
     with pytest.raises(ReaderError) as exc:
         reader.read(image)
     assert exc.value.retryable is retryable
-    assert exc.value.user_message  # অ্যাপে দেখানোর মতো বাংলা বার্তা
+    assert exc.value.code  # stable code the app localizes
 
 
 @pytest.mark.parametrize(

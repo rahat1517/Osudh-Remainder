@@ -1,141 +1,123 @@
-# 📋 প্রকল্প পরিকল্পনা
+# Product Plan
 
-## ১. সমস্যা
+## 1. Problem
 
-বাংলাদেশে অনেক রোগী, বিশেষ করে বয়স্করা, সময়মতো ওষুধ খেতে ভুলে যান বা ভুল ডোজ খান।
-প্রেসক্রিপশন সাধারণত হাতে লেখা, বাংলা-ইংরেজি মিশ্র, আর পড়া কঠিন।
+Many patients in Bangladesh, especially older people, miss doses or take the wrong amount.
+Prescriptions are usually handwritten, mix Bangla and English, and are hard to read. Family members
+who care for elderly parents often live in another city or abroad and cannot check in at dose times.
 
-## ২. সমাধান (এক লাইনে)
+## 2. Solution
 
-> প্রেসক্রিপশনের ছবি তুলুন → অ্যাপ পড়ে নেবে → এক ট্যাপে confirm করুন →
-> অ্যাপ সময়মতো বাংলায় মনে করিয়ে দেবে (আপনাকে বা আপনার বাবা-মাকে)।
+> Photograph the prescription → the app reads it → confirm with one tap →
+> the app reminds you, or your parents, in Bangla when each medicine is due.
 
-## ৩. মূল নীতি
+## 3. Principles
 
-| নীতি | ব্যাখ্যা |
+| Principle | Why |
 |---|---|
-| **"১০০% স্বয়ংক্রিয়" নয়, "AI পূরণ করবে, ব্যবহারকারী confirm করবেন"** | কোনো OCR/AI হাতের লেখা ১০০% সঠিক পড়তে পারে না |
-| **অ্যালার্ম AI-নির্ভর নয়** | অ্যালার্ম ফোনের local কোড বাজাবে, ইন্টারনেট ছাড়াই |
-| **AI ডোজ বদলাবে না** | শুধু ডাক্তার বদলাবেন, AI শুধু প্রস্তাব দেবে বা জানাবে |
+| **"AI fills in, the user confirms", never "100% automatic"** | No OCR or AI reads handwriting perfectly. |
+| **Alarms do not depend on AI** | Reminders are computed by deterministic code and fire offline. |
+| **The AI never changes a dose** | Only a doctor changes doses. The AI may only suggest or inform. |
+| **Uncertainty is surfaced, not hidden** | A wrong value marked certain is worse than an honest "please check". |
 
-## ৪. Confidence-ভিত্তিক তথ্য পূরণ
+## 4. Confidence-based form filling
 
-| Confidence | অ্যাপের আচরণ |
+| Confidence | Behaviour |
 |---|---|
-| উচ্চ (ছাপা লেখা + database-এ মিল) | নিজে পূরণ হবে ✅ |
-| মাঝারি | পূরণ হবে, হলুদ রঙে চিহ্নিত থাকবে, "এটা কি ঠিক?" জিজ্ঞেস করবে |
-| কম / অপঠিত | খালি থাকবে, ব্যবহারকারী টাইপ করবেন বা তালিকা থেকে বেছে নেবেন |
-| সবসময় | পুরো schedule দেখে **"Confirm"** চাপার পরই রিমাইন্ডার শুরু হবে |
+| High (clearly printed and found in the drug catalogue) | Filled in automatically |
+| Medium | Filled in, highlighted, and the user is asked to check it |
+| Low or unreadable | Left empty; the user types it or picks from suggestions |
+| Always | Reminders start only after the user reviews the schedule and taps **Confirm** |
 
-## ৫. বাংলাদেশি প্রেসক্রিপশন বোঝা
+## 5. Understanding Bangladeshi prescriptions
 
-- **ডোজ:** `1+0+1`, `১+০+১`, `0+0+1`, `½+0+½` → সকাল + দুপুর + রাত
-- **খাবারের সময়:** `খাবারের আগে/পরে`, `AC/PC`, `before/after meal`
-- **মেয়াদ:** `৭ দিন`, `1 month`, `চলবে` (বন্ধ না করা পর্যন্ত)
-- **ওষুধের নাম:** বাংলাদেশি brand (Napa, Seclo, Maxpro…) → DGDA/MedEx database দিয়ে যাচাই
+- **Dose:** `1+0+1`, `১+০+১`, `0+0+1`, `½+0+½` → morning + noon + night
+- **Meal timing:** "khabarer age/pore" (before/after food), `AC`/`PC`, "before/after meal"
+- **Duration:** "7 din" (7 days), "1 month", "cholbe" (continue until told otherwise)
+- **Medicine names:** Bangladeshi brands (Napa, Seclo, Maxpro, …), verified against the DGDA register
 
-## ৬. Zero-setup Onboarding
-
-```
-Install → ফোন নম্বর (OTP নিজে পড়বে) → [Allow] notification
-        → (ফোনের ব্র্যান্ড চিনে battery setting এক ট্যাপে খুলবে)
-        → প্রেসক্রিপশনের ছবি → AI পড়বে → [✔ ঠিক আছে]
-        → সব অ্যালার্ম set হয়ে যাবে
-```
-
-- খাবারের সময় জিজ্ঞেস করবে না। Default সময় (নাস্তা ৮:০০, দুপুর ১:৩০, রাত ৯:৩০) ধরে নিয়ে ব্যবহার দেখে নিজে শিখবে
-- রমজানে সেহরি ও ইফতার অনুযায়ী সময় বদলানোর প্রস্তাব দেবে
-
-## ৭. Notification Escalation
+## 6. Near-zero setup onboarding
 
 ```
-সময় হলো ──► ধাপ ১: Full-screen অ্যালার্ম + বাংলা voice  [খেয়েছি] [পরে] [বাদ]
-             ▼ সাড়া নেই (১০ মিনিট)
-             ধাপ ২: Snooze অ্যালার্ম (সর্বোচ্চ ৩ বার)
-             ▼ সাড়া নেই (৩০ মিনিট)
-             ধাপ ৩: SMS / automated ফোন কল (server থেকে)
-             ▼ এখনও সাড়া নেই
-             ধাপ ৪: Caregiver-কে জানানো
+Install → phone number (OTP read automatically) → allow notifications
+        → battery settings opened for the detected phone brand
+        → photograph prescription → AI reads it → Confirm
+        → all reminders are scheduled
 ```
 
-### Android নির্ভরযোগ্যতা
+- Meal times are not asked up front. Defaults (breakfast 08:00, lunch 13:30, dinner 21:30) are refined
+  from when the user actually taps "Taken".
+- During Ramadan the app offers to move doses to sehri and iftar.
 
-- `setExactAndAllowWhileIdle` + `SCHEDULE_EXACT_ALARM`
-- `BOOT_COMPLETED`-এ সব অ্যালার্ম আবার set করা
-- Xiaomi / Vivo / Oppo / Realme / Samsung-এর battery ও autostart settings-এ গাইড করা
-- সব রিমাইন্ডার ফোনে local-ভাবে সংরক্ষিত থাকবে
-
-## ৮. AI Architecture
+## 7. Notification escalation
 
 ```
-┌──────────────────── AI স্তর (Server) ────────────────────┐
-│ Agent ১: প্রেসক্রিপশন পাঠক    ছবি → structured JSON      │
-│ Agent ২: যাচাইকারী            ওষুধের DB মেলানো + confidence │
-│ Agent ৩: Schedule Engine (rule-based, AI নয়)              │
-│ Agent ৪: বাংলা সহকারী         চ্যাট / ভয়েস                 │
-│ Agent ৫: শেখা ও পর্যবেক্ষণ     সময় শেখা, মিস, refill        │
+Dose due → 1. Full-screen alarm with Bangla voice   [Taken] [Snooze] [Skip]
+           ▼ no response (10 min)
+           2. Snoozed alarm (up to 3 times)
+           ▼ no response (30 min)
+           3. SMS or automated voice call (server)
+           ▼ still no response
+           4. Caregiver notified
+```
+
+### Android reliability
+
+- Exact alarms (`setExactAndAllowWhileIdle`, `SCHEDULE_EXACT_ALARM`)
+- Re-register alarms on `BOOT_COMPLETED` and on time or time-zone changes
+- Guide users through brand-specific battery and autostart settings (Xiaomi, Vivo, Oppo, Realme, Samsung)
+- Schedules are stored on the phone, so alarms work without internet
+
+## 8. Architecture
+
+```
+┌───────────────────────── Server ─────────────────────────┐
+│ Agent 1  Prescription reader   image → structured data   │
+│ Agent 2  Verifier (rules)      catalogue match, limits   │
+│ Schedule engine (rules)        medicines → dose times    │
+│ Agent 4  Bangla assistant      chat and voice (Phase 8)  │
+│ Agent 5  Learning and monitoring (Phase 9)               │
 └──────────────────────────────────────────────────────────┘
-                    │ schedule একবার পাঠাবে
-                    ▼
-┌────────────── ফোন (Offline, Rule-based) ─────────────────┐
-│ Alarm Engine + [খেয়েছি / পরে / বাদ] → server-এ feedback │
+                     │ confirmed medicines
+                     ▼
+┌──────────────── Phone (offline, rule-based) ─────────────┐
+│ Same schedule engine (Dart) + alarm scheduler            │
+│ [Taken / Snooze / Skip] → synced to the server           │
 └──────────────────────────────────────────────────────────┘
 ```
 
-### Agent ১-এর output (নমুনা)
+The schedule engine exists in Python and Dart. Both follow
+[SCHEDULE_SPEC.md](SCHEDULE_SPEC.md) and must pass the same conformance vectors, plus a randomized
+differential test that compares them on thousands of inputs in CI.
 
-```json
-{
-  "medicines": [
-    { "name": "Seclo 20", "dose": "1+0+1", "timing": "before_meal",
-      "duration_days": 30, "confidence": "high" },
-    { "name": "Ma?x", "dose": "1+1+1", "timing": "after_meal",
-      "duration_days": 5, "confidence": "low" }
-  ]
-}
-```
+## 9. Hybrid AI strategy (cloud → self-hosted)
 
-## ৯. Hybrid AI কৌশল (Cloud → Local LLM)
+1. **Months 1-3:** launch on a cloud model. Every confirmation or correction by a user becomes an
+   accurate label (with consent, after removing personal data).
+2. **Months 3-6:** with 1,000-3,000 labels, fine-tune an open vision-language model with LoRA.
+3. **Then:** the self-hosted model tries first; low-confidence cases fall back to the cloud model.
 
-1. **ধাপ ১ (১–৩ মাস):** Cloud AI দিয়ে চালু করা। ব্যবহারকারীর প্রতিটা confirm বা সংশোধন হয়ে যাবে নির্ভুল label (অনুমতি নিয়ে, ব্যক্তিগত তথ্য মুছে)
-2. **ধাপ ২ (৩–৬ মাস):** ১,০০০–৩,০০০ label জমলে open-source vision model (যেমন Qwen2.5-VL 7B) LoRA দিয়ে fine-tune করা
-3. **ধাপ ৩:** Local model আগে চেষ্টা করবে। Confidence কম হলে Cloud AI-কে জিজ্ঞেস করবে
+This creates a data flywheel: more use → more accurate labels → a better local model → lower cost.
 
-এর ফলে একটা **data flywheel** তৈরি হবে: বেশি ব্যবহার → বেশি নির্ভুল data → আরও ভালো local model → খরচ কম।
+## 10. MVP scope
 
-## ১০. MVP (প্রথম version)
+- Phone-number login (OTP)
+- Prescription upload → AI extraction → confidence form → confirm
+- Medicine-name autocomplete from the drug catalogue
+- Offline alarms with Bangla voice
+- Taken / snooze / skip tracking
+- Caregiver linking
 
-- [ ] ফোন নম্বর লগইন (OTP)
-- [ ] প্রেসক্রিপশন আপলোড → AI extraction → confidence form → confirm
-- [ ] ওষুধের নাম autocomplete (বাংলাদেশি drug database)
-- [ ] Local অ্যালার্ম + বাংলা voice
-- [ ] খেয়েছি / পরে / বাদ ট্র্যাকিং
-- [ ] Caregiver linking
+**Version 2:** SMS and voice calls, refill reminders and pharmacy ordering, interaction warnings,
+fine-tuned self-hosted model.
 
-### Version 2
+## 11. Risks
 
-- [ ] SMS ও automated voice call
-- [ ] Refill reminder ও ফার্মেসি অর্ডার
-- [ ] Drug interaction সতর্কতা
-- [ ] Fine-tuned local model (hybrid)
-
-## ১১. কাজের ক্রম
-
-1. প্রেসক্রিপশন পাঠক + যাচাইকারী (Agent ১, ২) এবং ২০০–৩০০টা প্রেসক্রিপশনে নির্ভুলতা মাপা
-2. Offline alarm engine
-3. Schedule পরিকল্পনাকারী (Agent ৩)
-4. বাংলা সহকারী (Agent ৪)
-5. শেখা ও পর্যবেক্ষণ (Agent ৫)
-
-## ১২. ঝুঁকি ও করণীয়
-
-| ঝুঁকি | করণীয় |
+| Risk | Mitigation |
 |---|---|
-| ভুল পড়া → ভুল ডোজ | বাধ্যতামূলক confirm, confidence চিহ্ন, ওষুধের database দিয়ে যাচাই |
-| ফোন অ্যালার্ম বন্ধ করে দেয় | Exact alarm, battery গাইড, SMS/call backup |
-| রোগীর তথ্যের গোপনীয়তা | Encryption, অনুমতি, repository-তে কোনো আসল data না রাখা |
-| আইনি দায় | Disclaimer, AI কখনো নিজে ডোজ বদলাবে না |
+| Misreading → wrong dose | Mandatory confirmation, confidence highlighting, catalogue verification |
+| Phone kills alarms | Exact alarms, battery-settings guidance, SMS/call backup |
+| Patient privacy | Encryption, consent, metadata stripping, no real data in the repository |
+| Liability | Clear disclaimer; the AI never changes a dose on its own |
 
----
-
-> বিস্তারিত phase-ভিত্তিক কাজের তালিকা: [PHASES.md](PHASES.md)
+Detailed tasks and exit criteria per phase: [PHASES.md](PHASES.md)

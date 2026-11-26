@@ -1,13 +1,13 @@
-"""Agent ২: যাচাইকারী। AI-এর পড়া তথ্য নিয়ম দিয়ে যাচাই করে চূড়ান্ত confidence ঠিক করে।
+"""Agent 2, the verifier: checks the AI's reading with rules and sets the final confidence.
 
-এখানে কোনো AI নেই, শুধু নির্দিষ্ট নিয়ম, যাতে আচরণ test দিয়ে পুরোপুরি যাচাই করা যায়।
+No AI is involved here, only fixed rules, so the behaviour is fully covered by tests.
 
-মূল নিয়ম: চূড়ান্ত confidence কখনো AI-এর নিজের দেওয়া confidence-এর চেয়ে বেশি হয় না।
-যাচাই শুধু confidence কমাতে পারে, বাড়াতে পারে না।
+Core rule: the final confidence of a field is never higher than the confidence the AI gave it.
+Verification can only lower confidence, never raise it.
 """
 
 from app.drugs.matcher import DrugMatcher
-from app.drugs.models import Confidence
+from app.drugs.models import Confidence, DrugCandidate
 from app.drugs.normalize import strength_numbers
 from app.prescriptions.dose import normalize_dose_pattern
 from app.prescriptions.schemas import (
@@ -16,6 +16,7 @@ from app.prescriptions.schemas import (
     FieldResult,
     ImageQuality,
     MedicineResult,
+    Notice,
     PrescriptionExtraction,
     PrescriptionResult,
     Timing,
@@ -28,24 +29,31 @@ def lowest(*levels: Confidence) -> Confidence:
     return min(levels, key=_ORDER.__getitem__)
 
 
+def notice(code: str, message: str, **params: object) -> Notice:
+    return Notice(code=code, message=message, params={k: str(v) for k, v in params.items()})
+
+
 class PrescriptionVerifier:
     def __init__(self, matcher: DrugMatcher):
         self._matcher = matcher
 
     def verify(self, extraction: PrescriptionExtraction) -> PrescriptionResult:
-        warnings: list[str] = []
-        # ছবি খারাপ হলে কোনো ঘরই "নিশ্চিত" ধরা হবে না
-        cap = (
-            Confidence.MEDIUM if extraction.image_quality == ImageQuality.POOR else Confidence.HIGH
-        )
-        if extraction.image_quality == ImageQuality.POOR:
-            warnings.append("ছবিটা অস্পষ্ট। সব তথ্য ভালো করে মিলিয়ে দেখুন, অথবা আবার ছবি তুলুন।")
+        warnings: list[Notice] = []
+        poor = extraction.image_quality == ImageQuality.POOR
+        # On a poor image, no field may be "high"
+        cap = Confidence.MEDIUM if poor else Confidence.HIGH
+        if poor:
+            warnings.append(
+                notice("image_poor_quality", "The photo is unclear; check every field or retake it")
+            )
 
         medicines = [self._verify_medicine(m, cap) for m in extraction.medicines]
         if not medicines:
-            warnings.append("কোনো ওষুধ পাওয়া যায়নি। নিজে যোগ করুন অথবা আবার ছবি তুলুন।")
+            warnings.append(notice("no_medicines_found", "No medicines were found"))
         if any(m.name.confidence != Confidence.HIGH for m in medicines):
-            warnings.append("হলুদ চিহ্নিত ঘরগুলো প্রেসক্রিপশনের সাথে মিলিয়ে দেখুন।")
+            warnings.append(
+                notice("review_highlighted_fields", "Compare the highlighted fields with the paper")
+            )
         return PrescriptionResult(
             image_quality=extraction.image_quality, medicines=medicines, warnings=warnings
         )
@@ -66,25 +74,30 @@ class PrescriptionVerifier:
             other_instructions=m.other_instructions,
         )
 
-    def _verify_name_and_strength(self, m: ExtractedMedicine, cap: Confidence):
+    def _verify_name_and_strength(
+        self, m: ExtractedMedicine, cap: Confidence
+    ) -> tuple[FieldResult[str], DrugCandidate | None, list[DrugCandidate], FieldResult[str]]:
         if not m.name:
             return (
-                FieldResult[str](value=None, confidence=Confidence.LOW, note="নাম পড়া যায়নি"),
+                FieldResult[str](
+                    value=None,
+                    confidence=Confidence.LOW,
+                    note=notice("name_unreadable", "The medicine name could not be read"),
+                ),
                 None,
                 [],
                 FieldResult[str](value=m.strength, confidence=Confidence.LOW),
             )
 
-        query = f"{m.name} {m.strength or ''}".strip()
-        match = self._matcher.match(query, limit=5)
+        match = self._matcher.match(f"{m.name} {m.strength or ''}".strip(), limit=5)
         best = match.best
 
         if best is None or match.confidence == Confidence.LOW:
-            # তালিকায় নেই: AI যা পড়েছে সেটাই দেখানো হবে, কিন্তু নিশ্চিত বলা যাবে না
+            # Not in the catalogue: show what the AI read, but never as certain
             name = FieldResult[str](
                 value=m.name,
                 confidence=lowest(m.name_confidence, Confidence.MEDIUM, cap),
-                note="ওষুধের তালিকায় এই নাম পাওয়া যায়নি",
+                note=notice("name_not_in_catalog", "This name is not in the drug catalogue"),
             )
             strength = FieldResult[str](
                 value=m.strength, confidence=lowest(m.strength_confidence, Confidence.MEDIUM, cap)
@@ -94,16 +107,26 @@ class PrescriptionVerifier:
         name_conf = lowest(m.name_confidence, match.confidence, cap)
         note = None
         if best.drug.brand.lower() != m.name.strip().lower():
-            note = f'প্রেসক্রিপশনে লেখা "{m.name}"'
+            note = notice(
+                "name_corrected",
+                f"Written as {m.name!r} on the prescription",
+                written=m.name,
+                matched=best.drug.brand,
+            )
         name = FieldResult[str](value=best.drug.brand, confidence=name_conf, note=note)
         alternatives = (
             [c for c in match.candidates if c is not best] if name_conf != Confidence.HIGH else []
         )
-
         strength = self._verify_strength(m, best.drug.strength, best.strength_matched, cap)
         return name, best, alternatives, strength
 
-    def _verify_strength(self, m, catalog_strength: str, strength_matched: bool | None, cap):
+    @staticmethod
+    def _verify_strength(
+        m: ExtractedMedicine,
+        catalog_strength: str,
+        strength_matched: bool | None,
+        cap: Confidence,
+    ) -> FieldResult[str]:
         if m.strength:
             if strength_matched:
                 return FieldResult[str](
@@ -111,40 +134,54 @@ class PrescriptionVerifier:
                 )
             return FieldResult[str](
                 value=m.strength,
-                confidence=lowest(m.strength_confidence, Confidence.LOW, cap),
-                note="এই শক্তির ওষুধ তালিকায় নেই",
+                confidence=Confidence.LOW,
+                note=notice(
+                    "strength_not_in_catalog",
+                    "No product with this strength is in the catalogue",
+                    written=m.strength,
+                ),
             )
-        # প্রেসক্রিপশনে শক্তি লেখা নেই: তালিকা থেকে প্রস্তাব, কিন্তু ব্যবহারকারীকে মিলিয়ে দেখতে হবে
+        # No strength written: suggest the catalogue's, but the user must check it
         if catalog_strength and strength_numbers(catalog_strength):
             return FieldResult[str](
                 value=catalog_strength,
                 confidence=Confidence.MEDIUM if cap == Confidence.HIGH else Confidence.LOW,
-                note="প্রেসক্রিপশনে শক্তি লেখা নেই; তালিকা থেকে প্রস্তাব",
+                note=notice(
+                    "strength_suggested",
+                    "No strength on the prescription; suggested from the catalogue",
+                    suggested=catalog_strength,
+                ),
             )
         return FieldResult[str](value=None, confidence=Confidence.LOW)
 
-    def _verify_dose(self, m: ExtractedMedicine, cap: Confidence) -> FieldResult[str]:
+    @staticmethod
+    def _verify_dose(m: ExtractedMedicine, cap: Confidence) -> FieldResult[str]:
         pattern = normalize_dose_pattern(m.dose_pattern)
         if pattern is None:
             if m.as_needed:
-                # প্রয়োজনে খাওয়ার ওষুধে নির্দিষ্ট pattern না থাকাই স্বাভাবিক
+                # As-needed medicines normally have no fixed pattern
                 return FieldResult[str](
-                    value=None, confidence=lowest(m.dose_confidence, cap), note="প্রয়োজন হলে"
+                    value=None,
+                    confidence=lowest(m.dose_confidence, cap),
+                    note=notice("dose_as_needed", "Take when needed"),
                 )
-            return FieldResult[str](
-                value=None,
-                confidence=Confidence.LOW,
-                note=f'ডোজ বোঝা যায়নি: "{m.dose_raw}"' if m.dose_raw else "ডোজ লেখা নেই",
-            )
+            if m.dose_raw:
+                note = notice(
+                    "dose_unreadable", f"Could not interpret {m.dose_raw!r}", written=m.dose_raw
+                )
+            else:
+                note = notice("dose_missing", "No dose is written")
+            return FieldResult[str](value=None, confidence=Confidence.LOW, note=note)
         return FieldResult[str](value=pattern, confidence=lowest(m.dose_confidence, cap))
 
     @staticmethod
     def _verify_timing(m: ExtractedMedicine, cap: Confidence) -> FieldResult[Timing]:
-        conf = lowest(m.timing_confidence, cap)
         note = None
         if m.timing == Timing.NOT_SPECIFIED:
-            note = "খাবারের আগে না পরে, প্রেসক্রিপশনে লেখা নেই"
-        return FieldResult[Timing](value=m.timing, confidence=conf, note=note)
+            note = notice("timing_not_specified", "Before or after food is not written")
+        return FieldResult[Timing](
+            value=m.timing, confidence=lowest(m.timing_confidence, cap), note=note
+        )
 
     @staticmethod
     def _verify_duration(m: ExtractedMedicine, cap: Confidence) -> FieldResult[DurationValue]:
@@ -152,13 +189,16 @@ class PrescriptionVerifier:
         days = m.duration_days
         note = None
         if m.continue_indefinitely and days is not None:
-            # দুটো একসাথে হতে পারে না: AI দ্বিধায় ছিল
-            conf, note = Confidence.LOW, "মেয়াদ পরিষ্কার নয়"
+            # Both cannot be true; the AI was unsure
+            conf = Confidence.LOW
+            note = notice("duration_unclear", "The duration is unclear")
         elif days is not None and not 1 <= days <= 365:
-            conf, note, days = Confidence.LOW, f"মেয়াদ অস্বাভাবিক ({days} দিন)", None
+            conf = Confidence.LOW
+            note = notice("duration_out_of_range", f"Unusual duration ({days} days)", days=days)
+            days = None
         elif days is None and not m.continue_indefinitely:
-            note = "কতদিন খেতে হবে লেখা নেই"
             conf = lowest(conf, Confidence.MEDIUM)
+            note = notice("duration_missing", "How long to take it is not written")
         return FieldResult[DurationValue](
             value=DurationValue(days=days, continue_indefinitely=m.continue_indefinitely),
             confidence=conf,

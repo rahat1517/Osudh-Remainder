@@ -1,8 +1,8 @@
-"""প্রেসক্রিপশনের লেখা থেকে সবচেয়ে কাছের ওষুধ খুঁজে বের করা।
+"""Finds the closest catalogue drug for text read from a prescription.
 
-মূল নীতি: ভুল কিন্তু "নিশ্চিত" উত্তরের চেয়ে "নিশ্চিত নই" বলা অনেক নিরাপদ।
-তাই confidence HIGH দেওয়া হয় শুধু যখন নাম প্রায় হুবহু মেলে, অন্য কাছাকাছি নাম নেই,
-আর শক্তি (থাকলে) মেলে।
+Principle: saying "not sure" is far safer than a wrong answer marked certain. HIGH confidence is
+given only when the name matches almost exactly, no other brand is close, and the strength (if
+given) matches.
 """
 
 from collections import defaultdict
@@ -14,18 +14,18 @@ from app.drugs.normalize import ParsedName, normalize_brand, parse, strength_num
 
 HIGH_SCORE = 90.0
 MEDIUM_SCORE = 70.0
-# HIGH-এর জন্য সবচেয়ে ভালো আর দ্বিতীয় brand-এর মধ্যে ন্যূনতম পার্থক্য
+# Minimum score gap between the best and second-best brand required for HIGH
 HIGH_MARGIN = 8.0
 STRENGTH_MISMATCH_PENALTY = 15.0
 
 
-# প্রথম ধাপে দ্রুত (C) scorer দিয়ে এতগুলো প্রার্থী বাছাই, তারপর শুধু এদের বিস্তারিত হিসাব
+# Candidates shortlisted by the fast C scorer before the detailed scoring
 PREFILTER = 50
 
 
 def _name_score(query: str, choice: str, **_: object) -> float:
-    """হুবহু মিল (ratio) বেশি গুরুত্ব পায়, যাতে "napa" প্রশ্নে "Napa Extend"-এর চেয়ে "Napa" এগিয়ে থাকে।
-    WRatio আংশিক বা ক্রম-বদলানো মিল ধরে।"""
+    """Exact similarity (ratio) dominates, so "napa" ranks "Napa" above "Napa Extend".
+    WRatio contributes partial and reordered matches."""
     return 0.6 * fuzz.ratio(query, choice) + 0.4 * fuzz.WRatio(query, choice)
 
 
@@ -37,7 +37,7 @@ class DrugMatcher:
         for d in drugs:
             self._by_brand[normalize_brand(d.brand)].append(d)
         self._brand_keys = list(self._by_brand)
-        # "Cef-3"-এর মতো যেসব brand-এর নামেই সংখ্যা আছে
+        # Brands with a digit in the name, such as "Cef-3"
         self._has_numeric_brands = any(ch.isdigit() for key in self._brand_keys for ch in key)
         self._by_generic: dict[str, list[Drug]] = defaultdict(list)
         for d in drugs:
@@ -51,7 +51,7 @@ class DrugMatcher:
         return self._by_id.get(drug_id)
 
     # ------------------------------------------------------------------
-    # প্রেসক্রিপশনের একটা লাইন → সবচেয়ে কাছের ওষুধ
+    # One prescription line → closest drug
     # ------------------------------------------------------------------
     def match(self, text: str, limit: int = 5) -> MatchResult:
         parsed = parse(text)
@@ -60,7 +60,7 @@ class DrugMatcher:
 
         results = [self._match_parsed(text, parsed, limit)]
         if self._has_numeric_brands and parsed.strengths:
-            # প্রথম সংখ্যাটা নামের অংশও হতে পারে: "Cef-3 200" → নাম "cef 3", শক্তি 200
+            # The first number may be part of the name: "Cef-3 200" → name "cef 3", strength 200
             alt = ParsedName(f"{parsed.name} {parsed.strengths[0]}", parsed.strengths[1:])
             results.append(self._match_parsed(text, alt, limit))
         return max(results, key=lambda r: r.best.score if r.best else -1.0)
@@ -97,7 +97,7 @@ class DrugMatcher:
         if best is None:
             return Confidence.LOW
         if best.strength_matched is False:
-            # নাম মিলেছে কিন্তু এই শক্তির ওষুধ তালিকায় নেই: ব্যবহারকারীকে দেখাতেই হবে
+            # Name matches but this strength is not in the catalogue: the user must check it
             return (
                 Confidence.MEDIUM
                 if best.score >= MEDIUM_SCORE - STRENGTH_MISMATCH_PENALTY
@@ -112,7 +112,7 @@ class DrugMatcher:
         return Confidence.LOW
 
     # ------------------------------------------------------------------
-    # Autocomplete: ব্যবহারকারী টাইপ করার সময় brand বা generic নামে খোঁজা
+    # Autocomplete: search brand or generic names while the user types
     # ------------------------------------------------------------------
     def search(self, query: str, limit: int = 10) -> list[DrugCandidate]:
         parsed = parse(query)
@@ -127,15 +127,15 @@ class DrugMatcher:
                 if score > scores.get(drug.id, -1.0):
                     scores[drug.id] = score
 
-        # ১. brand বা generic নামের শুরুতে মিল (টাইপ করার সময় সবচেয়ে স্বাভাবিক)
+        # 1. Prefix matches on brand or generic name (the natural case while typing)
         for key in self._brand_keys:
             if key.startswith(q):
-                add(self._by_brand[key], 100.0 - 0.1 * (len(key) - len(q)))  # ছোট নাম আগে
+                add(self._by_brand[key], 100.0 - 0.1 * (len(key) - len(q)))  # shorter names first
         for key in self._generic_keys:
             if key.startswith(q):
                 add(self._by_generic[key], 95.0 - 0.1 * (len(key) - len(q)))
 
-        # ২. ভুল বানান: কাছাকাছি brand ও generic
+        # 2. Misspellings: nearest brands and generics
         for key, score, _ in self._top_brands(q, limit):
             add(self._by_brand[key], score)
         for key, score, _ in process.extract(
@@ -153,7 +153,7 @@ class DrugMatcher:
         return results
 
     def _top_brands(self, name: str, limit: int) -> list[tuple[str, float, int]]:
-        """দুই ধাপে সবচেয়ে কাছের brand: দ্রুত বাছাই, তারপর বিস্তারিত হিসাব।"""
+        """Nearest brands in two stages: fast shortlist, then detailed scoring."""
         shortlist = process.extract(name, self._brand_keys, scorer=fuzz.WRatio, limit=PREFILTER)
         rescored = [(key, _name_score(name, key), idx) for key, _, idx in shortlist]
         rescored.sort(key=lambda hit: hit[1], reverse=True)

@@ -6,7 +6,7 @@ from app.main import app
 
 @pytest.fixture(scope="module")
 def client():
-    with TestClient(app) as c:  # lifespan চালু করে ওষুধের তালিকা লোড করে
+    with TestClient(app) as c:  # runs the lifespan, which loads the catalogue
         yield c
 
 

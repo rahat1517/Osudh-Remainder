@@ -1,4 +1,4 @@
-"""Test-এর জন্য AI output তৈরির সহায়ক।"""
+"""Factories for AI outputs and images used in tests."""
 
 import io
 

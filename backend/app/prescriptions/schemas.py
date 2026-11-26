@@ -1,10 +1,13 @@
-"""প্রেসক্রিপশন পড়ার data model।
+"""Data models for prescription reading.
 
-দুই স্তর:
-1. `Extraction*`: AI (Agent ১) যা ফেরত দেয়। Claude-এর structured output এই আকারেই উত্তর দিতে বাধ্য।
-2. `Prescription*Result`: যাচাইয়ের (Agent ২) পর অ্যাপ যা পায়: প্রতিটা ঘরের মান + চূড়ান্ত confidence।
+Two layers:
+1. `Extraction*`: what the AI (Agent 1) returns. Claude's structured output is constrained to this
+   schema.
+2. `*Result`: what the app receives after verification (Agent 2): each field's value plus its final
+   confidence and an optional notice.
 
-⚠️ গোপনীয়তা: রোগীর নাম, বয়স, ফোন, ঠিকানার জন্য কোনো ঘর রাখা হয়নি, তাই AI চাইলেও এগুলো ফেরত দিতে পারবে না।
+Privacy: there are deliberately no fields for the patient's name, age, phone or address, so the AI
+cannot return them even if it reads them.
 """
 
 from enum import StrEnum
@@ -15,12 +18,12 @@ from app.drugs.models import Confidence, DrugCandidate
 
 
 class Timing(StrEnum):
-    BEFORE_MEAL = "before_meal"  # খাবারের আগে, AC
-    AFTER_MEAL = "after_meal"  # খাবারের পরে, ভরা পেটে, PC
-    WITH_MEAL = "with_meal"  # খাবারের সাথে
-    EMPTY_STOMACH = "empty_stomach"  # খালি পেটে
-    BEDTIME = "bedtime"  # ঘুমানোর আগে, HS
-    NOT_SPECIFIED = "not_specified"  # প্রেসক্রিপশনে লেখা নেই
+    BEFORE_MEAL = "before_meal"  # Bangla "khabarer age", Latin AC
+    AFTER_MEAL = "after_meal"  # "khabarer pore", "bhora pete", PC
+    WITH_MEAL = "with_meal"  # "khabarer shathe"
+    EMPTY_STOMACH = "empty_stomach"  # "khali pete"
+    BEDTIME = "bedtime"  # "ghumanor age", HS
+    NOT_SPECIFIED = "not_specified"  # nothing written on the prescription
 
 
 class ImageQuality(StrEnum):
@@ -30,7 +33,7 @@ class ImageQuality(StrEnum):
 
 
 # ---------------------------------------------------------------------------
-# Agent ১-এর output (Claude structured output)
+# Agent 1 output (Claude structured output)
 # ---------------------------------------------------------------------------
 class ExtractedMedicine(BaseModel):
     raw_text: str = Field(
@@ -73,12 +76,23 @@ class PrescriptionExtraction(BaseModel):
 
 
 # ---------------------------------------------------------------------------
-# যাচাইয়ের পর অ্যাপের জন্য ফলাফল
+# Verified result returned to the app
 # ---------------------------------------------------------------------------
+class Notice(BaseModel):
+    """Something the user should know about a field or the whole prescription.
+
+    The app localizes `code` (with `params`); `message` is an English fallback for logs and tools.
+    """
+
+    code: str
+    message: str
+    params: dict[str, str] = Field(default_factory=dict)
+
+
 class FieldResult[T](BaseModel):
     value: T | None
     confidence: Confidence
-    note: str | None = Field(default=None, description="ব্যবহারকারীকে দেখানোর জন্য ছোট ব্যাখ্যা (বাংলা)")
+    note: Notice | None = None
 
 
 class DurationValue(BaseModel):
@@ -89,8 +103,10 @@ class DurationValue(BaseModel):
 class MedicineResult(BaseModel):
     raw_text: str
     name: FieldResult[str]
-    matched_drug: DrugCandidate | None = Field(description="ওষুধের তালিকায় সবচেয়ে কাছের মিল")
-    alternatives: list[DrugCandidate] = Field(description="নিশ্চিত না হলে ব্যবহারকারীকে দেখানোর বিকল্প")
+    matched_drug: DrugCandidate | None = Field(description="Closest match in the drug catalogue")
+    alternatives: list[DrugCandidate] = Field(
+        description="Other candidates to offer the user when the match is not certain"
+    )
     strength: FieldResult[str]
     dose: FieldResult[str]
     timing: FieldResult[Timing]
@@ -102,6 +118,6 @@ class MedicineResult(BaseModel):
 class PrescriptionResult(BaseModel):
     image_quality: ImageQuality
     medicines: list[MedicineResult]
-    # নীতি: AI যতই নিশ্চিত হোক, ব্যবহারকারী confirm না করা পর্যন্ত কোনো schedule চালু হবে না
+    # Policy: however confident the AI is, nothing is scheduled until the user confirms.
     requires_confirmation: bool = True
-    warnings: list[str] = Field(default_factory=list)
+    warnings: list[Notice] = Field(default_factory=list)

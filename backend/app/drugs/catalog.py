@@ -1,6 +1,6 @@
-"""ওষুধের তালিকা লোড করা ও যাচাই করা।
+"""Loading and validating the drug catalogue.
 
-এখন CSV থেকে পড়ে। পরে Supabase database থেকে পড়ার ব্যবস্থা যোগ হবে, কিন্তু বাকি কোড একই থাকবে।
+Reads CSV today. A Supabase-backed loader can replace it later without changing callers.
 """
 
 import csv
@@ -35,13 +35,13 @@ def _parse_bool(value: str, line: int) -> bool:
         return True
     if v in {"false", "0", "no", ""}:
         return False
-    raise CatalogError(f"লাইন {line}: verified-এর মান true/false হতে হবে, পাওয়া গেছে '{value}'")
+    raise CatalogError(f"line {line}: verified must be true or false, got {value!r}")
 
 
 def parse_rows(
     rows: Iterable[dict[str, str]], start_line: int = 2
 ) -> tuple[list[Drug], LoadReport]:
-    """CSV-এর সারি থেকে ওষুধের তালিকা। খারাপ সারি বাদ দিয়ে রিপোর্টে লেখে।"""
+    """Builds drugs from CSV rows. Bad rows are skipped and listed in the report."""
     report = LoadReport()
     drugs: list[Drug] = []
     seen: set[tuple[str, str, str]] = set()
@@ -59,7 +59,7 @@ def parse_rows(
             if not v
         ]
         if missing:
-            report.errors.append(f"লাইন {line}: খালি ঘর: {', '.join(missing)}")
+            report.errors.append(f"line {line}: empty required field(s): {', '.join(missing)}")
             continue
         try:
             verified = _parse_bool(row.get("verified", ""), line)
@@ -69,7 +69,7 @@ def parse_rows(
 
         key = (normalize_brand(brand), strength.lower(), form.lower())
         if key in seen:
-            report.duplicates.append(f"লাইন {line}: {brand} {strength} ({form})")
+            report.duplicates.append(f"line {line}: {brand} {strength} ({form})")
             continue
         seen.add(key)
 
@@ -94,5 +94,5 @@ def load_csv(path: Path) -> tuple[list[Drug], LoadReport]:
         reader = csv.DictReader(f)
         missing = [c for c in REQUIRED_COLUMNS if c not in (reader.fieldnames or [])]
         if missing:
-            raise CatalogError(f"{path.name}: column নেই: {', '.join(missing)}")
+            raise CatalogError(f"{path.name}: missing column(s): {', '.join(missing)}")
         return parse_rows(reader)

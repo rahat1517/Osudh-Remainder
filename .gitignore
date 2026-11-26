@@ -1,10 +1,10 @@
 # ============================================================
-# ⚠️ রোগীর তথ্য — কখনো repository-তে যাবে না
+# Patient data: must never enter the repository
 # ============================================================
 data/
 datasets/
 prescriptions/
-# ব্যতিক্রম: কোডের ফোল্ডার (এখানে কোনো ছবি বা রোগীর তথ্য থাকে না)
+# Exception: source code folder (images inside it are still ignored below)
 !backend/app/prescriptions/
 uploads/
 patient_data/
@@ -12,8 +12,8 @@ ml/data/
 backend/eval/out/
 *.dcm
 
-# প্রেসক্রিপশনের ছবি (ভুল করে যেন commit না হয়)
-# নমুনা ছবি রাখতে চাইলে docs/samples/ ফোল্ডারে শুধু কাল্পনিক/নকল ছবি রাখুন
+# Prescription photos and scans, so none are committed by accident.
+# Fictional sample images may go in docs/samples/.
 *.jpg
 *.jpeg
 *.png
@@ -25,7 +25,7 @@ backend/eval/out/
 !app/android/app/src/main/res/**
 
 # ============================================================
-# 🔑 গোপন তথ্য — API key, password
+# Secrets: API keys, passwords
 # ============================================================
 .env
 .env.*
@@ -38,7 +38,7 @@ google-services.json
 GoogleService-Info.plist
 
 # ============================================================
-# 🧠 বড় model ফাইল (Hugging Face-এ রাখুন)
+# Large model files (store them on Hugging Face)
 # ============================================================
 *.safetensors
 *.gguf

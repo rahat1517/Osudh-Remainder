@@ -1,4 +1,4 @@
-"""Agent ১: প্রেসক্রিপশন পাঠক। ছবি → structured data (Claude vision + structured output)।"""
+"""Agent 1, the prescription reader: image → structured data (Claude vision + structured output)."""
 
 import base64
 import logging
@@ -6,6 +6,7 @@ from typing import Protocol
 
 import anthropic
 
+from app.prescriptions.errors import ReaderError
 from app.prescriptions.images import PreparedImage
 from app.prescriptions.prompt import SYSTEM_PROMPT, USER_INSTRUCTION
 from app.prescriptions.schemas import PrescriptionExtraction
@@ -13,15 +14,6 @@ from app.prescriptions.schemas import PrescriptionExtraction
 logger = logging.getLogger(__name__)
 
 FALLBACK_BETA = "server-side-fallback-2026-07-01"
-
-
-class ReaderError(RuntimeError):
-    """AI প্রেসক্রিপশন পড়তে পারেনি। `user_message` অ্যাপে দেখানো যায়।"""
-
-    def __init__(self, message: str, user_message: str, retryable: bool = False):
-        super().__init__(message)
-        self.user_message = user_message
-        self.retryable = retryable
 
 
 class Reader(Protocol):
@@ -58,28 +50,34 @@ class ClaudePrescriptionReader:
                 ],
                 output_config={"effort": self._effort},
                 output_format=PrescriptionExtraction,
-                # নিরাপত্তা-classifier ভুল করে অনুরোধ ফিরিয়ে দিলে server নিজেই অন্য model-এ চালাবে
+                # If a safety classifier declines by mistake, the API retries on a fallback model
                 betas=[FALLBACK_BETA],
                 fallbacks="default",
             )
         except anthropic.RateLimitError as e:
-            raise ReaderError(str(e), "এখন অনেক অনুরোধ আসছে। একটু পরে আবার চেষ্টা করুন।", True) from e
+            raise ReaderError(
+                "ai_rate_limited", "Too many requests to the AI service", retryable=True
+            ) from e
         except anthropic.APIConnectionError as e:
-            raise ReaderError(str(e), "AI সেবার সাথে সংযোগ হচ্ছে না। আবার চেষ্টা করুন।", True) from e
+            raise ReaderError(
+                "ai_unavailable", "Cannot reach the AI service", retryable=True
+            ) from e
         except anthropic.APIStatusError as e:
             retryable = e.status_code >= 500
             logger.error("Claude API error %s: %s", e.status_code, e.message)
-            raise ReaderError(str(e), "প্রেসক্রিপশন পড়া যায়নি। আবার চেষ্টা করুন।", retryable) from e
+            raise ReaderError(
+                "ai_failed", f"AI service error {e.status_code}", retryable=retryable
+            ) from e
 
         if response.stop_reason == "refusal":
-            raise ReaderError(
-                f"refusal: {response.stop_details}",
-                "এই ছবিটা পড়া যায়নি। ওষুধের নাম নিজে লিখে যোগ করুন।",
-            )
+            logger.warning("prescription read refused: %s", response.stop_details)
+            raise ReaderError("ai_refused", "The AI declined to read this image")
         if response.stop_reason == "max_tokens":
-            raise ReaderError("max_tokens reached", "প্রেসক্রিপশনটা অনেক বড়। দুই ভাগে ছবি তুলুন।")
+            raise ReaderError(
+                "prescription_too_long", "The prescription is too long to read at once"
+            )
         if response.parsed_output is None:
-            raise ReaderError("no parsed output", "প্রেসক্রিপশন পড়া যায়নি। আবার চেষ্টা করুন।", True)
+            raise ReaderError("ai_failed", "The AI returned no structured output", retryable=True)
 
         logger.info(
             "prescription read: request_id=%s model=%s medicines=%d",

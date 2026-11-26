@@ -1,7 +1,7 @@
 {
   "@@locale": "bn",
   "appTitle": "ওষুধ রিমাইন্ডার",
-  "@appTitle": { "description": "অ্যাপের নাম" },
+  "@appTitle": { "description": "App name shown in the title bar and launcher" },
   "welcomeTitle": "স্বাগতম!",
   "welcomeSubtitle": "প্রেসক্রিপশনের ছবি তুলুন, বাকিটা আমরা মনে রাখব।",
   "getStarted": "শুরু করুন",

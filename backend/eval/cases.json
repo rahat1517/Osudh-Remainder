@@ -1,5 +1,5 @@
 {
-  "_comment": "কাল্পনিক প্রেসক্রিপশন। ডাক্তার ও রোগী কাল্পনিক। lines = ছবিতে যা লেখা থাকবে, expected = সঠিক উত্তর।",
+  "_comment": "Fictional prescriptions; the doctor and patient are fictional. lines = text rendered in the image, expected = correct answer.",
   "cases": [
     {
       "id": "rx01-basic-bangla",
@@ -105,7 +105,7 @@
         {"brand": "Napa", "strength": "120 mg/5 ml", "dose": "1+1+1", "days": 3},
         {"brand": "Orsaline-N", "as_needed": true}
       ],
-      "_note": "Ace Plus লাইনে ডোজ নেই: AI-এর উচিত এটা low দেওয়া; expected-এ নেই, তাই শুধু অতিরিক্ত হিসেবে গোনা হবে"
+      "_note": "The Ace Plus line has no dose: the AI should rate it low. It is not in expected, so it is only counted as an extra."
     },
     {
       "id": "rx09-four-times",

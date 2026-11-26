@@ -1,7 +1,7 @@
-"""Agent ১ (প্রেসক্রিপশন পাঠক)-এর নির্দেশনা।
+"""Instructions for Agent 1, the prescription reader.
 
-ইংরেজিতে লেখা, কারণ model ইংরেজি নির্দেশনা সবচেয়ে নির্ভুলভাবে মানে। প্রেসক্রিপশনের বাংলা লেখা সে পড়তে পারে।
-নির্দেশনা বদলালে eval আবার চালিয়ে দেখুন নির্ভুলতা কমেনি (backend/eval/README.md)।
+The Bangla phrases are prescription vocabulary the model must recognise; keep them.
+After changing the prompt, run the eval to confirm accuracy did not drop (backend/eval/README.md).
 """
 
 SYSTEM_PROMPT = """\

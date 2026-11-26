@@ -1,7 +1,7 @@
-"""ওষুধের নাম স্বাভাবিক করা।
+"""Normalising medicine names.
 
-প্রেসক্রিপশনে বা OCR-এ একই ওষুধ নানাভাবে লেখা থাকে:
-"Tab. Seclo-20mg", "SECLO 20", "seclo২০", "Sec1o 20"। এখানে সবগুলোকে একই রূপে আনা হয়।
+The same medicine appears in many forms on prescriptions and in OCR output:
+"Tab. Seclo-20mg", "SECLO 20", "seclo২০" (Bangla digits), "Sec1o 20". All map to one form here.
 """
 
 import re
@@ -10,7 +10,7 @@ from dataclasses import dataclass
 
 _BANGLA_DIGITS = str.maketrans("০১২৩৪৫৬৭৮৯", "0123456789")
 
-# ওষুধের ধরন বোঝানো শব্দ: নামের অংশ নয়, তাই খোঁজার সময় বাদ দেওয়া হয়
+# Dosage-form words are not part of the name and are dropped for matching
 _FORM_WORDS = {
     "tab",
     "tabs",
@@ -44,10 +44,10 @@ _FORM_WORDS = {
     "paed",
 }
 
-# একক: শক্তির সংখ্যা রাখা হয়, একক বাদ দেওয়া হয়
+# Units: the strength number is kept, the unit dropped
 _UNIT_WORDS = {"mg", "mcg", "g", "gm", "ml", "iu", "unit", "units", "%"}
 
-# প্রচলিত সংক্ষেপ → পূর্ণ রূপ
+# Common abbreviations → full form
 _ABBREVIATIONS = {
     "ext": "extend",
     "xtend": "extend",
@@ -56,16 +56,17 @@ _ABBREVIATIONS = {
     "plas": "plus",
 }
 
-# OCR-এ অক্ষরের মাঝে ভুল করে পড়া সংখ্যা: "Sec1o" → "seclo", "Max0pro" → "maxopro"
+# OCR misreads a letter as a digit inside a word: "Sec1o" → "seclo", "Max0pro" → "maxopro"
 _OCR_DIGIT_TO_LETTER = {"0": "o", "1": "l", "5": "s", "8": "b"}
 _DIGIT_BETWEEN_LETTERS = re.compile(r"(?<=[a-z])([0158])(?=[a-z])")
-# নামের শেষে লেগে থাকা একটা সংখ্যা, যার পরে আসল শক্তি আছে: "Maxpr0 40" → "maxpro 40"
+# A single digit glued to the end of a name, followed by the real strength:
+# "Maxpr0 40" → "maxpro 40"
 _DIGIT_ENDING_WORD = re.compile(r"(?<=[a-z]{3})([0158])(?=\s+\d)")
 
 
 @dataclass(frozen=True)
 class ParsedName:
-    """স্বাভাবিক করা নাম আর শক্তির সংখ্যাগুলো।"""
+    """Normalised name and the strength numbers."""
 
     name: str
     strengths: tuple[str, ...]
@@ -78,14 +79,14 @@ def _basic_clean(text: str) -> str:
     text = text.replace("+", " plus ")
     # "seclo20" → "seclo 20", "20mg" → "20 mg"
     text = re.sub(r"(?<=[a-z])(?=\d)|(?<=\d)(?=[a-z])", " ", text)
-    # দশমিক বিন্দু রেখে বাকি যতিচিহ্ন বাদ
+    # Drop punctuation except decimal points
     text = re.sub(r"(?<!\d)\.|\.(?!\d)", " ", text)
     text = re.sub(r"[^a-z0-9.\s]", " ", text)
     return text
 
 
 def parse(text: str) -> ParsedName:
-    """নাম আর শক্তি আলাদা করে।
+    """Splits the name from the strength numbers.
 
     >>> parse("Tab. Seclo-20mg")
     ParsedName(name='seclo', strengths=('20',))
@@ -103,7 +104,7 @@ def parse(text: str) -> ParsedName:
 
 
 def normalize_brand(brand: str) -> str:
-    """Database-এ রাখার জন্য brand-এর স্বাভাবিক রূপ। "Cef-3" এর মতো নামে সংখ্যা থাকে, সেটা রাখা হয়।"""
+    """Normalised brand for storage and matching. Digits in names such as "Cef-3" are kept."""
     text = _basic_clean(brand)
     words = [_ABBREVIATIONS.get(t, t) for t in text.split() if t not in _FORM_WORDS]
     return " ".join(words)

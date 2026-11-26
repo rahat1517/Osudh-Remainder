@@ -1,14 +1,14 @@
 import 'package:material_ui/material_ui.dart';
 
-/// অ্যাপের থিম।
+/// App theme.
 ///
-/// বয়স্ক ব্যবহারকারীদের কথা মাথায় রেখে: বড় লেখা, বড় বাটন, স্পষ্ট রং।
+/// Designed for older users: larger text, large touch targets, clear colours.
 class AppTheme {
   AppTheme._();
 
   static const String fontFamily = 'HindSiliguri';
 
-  /// প্রধান রং: শান্ত সবুজ (স্বাস্থ্য ও ভরসার অনুভূতি)।
+  /// Primary colour: a calm green, associated with health and trust.
   static const Color seed = Color(0xFF0F7B5F);
 
   static ThemeData light() => _build(Brightness.light);
@@ -26,7 +26,7 @@ class AppTheme {
       useMaterial3: true,
     );
     return base.copyWith(
-      // সাধারণের চেয়ে একটু বড় লেখা, যাতে বয়স্করা সহজে পড়তে পারেন।
+      // Slightly larger than Material defaults for readability.
       textTheme: base.textTheme.merge(
         const TextTheme(
           headlineMedium: TextStyle(fontSize: 30),

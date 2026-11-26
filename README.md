@@ -1,72 +1,78 @@
-# 💊 ওষুধ রিমাইন্ডার (Oshudh Reminder)
+# Oshudh Reminder
 
-বাংলাদেশের মানুষের জন্য একটি AI-চালিত ওষুধ রিমাইন্ডার অ্যাপ।
-প্রেসক্রিপশনের ছবি তুললেই অ্যাপ নিজে পড়ে নেবে, ব্যবহারকারী এক ট্যাপে confirm করবেন,
-আর সময়মতো বাংলায় মনে করিয়ে দেবে: অ্যাপে, SMS-এ বা ফোন কলে।
+[![CI](https://github.com/rahat1517/Osudh-Remainder/actions/workflows/ci.yml/badge.svg)](https://github.com/rahat1517/Osudh-Remainder/actions/workflows/ci.yml)
 
-> **মূল কথা:** AI পড়বে ও বুঝবে → ব্যবহারকারী confirm করবেন → ফোন সময়মতো অ্যালার্ম বাজাবে।
+An AI-assisted medicine reminder for Bangladesh. Patients photograph a prescription, the app reads it,
+the patient confirms what was read with one tap, and the app reminds them (or their caregivers) to take
+each medicine on time, in Bangla.
 
----
+> **Design principle:** the AI reads and suggests; the patient confirms; deterministic code schedules.
+> Nothing the AI produces turns into a reminder without explicit confirmation.
 
-## ✨ প্রধান বৈশিষ্ট্য
+## Features
 
-- 📷 **প্রেসক্রিপশন স্ক্যান:** হাতে লেখা ও ছাপা প্রেসক্রিপশন AI দিয়ে পড়া
-- 🎯 **Confidence-ভিত্তিক পূরণ:** নিশ্চিত তথ্য নিজে বসবে, সন্দেহজনক তথ্য হলুদ দেখাবে, অপঠিত ঘর ব্যবহারকারী পূরণ করবেন
-- 🇧🇩 **বাংলাদেশি নির্দেশনা বোঝা:** `১+০+১`, `খাবারের আগে/পরে`, `৭ দিন`, `চলবে`
-- 💊 **বাংলাদেশি ওষুধের database:** brand → generic নাম যাচাই
-- ⏰ **Offline অ্যালার্ম:** ইন্টারনেট ছাড়াই full-screen অ্যালার্ম, বাংলায় voice
-- 👨‍👩‍👧 **Caregiver mode:** পরিবারের সদস্য ডোজ মিস হওয়ার খবর পাবেন
-- 🗣️ **বাংলা AI সহকারী:** কথা বলে ওষুধের তথ্য জানা ও রিমাইন্ডার বদলানো
-- 📈 **নিজে শেখে:** ব্যবহারের ধরন দেখে সময় ঠিক করার প্রস্তাব দেয়, রমজানে সময় বদলানোর প্রস্তাব দেয়
+| | Status |
+|---|---|
+| Prescription scanning with per-field confidence (printed and handwritten, Bangla and English) | Backend done (Phase 2) |
+| Bangladeshi dose notation: `১+০+১`, `½`, `BD`/`TDS`, before/after meals, "চলবে" (continue) | Done |
+| Drug catalogue with misspelling-tolerant matching (brand → generic → strength) | Done (dev seed) |
+| Deterministic schedule engine, identical on server and phone | Done (Phase 3) |
+| Offline full-screen alarms with Bangla voice | Phase 5 |
+| Caregiver mode: family members are alerted when a dose is missed | Phase 6 |
+| Bangla AI assistant, refill and Ramadan modes, SMS/voice-call escalation | Phases 8-10 |
 
-## 📁 প্রকল্পের কাঠামো
+## Repository layout
 
 ```
-oshudh-reminder/
-├── app/          ← Flutter মোবাইল অ্যাপ
-├── backend/      ← API server (প্রেসক্রিপশন পড়া, AI agent)
-├── ml/           ← Local LLM fine-tuning (পরবর্তী ধাপ)
-├── database/     ← ওষুধের database-এর script
-├── supabase/     ← Supabase কনফিগারেশন ও migration
-└── docs/         ← পরিকল্পনা ও ডিজাইন
+app/        Flutter mobile app (Android first)
+backend/    Python FastAPI service: drug catalogue, prescription reader, schedule engine
+database/   Drug catalogue sources and import notes
+supabase/   Supabase configuration, migrations and generated seed data
+spec/       Language-neutral specifications and shared conformance test vectors
+docs/       Product plan, roadmap, specifications
+ml/         Planned fine-tuning work for a self-hosted model (Phase 11)
 ```
 
-## 🚀 দ্রুত শুরু
+## Quick start
 
 ```bash
 # Backend
-cd backend && uv sync && uv run uvicorn app.main:app --reload
+cd backend && uv sync && uv run uvicorn app.main:app --reload   # http://localhost:8000/docs
 
 # App
 cd app && flutter pub get && flutter run
 ```
 
-বিস্তারিত: [backend/README.md](backend/README.md), [app/README.md](app/README.md), [CONTRIBUTING.md](CONTRIBUTING.md)
+See [backend/README.md](backend/README.md), [app/README.md](app/README.md) and
+[CONTRIBUTING.md](CONTRIBUTING.md).
 
-## 🛠️ প্রযুক্তি
+## Technology
 
-| অংশ | প্রযুক্তি |
+| Area | Choice |
 |---|---|
-| মোবাইল অ্যাপ | Flutter |
-| Backend | Python + FastAPI |
-| Database ও Auth | Supabase (PostgreSQL) |
-| প্রেসক্রিপশন পড়া | Claude API (vision), পরে fine-tuned local model (hybrid) |
-| বাংলা voice | Text-to-Speech / Speech-to-Text |
-| অ্যালার্ম | Android AlarmManager (offline, AI ছাড়া) |
+| Mobile app | Flutter (Android first) |
+| Backend | Python 3.12, FastAPI, uv |
+| Database and auth | Supabase (PostgreSQL, row-level security) |
+| Prescription reading | Claude vision with structured output; later a fine-tuned self-hosted model (hybrid) |
+| Scheduling | Rule-based engine in Python and Dart, checked against a shared conformance suite |
+| Alarms | Android exact alarms, fully offline |
 
-## 🔒 নিরাপত্তা নিয়ম
+## Documentation
 
-1. **রোগীর আসল তথ্য বা প্রেসক্রিপশনের ছবি কখনো এই repository-তে রাখা যাবে না।**
-2. API key ও password শুধু `.env` ফাইলে থাকবে (এটা `.gitignore`-এ আছে)।
-3. AI কখনো নিজে থেকে ওষুধ বা ডোজ বদলাবে না, শুধু প্রস্তাব দেবে।
-4. প্রতিটা প্রেসক্রিপশন ব্যবহারকারী confirm না করা পর্যন্ত কোনো অ্যালার্ম চালু হবে না।
+- [Product plan](docs/PLAN.md): problem, solution, architecture, risks
+- [Roadmap](docs/PHASES.md): twelve phases with tasks and exit criteria
+- [Schedule engine specification](docs/SCHEDULE_SPEC.md)
+- [Prescription reader evaluation](backend/eval/README.md)
 
-## 📚 ডকুমেন্টেশন
+## Safety and privacy
 
-- [প্রকল্প পরিকল্পনা](docs/PLAN.md): পুরো ধারণা ও architecture
-- [Phase অনুযায়ী কাজের পরিকল্পনা](docs/PHASES.md): ১২টা phase, প্রতিটার কাজ ও শেষের শর্ত
+1. Real patient data and prescription images are never committed to this repository.
+2. Secrets live only in `.env`, which is git-ignored.
+3. The AI never changes a medicine or dose on its own; it can only suggest.
+4. No reminder is created until the patient confirms the prescription.
+5. Uploaded photos are processed in memory, stripped of metadata, and never stored.
 
-## ⚠️ দাবিত্যাগ (Disclaimer)
+## Disclaimer
 
-এই অ্যাপ শুধু ওষুধ খাওয়ার কথা মনে করিয়ে দেওয়ার জন্য। এটা চিকিৎসা পরামর্শের বিকল্প নয়।
-সবসময় ডাক্তারের পরামর্শ মেনে চলুন।
+This app helps people remember to take their medicines. It is not a substitute for medical advice.
+Always follow your doctor's instructions.

@@ -2,7 +2,7 @@ import 'package:material_ui/material_ui.dart';
 
 import '../l10n/generated/app_localizations.dart';
 
-/// প্রথম স্ক্রিন। Phase 4-এ এখান থেকে লগইন ও onboarding শুরু হবে।
+/// First screen. Login and onboarding start from here in Phase 4.
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
 

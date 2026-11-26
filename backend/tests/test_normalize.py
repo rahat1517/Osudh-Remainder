@@ -8,10 +8,10 @@ from app.drugs.normalize import normalize_brand, parse, strength_numbers
     [
         ("Tab. Seclo-20mg", "seclo", ("20",)),
         ("SECLO 20 MG", "seclo", ("20",)),
-        ("seclo২০", "seclo", ("20",)),  # বাংলা সংখ্যা
+        ("seclo২০", "seclo", ("20",)),  # Bangla digits
         ("Sec1o 20", "seclo", ("20",)),  # OCR: 1 → l
-        ("Maxpr0 40", "maxpro", ("40",)),  # OCR: নামের শেষে 0 → o
-        ("Vit B1 100", "vit b", ("1", "100")),  # এক অক্ষরের পরের সংখ্যা অক্ষর হিসেবে ধরা হয় না
+        ("Maxpr0 40", "maxpro", ("40",)),  # OCR: trailing 0 → o
+        ("Vit B1 100", "vit b", ("1", "100")),  # digit after a single letter stays a digit
         ("Napa Ext", "napa extend", ()),
         ("Ace+", "ace plus", ()),
         ("Disopan 0.5mg", "disopan", ("0.5",)),

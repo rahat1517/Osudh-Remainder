@@ -9,7 +9,7 @@ def _load_cases(fixtures_dir):
 
 
 def test_misspelling_accuracy_at_least_90_percent(matcher, fixtures_dir):
-    """Phase 1-এর শেষের শর্ত: ভুল বানানের test set-এ ≥ ৯০% সঠিক মিল।"""
+    """Phase 1 exit criterion: at least 90% correct on the misspelling set."""
     cases = _load_cases(fixtures_dir)
     assert len(cases) >= 50
     failures = []
@@ -21,9 +21,9 @@ def test_misspelling_accuracy_at_least_90_percent(matcher, fixtures_dir):
             ok = best.drug.strength == case["expected_strength"]
         if not ok:
             got = f"{best.drug.brand} {best.drug.strength}" if best else None
-            failures.append(f"{case['query']!r} → {got} (প্রত্যাশিত {case['expected_brand']})")
+            failures.append(f"{case['query']!r} → {got} (expected {case['expected_brand']})")
     accuracy = 1 - len(failures) / len(cases)
-    assert accuracy >= 0.90, f"নির্ভুলতা {accuracy:.0%}\n" + "\n".join(failures)
+    assert accuracy >= 0.90, f"accuracy {accuracy:.0%}\n" + "\n".join(failures)
 
 
 def test_exact_name_and_strength_is_high_confidence(matcher):
@@ -34,12 +34,12 @@ def test_exact_name_and_strength_is_high_confidence(matcher):
 
 
 def test_prefers_exact_brand_over_longer_brand(matcher):
-    # "Napa" লিখলে "Napa Extend" নয়, "Napa" আসা উচিত
+    # "Napa" must return Napa, not Napa Extend
     assert matcher.match("Napa 500").best.drug.brand == "Napa"
 
 
 def test_strength_not_in_catalog_is_never_high(matcher):
-    # Seclo 60 তালিকায় নেই: নাম মিললেও নিশ্চিত বলা যাবে না
+    # Seclo 60 is not in the catalogue: the name matches but it cannot be certain
     result = matcher.match("Seclo 60")
     assert result.best.drug.brand == "Seclo"
     assert result.best.strength_matched is False
@@ -52,14 +52,14 @@ def test_unknown_drug_is_low_confidence(matcher):
 
 
 def test_partial_ocr_is_not_high_confidence(matcher):
-    # "Ma?x": OCR অর্ধেক পড়েছে। প্রস্তাব দেওয়া যায়, কিন্তু নিশ্চিত বলা যায় না
+    # "Ma?x": OCR read only part of it. Suggest, but never certain
     result = matcher.match("Ma?x")
     assert result.confidence != Confidence.HIGH
     assert "Maxpro" in [c.drug.brand for c in result.candidates]
 
 
 def test_typo_is_not_high_confidence_when_ambiguous(matcher):
-    # "Sedil" আর "Seclo" কাছাকাছি; বড় ধরনের টাইপো হলে HIGH দেওয়া যাবে না
+    # "Sedil" and "Seclo" are close; a large typo must not be HIGH
     result = matcher.match("Sel 5")
     assert result.confidence != Confidence.HIGH
 
@@ -85,7 +85,7 @@ def test_search_with_typo(matcher):
 
 
 def test_brand_with_digit_in_name(matcher):
-    # "Cef-3"-এর 3 নামের অংশ, শক্তি নয়
+    # The 3 in "Cef-3" is part of the name, not a strength
     for text in ("Cef-3 200", "Cef 3 400", "Cap. Cef-3 400mg"):
         result = matcher.match(text)
         assert result.best.drug.brand == "Cef-3", text

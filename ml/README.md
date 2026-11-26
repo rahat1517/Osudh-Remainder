@@ -1,12 +1,14 @@
-# 🧠 ml/: Local LLM fine-tuning (পরবর্তী ধাপ)
+# Self-hosted model fine-tuning (Phase 11)
 
-পরিকল্পনা:
-1. ব্যবহারকারীর confirm করা প্রেসক্রিপশন থেকে label সংগ্রহ (অনুমতি নিয়ে, ব্যক্তিগত তথ্য মুছে)
-2. ভাগ: ৮০% train / ১০% validation / ১০% test
-3. Open-source vision model (যেমন Qwen2.5-VL 7B) + LoRA/QLoRA fine-tune
-4. Test set-এ মাপা: ওষুধের নাম %, ডোজ %, সময় %, মেয়াদ %
-5. Hybrid: local model আগে চেষ্টা করবে, confidence কম হলে cloud AI
+Plan:
 
-## ⚠️ নিয়ম
-- **আসল প্রেসক্রিপশন বা রোগীর তথ্য এখানে commit করা যাবে না।** `ml/data/` ফোল্ডার `.gitignore`-এ আছে
-- Model ফাইল (`.safetensors`, `.gguf`) Hugging Face-এ (private) রাখুন
+1. Collect labels from prescriptions users confirmed, with consent and personal data removed.
+2. Split 80% train / 10% validation / 10% test, keeping each doctor in a single split.
+3. Fine-tune an open vision-language model (e.g. Qwen2.5-VL 7B) with LoRA/QLoRA.
+4. Measure on the test set: name, dose, timing and duration accuracy, and calibration of confidence.
+5. Hybrid serving: the local model tries first; low-confidence results fall back to the cloud model.
+
+## Rules
+
+- **Never commit real prescriptions or patient data.** `ml/data/` is git-ignored.
+- Store model weights (`.safetensors`, `.gguf`) in a private Hugging Face repository.

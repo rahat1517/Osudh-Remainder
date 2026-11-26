@@ -23,7 +23,7 @@ def test_parse_rows_skips_bad_rows_and_duplicates():
     drugs, report = parse_rows(
         [
             _row(),
-            _row(brand="SECLO"),  # একই ওষুধ, বড় হাতের অক্ষরে
+            _row(brand="SECLO"),  # same drug in upper case
             _row(generic=""),
             _row(brand="Maxpro", verified="maybe"),
         ]
