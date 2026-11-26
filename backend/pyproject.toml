@@ -16,6 +16,7 @@ dependencies = [
     "httpx2>=2.16.2",
     "pyjwt[crypto]>=2.10",
     "sentry-sdk[fastapi]>=2.20",
+    "psycopg[binary]>=3.2",
 ]
 
 [dependency-groups]
@@ -24,7 +25,6 @@ dev = [
     "httpx2>=2.16.2",
     "ruff>=0.8",
     "hypothesis>=6.120",
-    "psycopg[binary]>=3.2",
     "astral>=3.2",
 ]
 
