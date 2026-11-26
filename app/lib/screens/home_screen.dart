@@ -10,6 +10,7 @@ import 'assistant_screen.dart';
 import 'confirm_screen.dart';
 import 'family_screen.dart';
 import 'medicines_screen.dart';
+import '../widgets/insights_section.dart';
 import 'scan_screen.dart';
 import 'settings_screen.dart';
 import 'setup_screen.dart';
@@ -93,6 +94,7 @@ class HomeScreen extends StatelessWidget {
             : ListView(
                 padding: const EdgeInsets.all(16),
                 children: [
+                  const InsightsSection(),
                   if (state.offline)
                     Card(
                       child: ListTile(

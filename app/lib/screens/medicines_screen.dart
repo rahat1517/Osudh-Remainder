@@ -1,6 +1,7 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
+import '../insights/insights.dart';
 import '../l10n/generated/app_localizations.dart';
 import '../state/app_state.dart';
 import '../widgets/medicine_editor.dart';
@@ -28,6 +29,40 @@ class MedicinesScreen extends StatelessWidget {
       ),
     );
     if (ok ?? false) await state.stop(id);
+  }
+
+  Future<void> _stock(BuildContext context, String id, double? current) async {
+    final l = AppLocalizations.of(context);
+    final state = context.read<AppState>();
+    final controller = TextEditingController(
+      text: current == null ? '' : current.toStringAsFixed(0),
+    );
+    final value = await showDialog<double>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l.stockTitle),
+        content: TextField(
+          key: const Key('stockInput'),
+          controller: controller,
+          autofocus: true,
+          keyboardType: TextInputType.number,
+          decoration: InputDecoration(helperText: l.stockHelp),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(l.cancel),
+          ),
+          FilledButton(
+            key: const Key('saveStock'),
+            onPressed: () =>
+                Navigator.pop(ctx, double.tryParse(controller.text.trim())),
+            child: Text(l.save),
+          ),
+        ],
+      ),
+    );
+    if (value != null && value >= 0) await state.setStock(id, value);
   }
 
   @override
@@ -59,12 +94,16 @@ class MedicinesScreen extends StatelessWidget {
                 [
                   if (m.asNeeded) l.asNeeded else m.dosePattern ?? '',
                   timingLabel(l, m.timing),
+                  if (refillStatus(m, state.settings, state.wallNow)
+                      case final r?)
+                    l.daysLeft(r.daysLeft.toStringAsFixed(1)),
                   if (m.durationDays != null)
                     '${m.durationDays} ${l.fieldDuration}'
                   else
                     l.continueIndefinitely,
                 ].join(' · '),
               ),
+              onTap: () => _stock(context, m.id, m.pillsOnHand),
               trailing: IconButton(
                 tooltip: l.stopMedicine,
                 icon: const Icon(Icons.stop_circle_outlined),

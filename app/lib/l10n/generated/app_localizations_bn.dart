@@ -565,4 +565,97 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get mealBedtime => 'ঘুম';
+
+  @override
+  String get refillNoticeTitle => 'ওষুধ শেষ হয়ে আসছে';
+
+  @override
+  String refillNoticeBody(String name) {
+    return '$name প্রায় ৩ দিনের মধ্যে শেষ হবে। সময়মতো কিনে নিন।';
+  }
+
+  @override
+  String get lowStockTitle => 'শীঘ্রই শেষ হবে';
+
+  @override
+  String lowStockBody(String name, String days) {
+    return '$name: আর প্রায় $days দিন চলবে';
+  }
+
+  @override
+  String get duplicateTitle => 'একই ওষুধ দুইবার?';
+
+  @override
+  String duplicateBody(String names, String ingredient) {
+    return '$names-এ একই উপাদান ($ingredient) আছে। দুটোই খাওয়ার আগে ডাক্তার বা ফার্মাসিস্টকে জিজ্ঞেস করুন।';
+  }
+
+  @override
+  String get mealShiftTitle => 'খাবারের সময় বদলাবেন?';
+
+  @override
+  String mealShiftBody(int days, String meal, String to) {
+    return '$days দিন ধরে আপনি $meal-এর ওষুধ $to-এর দিকে খাচ্ছেন। $meal-এর সময় $to করবেন?';
+  }
+
+  @override
+  String get yes => 'হ্যাঁ';
+
+  @override
+  String get no => 'না';
+
+  @override
+  String get stockTitle => 'হাতে কয়টা ট্যাবলেট আছে';
+
+  @override
+  String get stockHelp => 'এখন হাতে কয়টা ট্যাবলেট (বা ডোজ) আছে গুনে লিখুন।';
+
+  @override
+  String daysLeft(String days) {
+    return 'আর প্রায় $days দিন চলবে';
+  }
+
+  @override
+  String get save => 'সংরক্ষণ';
+
+  @override
+  String get reportTitle => 'গত ৭ দিন';
+
+  @override
+  String reportOverall(int taken, int scheduled, int percent) {
+    return '$scheduledটি ডোজের মধ্যে $takenটি খাওয়া হয়েছে ($percent%)';
+  }
+
+  @override
+  String reportMissed(int missed, int skipped) {
+    return 'বাদ পড়েছে: $missed · নিজে বাদ দিয়েছেন: $skipped';
+  }
+
+  @override
+  String get reportShare => 'রিপোর্ট শেয়ার করুন (PDF)';
+
+  @override
+  String get ramadanTitle => 'রমজান মোড';
+
+  @override
+  String get ramadanIntro =>
+      'সকালের ওষুধ সেহরিতে আর সন্ধ্যার ওষুধ ইফতারে সরিয়ে নেয়।';
+
+  @override
+  String get ramadanDistrict => 'জেলা';
+
+  @override
+  String ramadanTimes(String sehri, String iftar) {
+    return 'আজ সেহরির শেষ সময় $sehri, ইফতার $iftar';
+  }
+
+  @override
+  String get ramadanConflicts =>
+      'এই ওষুধগুলোর ডোজ রোজার সময়ে পড়ছে। রমজানে কীভাবে খাবেন, ডাক্তারকে জিজ্ঞেস করুন:';
+
+  @override
+  String get ramadanOn => 'রমজানের সময়সূচি চালু করুন';
+
+  @override
+  String get ramadanOff => 'রমজানের সময়সূচি বন্ধ করুন';
 }

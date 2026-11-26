@@ -570,4 +570,97 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get mealBedtime => 'bedtime';
+
+  @override
+  String get refillNoticeTitle => 'Medicine running out';
+
+  @override
+  String refillNoticeBody(String name) {
+    return '$name will run out in about 3 days. Buy more in time.';
+  }
+
+  @override
+  String get lowStockTitle => 'Running out soon';
+
+  @override
+  String lowStockBody(String name, String days) {
+    return '$name: about $days days left';
+  }
+
+  @override
+  String get duplicateTitle => 'Same medicine twice?';
+
+  @override
+  String duplicateBody(String names, String ingredient) {
+    return '$names contain the same ingredient ($ingredient). Ask your doctor or pharmacist before taking both.';
+  }
+
+  @override
+  String get mealShiftTitle => 'Move a meal time?';
+
+  @override
+  String mealShiftBody(int days, String meal, String to) {
+    return 'On $days days you took your $meal medicines around $to. Set $meal to $to?';
+  }
+
+  @override
+  String get yes => 'Yes';
+
+  @override
+  String get no => 'No';
+
+  @override
+  String get stockTitle => 'Tablets on hand';
+
+  @override
+  String get stockHelp => 'Count the tablets (or doses) you have now.';
+
+  @override
+  String daysLeft(String days) {
+    return 'About $days days left';
+  }
+
+  @override
+  String get save => 'Save';
+
+  @override
+  String get reportTitle => 'Last 7 days';
+
+  @override
+  String reportOverall(int taken, int scheduled, int percent) {
+    return '$taken of $scheduled doses taken ($percent%)';
+  }
+
+  @override
+  String reportMissed(int missed, int skipped) {
+    return 'Missed: $missed · Skipped: $skipped';
+  }
+
+  @override
+  String get reportShare => 'Share report (PDF)';
+
+  @override
+  String get ramadanTitle => 'Ramadan mode';
+
+  @override
+  String get ramadanIntro =>
+      'Moves your morning medicines to sehri and evening medicines to iftar.';
+
+  @override
+  String get ramadanDistrict => 'District';
+
+  @override
+  String ramadanTimes(String sehri, String iftar) {
+    return 'Today: sehri ends $sehri, iftar $iftar';
+  }
+
+  @override
+  String get ramadanConflicts =>
+      'These medicines have doses during fasting hours. Ask your doctor how to take them during Ramadan:';
+
+  @override
+  String get ramadanOn => 'Turn on Ramadan times';
+
+  @override
+  String get ramadanOff => 'Turn off Ramadan times';
 }

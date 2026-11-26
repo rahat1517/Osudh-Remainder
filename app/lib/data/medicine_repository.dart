@@ -21,6 +21,9 @@ abstract interface class MedicineRepository {
 
   /// Saves the user's meal and bed times.
   Future<void> saveSettings(ScheduleSettings settings);
+
+  /// Records how many tablets (doses) the user has now, for refill reminders.
+  Future<void> updateStock(String medicineId, double pillsOnHand);
 }
 
 void _checkReady(List<MedicineDraft> drafts) {
@@ -72,6 +75,15 @@ class SupabaseMedicineRepository implements MedicineRepository {
       .from('medicines')
       .update({'stopped_at': DateTime.now().toUtc().toIso8601String()})
       .eq('id', id);
+
+  @override
+  Future<void> updateStock(String medicineId, double pillsOnHand) => _db
+      .from('medicines')
+      .update({
+        'pills_on_hand': pillsOnHand,
+        'pills_counted_at': DateTime.now().toUtc().toIso8601String(),
+      })
+      .eq('id', medicineId);
 
   @override
   Future<void> saveSettings(ScheduleSettings s) async {
@@ -140,6 +152,7 @@ class InMemoryMedicineRepository implements MedicineRepository {
           strength: row['strength'] as String?,
           form: row['form'] as String?,
           drugId: row['drug_id'] as int?,
+          generic: row['generic'] as String?,
           dosePattern: row['dose_pattern'] as String?,
           timing: timingFromJson(row['timing'] as String),
           durationDays: row['duration_days'] as int?,
@@ -159,4 +172,28 @@ class InMemoryMedicineRepository implements MedicineRepository {
 
   @override
   Future<void> saveSettings(ScheduleSettings s) async => settings = s;
+
+  @override
+  Future<void> updateStock(String medicineId, double pillsOnHand) async {
+    final i = _medicines.indexWhere((m) => m.id == medicineId);
+    if (i < 0) return;
+    final m = _medicines[i];
+    _medicines[i] = Medicine(
+      id: m.id,
+      name: m.name,
+      strength: m.strength,
+      form: m.form,
+      drugId: m.drugId,
+      dosePattern: m.dosePattern,
+      intervalHours: m.intervalHours,
+      timing: m.timing,
+      durationDays: m.durationDays,
+      weekdays: m.weekdays,
+      asNeeded: m.asNeeded,
+      startAt: m.startAt,
+      generic: m.generic,
+      pillsOnHand: pillsOnHand,
+      pillsCountedAt: _now(),
+    );
+  }
 }

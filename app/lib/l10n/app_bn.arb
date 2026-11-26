@@ -277,5 +277,110 @@
   "mealLunch": "দুপুরের খাবার",
   "mealEvening": "বিকেলের নাস্তা",
   "mealDinner": "রাতের খাবার",
-  "mealBedtime": "ঘুম"
+  "mealBedtime": "ঘুম",
+  "refillNoticeTitle": "ওষুধ শেষ হয়ে আসছে",
+  "refillNoticeBody": "{name} প্রায় ৩ দিনের মধ্যে শেষ হবে। সময়মতো কিনে নিন।",
+  "@refillNoticeBody": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "lowStockTitle": "শীঘ্রই শেষ হবে",
+  "lowStockBody": "{name}: আর প্রায় {days} দিন চলবে",
+  "@lowStockBody": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "days": {
+        "type": "String"
+      }
+    }
+  },
+  "duplicateTitle": "একই ওষুধ দুইবার?",
+  "duplicateBody": "{names}-এ একই উপাদান ({ingredient}) আছে। দুটোই খাওয়ার আগে ডাক্তার বা ফার্মাসিস্টকে জিজ্ঞেস করুন।",
+  "@duplicateBody": {
+    "placeholders": {
+      "names": {
+        "type": "String"
+      },
+      "ingredient": {
+        "type": "String"
+      }
+    }
+  },
+  "mealShiftTitle": "খাবারের সময় বদলাবেন?",
+  "mealShiftBody": "{days} দিন ধরে আপনি {meal}-এর ওষুধ {to}-এর দিকে খাচ্ছেন। {meal}-এর সময় {to} করবেন?",
+  "@mealShiftBody": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      },
+      "meal": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
+  "yes": "হ্যাঁ",
+  "no": "না",
+  "stockTitle": "হাতে কয়টা ট্যাবলেট আছে",
+  "stockHelp": "এখন হাতে কয়টা ট্যাবলেট (বা ডোজ) আছে গুনে লিখুন।",
+  "daysLeft": "আর প্রায় {days} দিন চলবে",
+  "@daysLeft": {
+    "placeholders": {
+      "days": {
+        "type": "String"
+      }
+    }
+  },
+  "save": "সংরক্ষণ",
+  "reportTitle": "গত ৭ দিন",
+  "reportOverall": "{scheduled}টি ডোজের মধ্যে {taken}টি খাওয়া হয়েছে ({percent}%)",
+  "@reportOverall": {
+    "placeholders": {
+      "taken": {
+        "type": "int"
+      },
+      "scheduled": {
+        "type": "int"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "reportMissed": "বাদ পড়েছে: {missed} · নিজে বাদ দিয়েছেন: {skipped}",
+  "@reportMissed": {
+    "placeholders": {
+      "missed": {
+        "type": "int"
+      },
+      "skipped": {
+        "type": "int"
+      }
+    }
+  },
+  "reportShare": "রিপোর্ট শেয়ার করুন (PDF)",
+  "ramadanTitle": "রমজান মোড",
+  "ramadanIntro": "সকালের ওষুধ সেহরিতে আর সন্ধ্যার ওষুধ ইফতারে সরিয়ে নেয়।",
+  "ramadanDistrict": "জেলা",
+  "ramadanTimes": "আজ সেহরির শেষ সময় {sehri}, ইফতার {iftar}",
+  "@ramadanTimes": {
+    "placeholders": {
+      "sehri": {
+        "type": "String"
+      },
+      "iftar": {
+        "type": "String"
+      }
+    }
+  },
+  "ramadanConflicts": "এই ওষুধগুলোর ডোজ রোজার সময়ে পড়ছে। রমজানে কীভাবে খাবেন, ডাক্তারকে জিজ্ঞেস করুন:",
+  "ramadanOn": "রমজানের সময়সূচি চালু করুন",
+  "ramadanOff": "রমজানের সময়সূচি বন্ধ করুন"
 }

@@ -30,15 +30,23 @@ class AlarmService {
 
   /// Re-plans and re-schedules every alarm. Returns the number of dose alarms.
   Future<int> sync() async {
+    final medicines = store.loadMedicines();
+    final settings = store.loadSettings();
     final alarms = planAlarms(
-      medicines: store.loadMedicines(),
-      settings: store.loadSettings(),
+      medicines: medicines,
+      settings: settings,
       wallNow: wallNow,
       handledKeys: store.handledKeys(),
       utcOffset: utcOffset,
     );
-    await scheduler.replaceAll(alarms);
-    return alarms.where((a) => !a.isHorizonNotice).length;
+    final refills = planRefillNotices(
+      medicines: medicines,
+      settings: settings,
+      wallNow: wallNow,
+      utcOffset: utcOffset,
+    );
+    await scheduler.replaceAll([...alarms, ...refills]);
+    return alarms.where((a) => !a.isNotice).length;
   }
 
   Future<void> record(AlarmPayload payload, DoseStatus status) async {

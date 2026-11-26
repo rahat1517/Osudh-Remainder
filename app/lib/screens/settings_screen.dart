@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 
 import '../l10n/generated/app_localizations.dart';
 import '../state/app_state.dart';
+import 'ramadan_screen.dart';
+import 'report_screen.dart';
 
 const privacyPolicyUrl =
     'https://github.com/rahat1517/Osudh-Remainder/blob/main/docs/legal/privacy-policy.md';
@@ -54,6 +56,20 @@ class SettingsScreen extends StatelessWidget {
             title: Text(l.privacyPolicy),
             subtitle: Text('${l.privacySummary}\n$privacyPolicyUrl'),
             isThreeLine: true,
+          ),
+          ListTile(
+            leading: const Icon(Icons.insights),
+            title: Text(l.reportTitle),
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(builder: (_) => const ReportScreen()),
+            ),
+          ),
+          ListTile(
+            leading: const Icon(Icons.nightlight_round),
+            title: Text(l.ramadanTitle),
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(builder: (_) => const RamadanScreen()),
+            ),
           ),
           const Divider(),
           ListTile(

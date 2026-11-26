@@ -39,6 +39,7 @@ class MedicineDraft {
     required this.durationDays,
     this.drugId,
     this.form,
+    this.generic,
     this.alternatives = const [],
     this.continueIndefinitely = false,
     this.asNeeded = false,
@@ -54,6 +55,7 @@ class MedicineDraft {
     ),
     drugId: m.drug?.id,
     form: m.drug?.form,
+    generic: m.drug?.generic,
     alternatives: m.alternatives,
     strength: DraftField(
       m.strength.value,
@@ -95,6 +97,7 @@ class MedicineDraft {
   final DraftField<int> durationDays;
   int? drugId;
   String? form;
+  String? generic;
   final List<Drug> alternatives;
   bool continueIndefinitely;
   bool asNeeded;
@@ -118,6 +121,7 @@ class MedicineDraft {
     if (drug.strength.isNotEmpty) strength.edit(drug.strength);
     drugId = drug.id;
     form = drug.form;
+    generic = drug.generic;
   }
 
   List<DraftProblem> get problems => [
@@ -147,6 +151,7 @@ class MedicineDraft {
     'strength': _blankToNull(strength.value),
     'form': form,
     'drug_id': drugId,
+    'generic': generic,
     'dose_pattern': asNeeded && parseDosePattern(dose.value) == null
         ? null
         : normalizeDosePattern(dose.value),

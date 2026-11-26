@@ -180,6 +180,9 @@ class Medicine {
     this.durationDays,
     this.weekdays,
     this.asNeeded = false,
+    this.generic,
+    this.pillsOnHand,
+    this.pillsCountedAt,
   });
 
   factory Medicine.fromJson(Map<String, dynamic> j) => Medicine(
@@ -195,6 +198,11 @@ class Medicine {
     weekdays: (j['weekdays'] as List?)?.cast<int>(),
     asNeeded: j['as_needed'] as bool? ?? false,
     startAt: DateTime.parse(j['start_at'] as String),
+    generic: j['generic'] as String?,
+    pillsOnHand: (j['pills_on_hand'] as num?)?.toDouble(),
+    pillsCountedAt: j['pills_counted_at'] == null
+        ? null
+        : DateTime.parse(j['pills_counted_at'] as String),
   );
 
   final String id;
@@ -212,6 +220,13 @@ class Medicine {
   /// Real instant the course started.
   final DateTime startAt;
 
+  /// Active ingredient(s) from the catalogue, e.g. "Paracetamol + Caffeine".
+  final String? generic;
+
+  /// Tablets (or doses) the user had when they last counted, for refill reminders.
+  final double? pillsOnHand;
+  final DateTime? pillsCountedAt;
+
   String get label =>
       strength == null || strength!.isEmpty ? name : '$name $strength';
 
@@ -228,6 +243,9 @@ class Medicine {
     'weekdays': weekdays,
     'as_needed': asNeeded,
     'start_at': startAt.toUtc().toIso8601String(),
+    'generic': generic,
+    'pills_on_hand': pillsOnHand,
+    'pills_counted_at': pillsCountedAt?.toUtc().toIso8601String(),
   };
 
   /// Input for the schedule engine, with [startAt] converted to wall-clock time in a fixed-offset
