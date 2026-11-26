@@ -192,5 +192,46 @@
       }
     }
   },
-  "offlineNotice": "Offline: showing saved medicines"
+  "offlineNotice": "Offline: showing saved medicines",
+  "caregiverAlertsChannel": "Family alerts",
+  "familyTitle": "Family",
+  "familyIntro": "Family members can see whether medicines were taken and are alerted when a dose is missed.",
+  "inviteCaregiver": "Invite a family member",
+  "permissionView": "Can see my medicines",
+  "permissionEdit": "Can see and add my medicines",
+  "inviteCodeTitle": "Invite code",
+  "inviteCodeHelp": "Give this code to your family member. It works once, for 24 hours.",
+  "shareCode": "My Oshudh Reminder invite code: {code}",
+  "@shareCode": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "iAmCaregiver": "I look after someone",
+  "enterInviteCode": "Enter the invite code",
+  "acceptInvite": "Connect",
+  "inviteInvalid": "This code is wrong, used or expired.",
+  "inviteOwn": "You cannot use your own code.",
+  "myCaregivers": "People who look after me",
+  "peopleICareFor": "People I look after",
+  "noLinks": "No one yet.",
+  "unnamedPerson": "Family member",
+  "revoke": "Remove",
+  "revokeConfirm": "Remove {name}? They will no longer see the medicines.",
+  "@revokeConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "stateTaken": "Taken",
+  "stateSkipped": "Skipped",
+  "stateMissed": "Missed",
+  "stateDue": "Due now",
+  "stateUpcoming": "Upcoming",
+  "addForPatient": "Add a prescription for them",
+  "dashboardEmpty": "No doses today."
 }

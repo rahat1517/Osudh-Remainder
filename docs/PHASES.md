@@ -16,7 +16,7 @@ Legend: ✅ done · ⏳ blocked on an external input · ⬜ not started
 | **3** | Schedule engine | backend, app | 1 week | ✅ |
 | **4** | App: onboarding, scan and confirm | app | 2-3 weeks | ✅ (device test ⏳) |
 | **5** | Offline alarm engine and Bangla voice | app | 2 weeks | ✅ (device test ⏳) |
-| **6** | Caregiver mode | app, backend | 1-2 weeks | ⬜ |
+| **6** | Caregiver mode | app, backend | 1-2 weeks | ✅ (Firebase setup ⏳) |
 | **7** | Testing, pilot and Play Store | all | 2-3 weeks | ⬜ |
 | | **MVP launch** | | **~3-4 months** | |
 | **8** | Bangla AI assistant | backend, app | 2 weeks | ⬜ |
@@ -193,20 +193,31 @@ and `USE_FULL_SCREEN_INTENT`; both need a declaration in the Play Console (Phase
 
 ---
 
-## Phase 6: Caregiver mode ⬜
+## Phase 6: Caregiver mode ✅ (Firebase setup ⏳)
 
 **Goal:** family members see the schedule and are alerted about missed doses.
-**Depends on:** Phase 5
 
-- [ ] `caregivers` schema with permission levels (view / edit)
-- [ ] Invitation by code or link, with the patient's consent
-- [ ] Caregiver dashboard: taken and missed doses today
-- [ ] Caregiver can add prescriptions on the patient's behalf
-- [ ] Missed-dose push notification (FCM) after 30 minutes without "Taken"
-- [ ] Server-side missed-dose detection job
-- [ ] Revoking access
+- [x] Schema: `caregiver_links` (view / edit), single-use `caregiver_invites` (8-character codes
+      without look-alike characters, 24-hour expiry), `push_tokens`, `missed_dose_alerts`
+- [x] Consent: access only through a patient-created invite; links cannot be inserted directly;
+      either side can revoke (`revoke_caregiver_link`)
+- [x] RLS: caregivers read the patient's profile, prescriptions, medicines and dose log; edit caregivers
+      may add and confirm prescriptions for the patient (10 database tests)
+- [x] Missed-dose detection with the Python schedule engine (30-minute grace, 6-hour lookback)
+- [x] Alert job: one alert per missed dose, grouped by time, in the caregiver's language (Bangla digits
+      in Bangla), invalid push tokens removed; end-to-end test on PostgreSQL
+- [x] FCM HTTP v1 notifier (service account); scheduled workflow every 5 minutes, inactive until secrets
+      are set
+- [x] App: family screen (invite, accept, revoke), caregiver dashboard (taken / skipped / missed / due /
+      upcoming), add a prescription for the patient with edit permission, push-token registration,
+      alert notification channel
+- [ ] Firebase project and secrets (`DATABASE_URL`, `FCM_SERVICE_ACCOUNT`, app `FIREBASE_*` defines).
+      **Owner action.**
 
-**Exit criteria:** caregiver notified within 35 minutes of a missed dose · no access without consent
+**Exit criteria:**
+- ✅ Caregiver alerted within 35 minutes of a missed dose (30-minute grace + 5-minute job interval),
+  verified in the end-to-end job test; live delivery needs the Firebase setup
+- ✅ No access without consent (database tests)
 
 ---
 

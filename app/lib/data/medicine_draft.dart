@@ -137,8 +137,12 @@ class MedicineDraft {
   bool get isReady => problems.isEmpty;
 
   /// Row for the `medicines` table.
-  Map<String, dynamic> toRow({required String prescriptionId}) => {
+  Map<String, dynamic> toRow({
+    required String prescriptionId,
+    String? forUserId,
+  }) => {
     'prescription_id': prescriptionId,
+    'user_id': ?forUserId,
     'name': name.value!.trim(),
     'strength': _blankToNull(strength.value),
     'form': form,

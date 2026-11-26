@@ -401,4 +401,91 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get offlineNotice => 'Offline: showing saved medicines';
+
+  @override
+  String get caregiverAlertsChannel => 'Family alerts';
+
+  @override
+  String get familyTitle => 'Family';
+
+  @override
+  String get familyIntro =>
+      'Family members can see whether medicines were taken and are alerted when a dose is missed.';
+
+  @override
+  String get inviteCaregiver => 'Invite a family member';
+
+  @override
+  String get permissionView => 'Can see my medicines';
+
+  @override
+  String get permissionEdit => 'Can see and add my medicines';
+
+  @override
+  String get inviteCodeTitle => 'Invite code';
+
+  @override
+  String get inviteCodeHelp =>
+      'Give this code to your family member. It works once, for 24 hours.';
+
+  @override
+  String shareCode(String code) {
+    return 'My Oshudh Reminder invite code: $code';
+  }
+
+  @override
+  String get iAmCaregiver => 'I look after someone';
+
+  @override
+  String get enterInviteCode => 'Enter the invite code';
+
+  @override
+  String get acceptInvite => 'Connect';
+
+  @override
+  String get inviteInvalid => 'This code is wrong, used or expired.';
+
+  @override
+  String get inviteOwn => 'You cannot use your own code.';
+
+  @override
+  String get myCaregivers => 'People who look after me';
+
+  @override
+  String get peopleICareFor => 'People I look after';
+
+  @override
+  String get noLinks => 'No one yet.';
+
+  @override
+  String get unnamedPerson => 'Family member';
+
+  @override
+  String get revoke => 'Remove';
+
+  @override
+  String revokeConfirm(String name) {
+    return 'Remove $name? They will no longer see the medicines.';
+  }
+
+  @override
+  String get stateTaken => 'Taken';
+
+  @override
+  String get stateSkipped => 'Skipped';
+
+  @override
+  String get stateMissed => 'Missed';
+
+  @override
+  String get stateDue => 'Due now';
+
+  @override
+  String get stateUpcoming => 'Upcoming';
+
+  @override
+  String get addForPatient => 'Add a prescription for them';
+
+  @override
+  String get dashboardEmpty => 'No doses today.';
 }

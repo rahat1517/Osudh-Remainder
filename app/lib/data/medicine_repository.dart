@@ -102,6 +102,7 @@ class InMemoryMedicineRepository implements MedicineRepository {
     List<MedicineDraft> drafts, {
     required String source,
     String? imageQuality,
+    String? forUserId,
   }) async {
     _checkReady(drafts);
     final start = _now();

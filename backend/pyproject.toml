@@ -12,6 +12,8 @@ dependencies = [
     "anthropic>=2.14.0",
     "python-multipart>=0.0.12",
     "pillow>=13.0.0",
+    "google-auth>=2.35",
+    "httpx2>=2.16.2",
 ]
 
 [dependency-groups]

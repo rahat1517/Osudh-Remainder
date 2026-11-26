@@ -1,5 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'alarms/alarm_payload.dart';
@@ -8,6 +9,8 @@ import 'alarms/alarm_service.dart';
 import 'alarms/dose_log_sync.dart';
 import 'alarms/local_store.dart';
 import 'alarms/speaker.dart';
+import 'caregivers/caregiver_repository.dart';
+import 'caregivers/push_registration.dart';
 import 'config/app_config.dart';
 import 'data/auth_repository.dart';
 import 'data/backend_api.dart';
@@ -42,14 +45,31 @@ Future<void> main() async {
       store: store,
       alarms: alarms,
       logSync: SupabaseDoseLogSync(client),
+      caregivers: SupabaseCaregiverRepository(client),
     );
+    final push = config.hasFirebase
+        ? FirebasePushRegistration(
+            client,
+            FirebaseOptions(
+              apiKey: config.firebaseApiKey,
+              appId: config.firebaseAppId,
+              messagingSenderId: config.firebaseSenderId,
+              projectId: config.firebaseProjectId,
+            ),
+          )
+        : NoPushRegistration();
+    if (state.signedIn) await push.register().catchError((Object _) {});
   } else {
+    final auth = DemoAuthRepository();
     state = AppState(
-      auth: DemoAuthRepository(),
+      auth: auth,
       medicines: InMemoryMedicineRepository(),
       api: HttpBackendApi(config.backendUrl),
       store: store,
       alarms: alarms,
+      caregivers: InMemoryCaregiverRepository(
+        currentUser: () => auth.currentUserId ?? '',
+      ),
     );
   }
 

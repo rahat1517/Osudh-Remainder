@@ -24,15 +24,16 @@ class ConfirmScreen extends StatefulWidget {
     required this.source,
     this.imageQuality,
     this.warnings = const [],
+    this.forUserId,
   });
 
-  ConfirmScreen.fromScan(PrescriptionScan scan, {super.key})
+  ConfirmScreen.fromScan(PrescriptionScan scan, {super.key, this.forUserId})
     : drafts = [for (final m in scan.medicines) MedicineDraft.fromScan(m)],
       source = 'scan',
       imageQuality = scan.imageQuality,
       warnings = scan.warnings;
 
-  ConfirmScreen.manual({super.key})
+  ConfirmScreen.manual({super.key, this.forUserId})
     : drafts = [MedicineDraft.manual()],
       source = 'manual',
       imageQuality = null,
@@ -42,6 +43,9 @@ class ConfirmScreen extends StatefulWidget {
   final String source;
   final String? imageQuality;
   final List<Notice> warnings;
+
+  /// Saves for a patient the user looks after (edit permission) instead of for the user.
+  final String? forUserId;
 
   @override
   State<ConfirmScreen> createState() => _ConfirmScreenState();

@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import '../alarms/alarm_service.dart';
 import '../alarms/dose_log_sync.dart';
 import '../alarms/local_store.dart';
+import '../caregivers/caregiver_repository.dart';
 import '../data/auth_repository.dart';
 import '../data/backend_api.dart';
 import '../data/medicine_draft.dart';
@@ -26,10 +27,14 @@ class AppState extends ChangeNotifier {
     required this.api,
     this.store,
     this.alarms,
+    this.caregivers,
     this.logSync,
     DateTime Function()? clock,
     this.utcOffset = const Duration(hours: 6),
   }) : _clock = clock ?? DateTime.now;
+
+  /// Caregiver links and patient dashboards (Phase 6).
+  final CaregiverRepository? caregivers;
 
   /// Offline cache; when the server is unreachable the app keeps working from it.
   final LocalStore? store;

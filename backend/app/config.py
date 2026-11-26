@@ -24,6 +24,12 @@ class Settings(BaseSettings):
     reader_model: str = "claude-opus-5-5"
     reader_effort: str = "high"
 
+    # Direct PostgreSQL connection for server jobs (Phase 6), e.g. the Supabase pooler URL.
+    # Uses a privileged role: never expose it to clients.
+    database_url: str | None = None
+    # Firebase Cloud Messaging: path to a service-account JSON file
+    fcm_service_account_file: Path | None = None
+
     # Needed in later phases
     supabase_url: str | None = None
     supabase_anon_key: str | None = None

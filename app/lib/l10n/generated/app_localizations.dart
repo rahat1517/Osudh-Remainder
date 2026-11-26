@@ -793,6 +793,168 @@ abstract class AppLocalizations {
   /// In bn, this message translates to:
   /// **'ইন্টারনেট নেই: সংরক্ষিত ওষুধ দেখানো হচ্ছে'**
   String get offlineNotice;
+
+  /// No description provided for @caregiverAlertsChannel.
+  ///
+  /// In bn, this message translates to:
+  /// **'পরিবারের সতর্কবার্তা'**
+  String get caregiverAlertsChannel;
+
+  /// No description provided for @familyTitle.
+  ///
+  /// In bn, this message translates to:
+  /// **'পরিবার'**
+  String get familyTitle;
+
+  /// No description provided for @familyIntro.
+  ///
+  /// In bn, this message translates to:
+  /// **'পরিবারের সদস্যরা দেখতে পারবেন ওষুধ খাওয়া হলো কিনা, আর কোনো ডোজ বাদ গেলে খবর পাবেন।'**
+  String get familyIntro;
+
+  /// No description provided for @inviteCaregiver.
+  ///
+  /// In bn, this message translates to:
+  /// **'পরিবারের সদস্যকে আমন্ত্রণ'**
+  String get inviteCaregiver;
+
+  /// No description provided for @permissionView.
+  ///
+  /// In bn, this message translates to:
+  /// **'আমার ওষুধ দেখতে পারবেন'**
+  String get permissionView;
+
+  /// No description provided for @permissionEdit.
+  ///
+  /// In bn, this message translates to:
+  /// **'আমার ওষুধ দেখতে ও যোগ করতে পারবেন'**
+  String get permissionEdit;
+
+  /// No description provided for @inviteCodeTitle.
+  ///
+  /// In bn, this message translates to:
+  /// **'আমন্ত্রণ কোড'**
+  String get inviteCodeTitle;
+
+  /// No description provided for @inviteCodeHelp.
+  ///
+  /// In bn, this message translates to:
+  /// **'কোডটি আপনার পরিবারের সদস্যকে দিন। এটা একবারই, ২৪ ঘণ্টার জন্য কাজ করবে।'**
+  String get inviteCodeHelp;
+
+  /// No description provided for @shareCode.
+  ///
+  /// In bn, this message translates to:
+  /// **'আমার ওষুধ রিমাইন্ডার আমন্ত্রণ কোড: {code}'**
+  String shareCode(String code);
+
+  /// No description provided for @iAmCaregiver.
+  ///
+  /// In bn, this message translates to:
+  /// **'আমি কারো দেখাশোনা করি'**
+  String get iAmCaregiver;
+
+  /// No description provided for @enterInviteCode.
+  ///
+  /// In bn, this message translates to:
+  /// **'আমন্ত্রণ কোডটি লিখুন'**
+  String get enterInviteCode;
+
+  /// No description provided for @acceptInvite.
+  ///
+  /// In bn, this message translates to:
+  /// **'যুক্ত হোন'**
+  String get acceptInvite;
+
+  /// No description provided for @inviteInvalid.
+  ///
+  /// In bn, this message translates to:
+  /// **'কোডটি ভুল, ব্যবহৃত অথবা মেয়াদোত্তীর্ণ।'**
+  String get inviteInvalid;
+
+  /// No description provided for @inviteOwn.
+  ///
+  /// In bn, this message translates to:
+  /// **'নিজের কোড নিজে ব্যবহার করা যাবে না।'**
+  String get inviteOwn;
+
+  /// No description provided for @myCaregivers.
+  ///
+  /// In bn, this message translates to:
+  /// **'যাঁরা আমার দেখাশোনা করেন'**
+  String get myCaregivers;
+
+  /// No description provided for @peopleICareFor.
+  ///
+  /// In bn, this message translates to:
+  /// **'যাঁদের আমি দেখাশোনা করি'**
+  String get peopleICareFor;
+
+  /// No description provided for @noLinks.
+  ///
+  /// In bn, this message translates to:
+  /// **'এখনো কেউ নেই।'**
+  String get noLinks;
+
+  /// No description provided for @unnamedPerson.
+  ///
+  /// In bn, this message translates to:
+  /// **'পরিবারের সদস্য'**
+  String get unnamedPerson;
+
+  /// No description provided for @revoke.
+  ///
+  /// In bn, this message translates to:
+  /// **'বাদ দিন'**
+  String get revoke;
+
+  /// No description provided for @revokeConfirm.
+  ///
+  /// In bn, this message translates to:
+  /// **'{name}-কে বাদ দেবেন? তিনি আর ওষুধের তথ্য দেখতে পাবেন না।'**
+  String revokeConfirm(String name);
+
+  /// No description provided for @stateTaken.
+  ///
+  /// In bn, this message translates to:
+  /// **'খেয়েছেন'**
+  String get stateTaken;
+
+  /// No description provided for @stateSkipped.
+  ///
+  /// In bn, this message translates to:
+  /// **'বাদ দিয়েছেন'**
+  String get stateSkipped;
+
+  /// No description provided for @stateMissed.
+  ///
+  /// In bn, this message translates to:
+  /// **'খাওয়া হয়নি'**
+  String get stateMissed;
+
+  /// No description provided for @stateDue.
+  ///
+  /// In bn, this message translates to:
+  /// **'এখন খাওয়ার সময়'**
+  String get stateDue;
+
+  /// No description provided for @stateUpcoming.
+  ///
+  /// In bn, this message translates to:
+  /// **'আসছে'**
+  String get stateUpcoming;
+
+  /// No description provided for @addForPatient.
+  ///
+  /// In bn, this message translates to:
+  /// **'তাঁর জন্য প্রেসক্রিপশন যোগ করুন'**
+  String get addForPatient;
+
+  /// No description provided for @dashboardEmpty.
+  ///
+  /// In bn, this message translates to:
+  /// **'আজ কোনো ডোজ নেই।'**
+  String get dashboardEmpty;
 }
 
 class _AppLocalizationsDelegate
