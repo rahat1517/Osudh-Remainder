@@ -192,3 +192,27 @@ def test_anonymous_clients_cannot_delete_accounts(db):
     new_user(db)
     with as_user(db, None), fails_with(db, psycopg.errors.InsufficientPrivilege):
         db.execute("select delete_my_account()")
+
+
+# --- Phase 9: insight columns ---------------------------------------------------------------
+
+
+def test_active_medicines_include_insight_columns(db):
+    user = new_user(db)
+    with as_user(db, user):
+        med = _medicine(db, _prescription(db, "confirmed"))
+        db.execute(
+            "update medicines set generic = 'Omeprazole', pills_on_hand = 20, "
+            "pills_counted_at = now() where id = %s",
+            (med,),
+        )
+        row = db.execute("select generic, pills_on_hand from active_medicines").fetchone()
+    assert row == ("Omeprazole", 20)
+
+
+def test_pill_count_cannot_be_negative(db):
+    user = new_user(db)
+    with as_user(db, user):
+        med = _medicine(db, _prescription(db, "confirmed"))
+        with fails_with(db, psycopg.errors.CheckViolation):
+            db.execute("update medicines set pills_on_hand = -1 where id = %s", (med,))

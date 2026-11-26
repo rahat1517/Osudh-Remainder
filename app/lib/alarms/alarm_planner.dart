@@ -2,6 +2,7 @@
 library;
 
 import '../data/models.dart';
+import '../insights/insights.dart';
 import '../schedule/schedule_engine.dart';
 import '../schedule/schedule_models.dart';
 import 'dose_log.dart';
@@ -30,6 +31,7 @@ class AlarmSpec {
     required this.at,
     required this.items,
     this.isHorizonNotice = false,
+    this.refillFor,
   });
 
   final int id;
@@ -38,6 +40,43 @@ class AlarmSpec {
   final DateTime at;
   final List<AlarmItem> items;
   final bool isHorizonNotice;
+
+  /// Medicine label when this is a "running out soon" notice instead of a dose alarm.
+  final String? refillFor;
+
+  bool get isNotice => isHorizonNotice || refillFor != null;
+}
+
+/// "Running out" notices at 10:00, three days before each medicine's tablets run out
+/// (or at the next 10:00 if that day has already come).
+List<AlarmSpec> planRefillNotices({
+  required List<Medicine> medicines,
+  required ScheduleSettings settings,
+  required DateTime wallNow,
+  Duration utcOffset = const Duration(hours: 6),
+}) {
+  final notices = <AlarmSpec>[];
+  for (final m in medicines) {
+    final r = refillStatus(m, settings, wallNow, utcOffset: utcOffset);
+    final runsOut = r?.runsOutOn;
+    if (runsOut == null) continue;
+    final warnDay = runsOut.subtract(const Duration(days: refillWarningDays));
+    var at = DateTime.utc(warnDay.year, warnDay.month, warnDay.day, 10);
+    if (at.isBefore(wallNow)) {
+      final next = DateTime.utc(wallNow.year, wallNow.month, wallNow.day, 10);
+      at = next.isAfter(wallNow) ? next : next.add(const Duration(days: 1));
+    }
+    if (!at.isBefore(runsOut)) continue; // too late to warn ahead
+    notices.add(
+      AlarmSpec(
+        id: stableAlarmId('refill|${m.id}'),
+        at: at,
+        items: const [],
+        refillFor: m.label,
+      ),
+    );
+  }
+  return notices;
 }
 
 /// 31-bit FNV-1a hash: a stable notification id for the same reminder across re-plans.

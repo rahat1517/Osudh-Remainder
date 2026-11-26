@@ -1,0 +1,327 @@
+{
+ "source": "astral (Python), depression 18 for Fajr, UTC+6",
+ "districts": {
+  "dhaka": [
+   23.8103,
+   90.4125
+  ],
+  "chattogram": [
+   22.3569,
+   91.7832
+  ],
+  "sylhet": [
+   24.8949,
+   91.8687
+  ],
+  "rajshahi": [
+   24.3745,
+   88.6042
+  ],
+  "khulna": [
+   22.8456,
+   89.5403
+  ],
+  "barishal": [
+   22.701,
+   90.3535
+  ],
+  "rangpur": [
+   25.7439,
+   89.2752
+  ],
+  "mymensingh": [
+   24.7471,
+   90.4203
+  ]
+ },
+ "cases": [
+  {
+   "district": "dhaka",
+   "date": "2027-02-08",
+   "fajr": "05:19:06",
+   "sunset": "17:48:59"
+  },
+  {
+   "district": "dhaka",
+   "date": "2027-02-23",
+   "fajr": "05:10:12",
+   "sunset": "17:57:43"
+  },
+  {
+   "district": "dhaka",
+   "date": "2027-03-09",
+   "fajr": "04:58:28",
+   "sunset": "18:04:27"
+  },
+  {
+   "district": "dhaka",
+   "date": "2026-06-21",
+   "fajr": "03:43:52",
+   "sunset": "18:48:08"
+  },
+  {
+   "district": "dhaka",
+   "date": "2026-12-21",
+   "fajr": "05:15:20",
+   "sunset": "17:16:07"
+  },
+  {
+   "district": "dhaka",
+   "date": "2028-01-28",
+   "fajr": "05:22:41",
+   "sunset": "17:41:23"
+  },
+  {
+   "district": "chattogram",
+   "date": "2027-02-08",
+   "fajr": "05:12:35",
+   "sunset": "17:45:18"
+  },
+  {
+   "district": "chattogram",
+   "date": "2027-02-23",
+   "fajr": "05:04:21",
+   "sunset": "17:53:23"
+  },
+  {
+   "district": "chattogram",
+   "date": "2027-03-09",
+   "fajr": "04:53:17",
+   "sunset": "17:59:27"
+  },
+  {
+   "district": "chattogram",
+   "date": "2026-06-21",
+   "fajr": "03:43:03",
+   "sunset": "18:39:34"
+  },
+  {
+   "district": "chattogram",
+   "date": "2026-12-21",
+   "fajr": "05:07:44",
+   "sunset": "17:13:37"
+  },
+  {
+   "district": "chattogram",
+   "date": "2028-01-28",
+   "fajr": "05:15:45",
+   "sunset": "17:38:09"
+  },
+  {
+   "district": "sylhet",
+   "date": "2027-02-08",
+   "fajr": "05:14:01",
+   "sunset": "17:41:47"
+  },
+  {
+   "district": "sylhet",
+   "date": "2027-02-23",
+   "fajr": "05:04:38",
+   "sunset": "17:51:01"
+  },
+  {
+   "district": "sylhet",
+   "date": "2027-03-09",
+   "fajr": "04:52:24",
+   "sunset": "17:58:14"
+  },
+  {
+   "district": "sylhet",
+   "date": "2026-06-21",
+   "fajr": "03:34:25",
+   "sunset": "18:44:39"
+  },
+  {
+   "district": "sylhet",
+   "date": "2026-12-21",
+   "fajr": "05:11:04",
+   "sunset": "17:08:01"
+  },
+  {
+   "district": "sylhet",
+   "date": "2028-01-28",
+   "fajr": "05:17:55",
+   "sunset": "17:33:51"
+  },
+  {
+   "district": "rajshahi",
+   "date": "2027-02-08",
+   "fajr": "05:26:43",
+   "sunset": "17:55:30"
+  },
+  {
+   "district": "rajshahi",
+   "date": "2027-02-23",
+   "fajr": "05:17:34",
+   "sunset": "18:04:30"
+  },
+  {
+   "district": "rajshahi",
+   "date": "2027-03-09",
+   "fajr": "05:05:34",
+   "sunset": "18:11:29"
+  },
+  {
+   "district": "rajshahi",
+   "date": "2026-06-21",
+   "fajr": "03:49:14",
+   "sunset": "18:56:35"
+  },
+  {
+   "district": "rajshahi",
+   "date": "2026-12-21",
+   "fajr": "05:23:23",
+   "sunset": "17:22:10"
+  },
+  {
+   "district": "rajshahi",
+   "date": "2028-01-28",
+   "fajr": "05:30:28",
+   "sunset": "17:47:44"
+  },
+  {
+   "district": "khulna",
+   "date": "2027-02-08",
+   "fajr": "05:21:54",
+   "sunset": "17:53:40"
+  },
+  {
+   "district": "khulna",
+   "date": "2027-02-23",
+   "fajr": "05:13:27",
+   "sunset": "18:01:58"
+  },
+  {
+   "district": "khulna",
+   "date": "2027-03-09",
+   "fajr": "05:02:09",
+   "sunset": "18:08:16"
+  },
+  {
+   "district": "khulna",
+   "date": "2026-06-21",
+   "fajr": "03:50:29",
+   "sunset": "18:49:34"
+  },
+  {
+   "district": "khulna",
+   "date": "2026-12-21",
+   "fajr": "05:17:25",
+   "sunset": "17:21:36"
+  },
+  {
+   "district": "khulna",
+   "date": "2028-01-28",
+   "fajr": "05:25:13",
+   "sunset": "17:46:22"
+  },
+  {
+   "district": "barishal",
+   "date": "2027-02-08",
+   "fajr": "05:18:33",
+   "sunset": "17:50:36"
+  },
+  {
+   "district": "barishal",
+   "date": "2027-02-23",
+   "fajr": "05:10:09",
+   "sunset": "17:58:50"
+  },
+  {
+   "district": "barishal",
+   "date": "2027-03-09",
+   "fajr": "04:58:56",
+   "sunset": "18:05:04"
+  },
+  {
+   "district": "barishal",
+   "date": "2026-06-21",
+   "fajr": "03:47:41",
+   "sunset": "18:46:00"
+  },
+  {
+   "district": "barishal",
+   "date": "2026-12-21",
+   "fajr": "05:13:57",
+   "sunset": "17:18:38"
+  },
+  {
+   "district": "barishal",
+   "date": "2028-01-28",
+   "fajr": "05:21:49",
+   "sunset": "17:43:20"
+  },
+  {
+   "district": "rangpur",
+   "date": "2027-02-08",
+   "fajr": "05:24:57",
+   "sunset": "17:51:04"
+  },
+  {
+   "district": "rangpur",
+   "date": "2027-02-23",
+   "fajr": "05:15:11",
+   "sunset": "18:00:42"
+  },
+  {
+   "district": "rangpur",
+   "date": "2027-03-09",
+   "fajr": "05:02:33",
+   "sunset": "18:08:19"
+  },
+  {
+   "district": "rangpur",
+   "date": "2026-06-21",
+   "fajr": "03:41:51",
+   "sunset": "18:56:54"
+  },
+  {
+   "district": "rangpur",
+   "date": "2026-12-21",
+   "fajr": "05:22:40",
+   "sunset": "17:16:35"
+  },
+  {
+   "district": "rangpur",
+   "date": "2028-01-28",
+   "fajr": "05:29:06",
+   "sunset": "17:42:52"
+  },
+  {
+   "district": "mymensingh",
+   "date": "2027-02-08",
+   "fajr": "05:19:42",
+   "sunset": "17:47:46"
+  },
+  {
+   "district": "mymensingh",
+   "date": "2027-02-23",
+   "fajr": "05:10:24",
+   "sunset": "17:56:56"
+  },
+  {
+   "district": "mymensingh",
+   "date": "2027-03-09",
+   "fajr": "04:58:13",
+   "sunset": "18:04:05"
+  },
+  {
+   "district": "mymensingh",
+   "date": "2026-06-21",
+   "fajr": "03:40:43",
+   "sunset": "18:50:07"
+  },
+  {
+   "district": "mymensingh",
+   "date": "2026-12-21",
+   "fajr": "05:16:39",
+   "sunset": "17:14:07"
+  },
+  {
+   "district": "mymensingh",
+   "date": "2028-01-28",
+   "fajr": "05:23:34",
+   "sunset": "17:39:53"
+  }
+ ]
+}

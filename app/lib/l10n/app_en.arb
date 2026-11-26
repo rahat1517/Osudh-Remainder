@@ -274,5 +274,110 @@
   "mealLunch": "lunch",
   "mealEvening": "evening snack",
   "mealDinner": "dinner",
-  "mealBedtime": "bedtime"
+  "mealBedtime": "bedtime",
+  "refillNoticeTitle": "Medicine running out",
+  "refillNoticeBody": "{name} will run out in about 3 days. Buy more in time.",
+  "@refillNoticeBody": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "lowStockTitle": "Running out soon",
+  "lowStockBody": "{name}: about {days} days left",
+  "@lowStockBody": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "days": {
+        "type": "String"
+      }
+    }
+  },
+  "duplicateTitle": "Same medicine twice?",
+  "duplicateBody": "{names} contain the same ingredient ({ingredient}). Ask your doctor or pharmacist before taking both.",
+  "@duplicateBody": {
+    "placeholders": {
+      "names": {
+        "type": "String"
+      },
+      "ingredient": {
+        "type": "String"
+      }
+    }
+  },
+  "mealShiftTitle": "Move a meal time?",
+  "mealShiftBody": "On {days} days you took your {meal} medicines around {to}. Set {meal} to {to}?",
+  "@mealShiftBody": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      },
+      "meal": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
+  "yes": "Yes",
+  "no": "No",
+  "stockTitle": "Tablets on hand",
+  "stockHelp": "Count the tablets (or doses) you have now.",
+  "daysLeft": "About {days} days left",
+  "@daysLeft": {
+    "placeholders": {
+      "days": {
+        "type": "String"
+      }
+    }
+  },
+  "save": "Save",
+  "reportTitle": "Last 7 days",
+  "reportOverall": "{taken} of {scheduled} doses taken ({percent}%)",
+  "@reportOverall": {
+    "placeholders": {
+      "taken": {
+        "type": "int"
+      },
+      "scheduled": {
+        "type": "int"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "reportMissed": "Missed: {missed} · Skipped: {skipped}",
+  "@reportMissed": {
+    "placeholders": {
+      "missed": {
+        "type": "int"
+      },
+      "skipped": {
+        "type": "int"
+      }
+    }
+  },
+  "reportShare": "Share report (PDF)",
+  "ramadanTitle": "Ramadan mode",
+  "ramadanIntro": "Moves your morning medicines to sehri and evening medicines to iftar.",
+  "ramadanDistrict": "District",
+  "ramadanTimes": "Today: sehri ends {sehri}, iftar {iftar}",
+  "@ramadanTimes": {
+    "placeholders": {
+      "sehri": {
+        "type": "String"
+      },
+      "iftar": {
+        "type": "String"
+      }
+    }
+  },
+  "ramadanConflicts": "These medicines have doses during fasting hours. Ask your doctor how to take them during Ramadan:",
+  "ramadanOn": "Turn on Ramadan times",
+  "ramadanOff": "Turn off Ramadan times"
 }

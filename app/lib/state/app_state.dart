@@ -7,7 +7,9 @@ import '../caregivers/caregiver_repository.dart';
 import '../data/auth_repository.dart';
 import '../data/backend_api.dart';
 import '../data/medicine_draft.dart';
+import '../alarms/dose_log.dart';
 import '../data/medicine_repository.dart';
+import '../insights/insights.dart';
 import '../data/models.dart';
 import '../schedule/schedule_engine.dart';
 import '../schedule/schedule_models.dart';
@@ -120,6 +122,48 @@ class AppState extends ChangeNotifier {
 
   Future<void> stop(String medicineId) async {
     await medicines.stopMedicine(medicineId);
+    await refresh();
+  }
+
+  /// Dose log on this phone (offline cache).
+  List<DoseLog> get doseLogs => store?.logs() ?? const [];
+
+  List<MealShift> mealShiftSuggestions() => suggestMealShifts(
+    logs: doseLogs,
+    medicines: active,
+    settings: settings,
+    wallNow: wallNow,
+    utcOffset: utcOffset,
+  );
+
+  List<({Medicine medicine, RefillStatus status})> lowStock() => [
+    for (final m in active)
+      if (refillStatus(m, settings, wallNow, utcOffset: utcOffset) case final r?
+          when r.needsRefill)
+        (medicine: m, status: r),
+  ];
+
+  Adherence weeklyAdherence() {
+    final now = wallNow;
+    return adherence(
+      medicines: active,
+      logs: doseLogs,
+      settings: settings,
+      from: now.subtract(const Duration(days: 7)),
+      to: now.subtract(const Duration(minutes: 30)),
+      utcOffset: utcOffset,
+    );
+  }
+
+  Future<void> setStock(String medicineId, double pills) async {
+    await medicines.updateStock(medicineId, pills);
+    await refresh();
+  }
+
+  /// Replaces all meal times at once (Ramadan mode on/off).
+  Future<void> applySettings(ScheduleSettings updated) async {
+    validateSettings(updated);
+    await medicines.saveSettings(updated);
     await refresh();
   }
 

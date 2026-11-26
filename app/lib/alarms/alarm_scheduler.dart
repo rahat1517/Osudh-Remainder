@@ -60,12 +60,16 @@ class NotificationAlarmScheduler implements AlarmScheduler {
       a.at.hour,
       a.at.minute,
     );
-    if (a.isHorizonNotice) {
+    if (a.isNotice) {
       await _plugin.zonedSchedule(
         id: a.id,
         scheduledDate: when,
-        title: _l10n.horizonNoticeTitle,
-        body: _l10n.horizonNoticeBody,
+        title: a.refillFor != null
+            ? _l10n.refillNoticeTitle
+            : _l10n.horizonNoticeTitle,
+        body: a.refillFor != null
+            ? _l10n.refillNoticeBody(a.refillFor!)
+            : _l10n.horizonNoticeBody,
         androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
         notificationDetails: const NotificationDetails(
           android: AndroidNotificationDetails('app_notices', 'App notices'),

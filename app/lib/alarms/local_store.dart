@@ -120,5 +120,39 @@ class LocalStore {
     return n;
   }
 
+  static const _ramadanBackupKey = 'ramadan_backup_v1';
+  static const _districtKey = 'district_v1';
+
+  /// Meal times saved before Ramadan mode was turned on, restored when it is turned off.
+  Future<void> saveRamadanBackup(ScheduleSettings s) => _prefs.setString(
+    _ramadanBackupKey,
+    jsonEncode({
+      'breakfast': s.breakfast,
+      'lunch': s.lunch,
+      'evening': s.evening,
+      'dinner': s.dinner,
+      'bedtime': s.bedtime,
+    }),
+  );
+
+  ScheduleSettings? ramadanBackup() {
+    final raw = _prefs.getString(_ramadanBackupKey);
+    if (raw == null) return null;
+    final j = jsonDecode(raw) as Map<String, dynamic>;
+    return ScheduleSettings(
+      breakfast: j['breakfast'] as int,
+      lunch: j['lunch'] as int,
+      evening: j['evening'] as int,
+      dinner: j['dinner'] as int,
+      bedtime: j['bedtime'] as int,
+    );
+  }
+
+  Future<void> clearRamadanBackup() => _prefs.remove(_ramadanBackupKey);
+
+  String get district => _prefs.getString(_districtKey) ?? 'dhaka';
+
+  Future<void> setDistrict(String key) => _prefs.setString(_districtKey, key);
+
   Future<void> clear() => _prefs.clear();
 }

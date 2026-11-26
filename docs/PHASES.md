@@ -20,7 +20,7 @@ Legend: ✅ done · ⏳ blocked on an external input · ⬜ not started
 | **7** | Testing, pilot and Play Store | all | 2-3 weeks | ✅ (pilot and store ⏳) |
 | | **MVP launch** | | **~3-4 months** | |
 | **8** | Bangla AI assistant | backend, app | 2 weeks | ✅ (live eval ⏳) |
-| **9** | Learning, refills and Ramadan mode | backend, app | 2 weeks | ⬜ |
+| **9** | Learning, refills and Ramadan mode | backend, app | 2 weeks | ✅ |
 | **10** | SMS and voice-call escalation | backend | 1-2 weeks | ⬜ |
 | **11** | Data flywheel and self-hosted model (hybrid) | ml, backend | 4-6 weeks | ⬜ |
 
@@ -271,16 +271,26 @@ live run) · ⏳ ≥ 90% correct on common questions
 
 ---
 
-## Phase 9: Learning, refills and Ramadan mode ⬜
+## Phase 9: Learning, refills and Ramadan mode ✅
 
-- [ ] Learn actual dose times; propose a change after 3+ consistent days
-- [ ] Track pill counts; refill reminder 3 days before running out
-- [ ] Ramadan mode: sehri and iftar times by district
-- [ ] Weekly adherence report and PDF for the doctor
-- [ ] Duplicate-therapy warning (same generic on two prescriptions)
+- [x] Meal-time learning: when doses for a meal were taken at least 20 minutes late (or early) on 3+
+      days in the last week, the home screen proposes moving that meal by the median; applied only on "Yes"
+- [x] Refills: tablets on hand entered per medicine; remaining = count minus doses scheduled since;
+      "about N days left" in the list; home warning and a notification at 10:00 three days before running
+      out (not when the course ends first)
+- [x] Ramadan mode: sehri (Fajr, sun 18° below the horizon) and iftar (sunset) computed on the phone for
+      8 divisional cities; matches 48 reference values from the Python `astral` library within 2 minutes
+      (`spec/ramadan/vectors.json`); breakfast moves to sehri, the iftar meal is placed so even
+      before-meal doses fall at or after sunset; medicines with doses inside fasting hours are listed for
+      the doctor, never moved; previous times restored when turned off
+- [x] Adherence report for the last 7 days (overall and per medicine), shareable as a PDF for the doctor
+- [x] Duplicate-therapy warning (shared active ingredient, including combinations and salt names) on the
+      home and confirm screens; the catalogue generic is stored with each medicine
+- [x] Schema: `generic`, `pills_on_hand`, `pills_counted_at`, profile `district`, `ramadan_mode`;
+      `active_medicines` recreated to include the new columns
 
-**Exit criteria:** no suggestion takes effect without the user's "Yes" · Ramadan mode tested for
-Dhaka, Chattogram and Sylhet
+**Exit criteria:** ✅ no suggestion takes effect without the user's "Yes" (tests) · ✅ Ramadan times
+checked for Dhaka, Chattogram, Sylhet and five more divisional cities
 
 ---
 

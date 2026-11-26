@@ -255,7 +255,9 @@ class _MedicineEditorState extends State<MedicineEditor> {
       focusNode: focus,
       onChanged: (v) => _changed(() {
         d.name.edit(v);
-        d.drugId = null; // typed by hand: no longer linked to a catalogue entry
+        // Typed by hand: no longer linked to a catalogue entry
+        d.drugId = null;
+        d.generic = null;
       }),
     ),
   );

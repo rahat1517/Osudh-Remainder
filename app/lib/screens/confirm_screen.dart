@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../data/medicine_draft.dart';
 import '../data/models.dart';
+import '../insights/insights.dart';
 import '../l10n/codes.dart';
 import '../l10n/generated/app_localizations.dart';
 import '../state/app_state.dart';
@@ -99,6 +100,30 @@ class _ConfirmScreenState extends State<ConfirmScreen> {
                   title: Text(text),
                 ),
               ),
+          for (final g in duplicateTherapies([
+            ...context.read<AppState>().active,
+            for (final (i, d) in _drafts.indexed)
+              if (d.generic != null)
+                Medicine(
+                  id: 'draft-$i',
+                  name: d.name.value ?? '',
+                  generic: d.generic,
+                  startAt: DateTime.now(),
+                ),
+          ]))
+            Card(
+              color: Theme.of(context).colorScheme.errorContainer,
+              child: ListTile(
+                leading: const Icon(Icons.warning_amber),
+                title: Text(l.duplicateTitle),
+                subtitle: Text(
+                  l.duplicateBody(
+                    g.medicines.map((m) => m.label).join(', '),
+                    g.ingredient,
+                  ),
+                ),
+              ),
+            ),
           for (final (i, draft) in _drafts.indexed)
             MedicineEditor(
               key: ObjectKey(draft),

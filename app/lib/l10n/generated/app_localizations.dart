@@ -1099,6 +1099,156 @@ abstract class AppLocalizations {
   /// In bn, this message translates to:
   /// **'ঘুম'**
   String get mealBedtime;
+
+  /// No description provided for @refillNoticeTitle.
+  ///
+  /// In bn, this message translates to:
+  /// **'ওষুধ শেষ হয়ে আসছে'**
+  String get refillNoticeTitle;
+
+  /// No description provided for @refillNoticeBody.
+  ///
+  /// In bn, this message translates to:
+  /// **'{name} প্রায় ৩ দিনের মধ্যে শেষ হবে। সময়মতো কিনে নিন।'**
+  String refillNoticeBody(String name);
+
+  /// No description provided for @lowStockTitle.
+  ///
+  /// In bn, this message translates to:
+  /// **'শীঘ্রই শেষ হবে'**
+  String get lowStockTitle;
+
+  /// No description provided for @lowStockBody.
+  ///
+  /// In bn, this message translates to:
+  /// **'{name}: আর প্রায় {days} দিন চলবে'**
+  String lowStockBody(String name, String days);
+
+  /// No description provided for @duplicateTitle.
+  ///
+  /// In bn, this message translates to:
+  /// **'একই ওষুধ দুইবার?'**
+  String get duplicateTitle;
+
+  /// No description provided for @duplicateBody.
+  ///
+  /// In bn, this message translates to:
+  /// **'{names}-এ একই উপাদান ({ingredient}) আছে। দুটোই খাওয়ার আগে ডাক্তার বা ফার্মাসিস্টকে জিজ্ঞেস করুন।'**
+  String duplicateBody(String names, String ingredient);
+
+  /// No description provided for @mealShiftTitle.
+  ///
+  /// In bn, this message translates to:
+  /// **'খাবারের সময় বদলাবেন?'**
+  String get mealShiftTitle;
+
+  /// No description provided for @mealShiftBody.
+  ///
+  /// In bn, this message translates to:
+  /// **'{days} দিন ধরে আপনি {meal}-এর ওষুধ {to}-এর দিকে খাচ্ছেন। {meal}-এর সময় {to} করবেন?'**
+  String mealShiftBody(int days, String meal, String to);
+
+  /// No description provided for @yes.
+  ///
+  /// In bn, this message translates to:
+  /// **'হ্যাঁ'**
+  String get yes;
+
+  /// No description provided for @no.
+  ///
+  /// In bn, this message translates to:
+  /// **'না'**
+  String get no;
+
+  /// No description provided for @stockTitle.
+  ///
+  /// In bn, this message translates to:
+  /// **'হাতে কয়টা ট্যাবলেট আছে'**
+  String get stockTitle;
+
+  /// No description provided for @stockHelp.
+  ///
+  /// In bn, this message translates to:
+  /// **'এখন হাতে কয়টা ট্যাবলেট (বা ডোজ) আছে গুনে লিখুন।'**
+  String get stockHelp;
+
+  /// No description provided for @daysLeft.
+  ///
+  /// In bn, this message translates to:
+  /// **'আর প্রায় {days} দিন চলবে'**
+  String daysLeft(String days);
+
+  /// No description provided for @save.
+  ///
+  /// In bn, this message translates to:
+  /// **'সংরক্ষণ'**
+  String get save;
+
+  /// No description provided for @reportTitle.
+  ///
+  /// In bn, this message translates to:
+  /// **'গত ৭ দিন'**
+  String get reportTitle;
+
+  /// No description provided for @reportOverall.
+  ///
+  /// In bn, this message translates to:
+  /// **'{scheduled}টি ডোজের মধ্যে {taken}টি খাওয়া হয়েছে ({percent}%)'**
+  String reportOverall(int taken, int scheduled, int percent);
+
+  /// No description provided for @reportMissed.
+  ///
+  /// In bn, this message translates to:
+  /// **'বাদ পড়েছে: {missed} · নিজে বাদ দিয়েছেন: {skipped}'**
+  String reportMissed(int missed, int skipped);
+
+  /// No description provided for @reportShare.
+  ///
+  /// In bn, this message translates to:
+  /// **'রিপোর্ট শেয়ার করুন (PDF)'**
+  String get reportShare;
+
+  /// No description provided for @ramadanTitle.
+  ///
+  /// In bn, this message translates to:
+  /// **'রমজান মোড'**
+  String get ramadanTitle;
+
+  /// No description provided for @ramadanIntro.
+  ///
+  /// In bn, this message translates to:
+  /// **'সকালের ওষুধ সেহরিতে আর সন্ধ্যার ওষুধ ইফতারে সরিয়ে নেয়।'**
+  String get ramadanIntro;
+
+  /// No description provided for @ramadanDistrict.
+  ///
+  /// In bn, this message translates to:
+  /// **'জেলা'**
+  String get ramadanDistrict;
+
+  /// No description provided for @ramadanTimes.
+  ///
+  /// In bn, this message translates to:
+  /// **'আজ সেহরির শেষ সময় {sehri}, ইফতার {iftar}'**
+  String ramadanTimes(String sehri, String iftar);
+
+  /// No description provided for @ramadanConflicts.
+  ///
+  /// In bn, this message translates to:
+  /// **'এই ওষুধগুলোর ডোজ রোজার সময়ে পড়ছে। রমজানে কীভাবে খাবেন, ডাক্তারকে জিজ্ঞেস করুন:'**
+  String get ramadanConflicts;
+
+  /// No description provided for @ramadanOn.
+  ///
+  /// In bn, this message translates to:
+  /// **'রমজানের সময়সূচি চালু করুন'**
+  String get ramadanOn;
+
+  /// No description provided for @ramadanOff.
+  ///
+  /// In bn, this message translates to:
+  /// **'রমজানের সময়সূচি বন্ধ করুন'**
+  String get ramadanOff;
 }
 
 class _AppLocalizationsDelegate
