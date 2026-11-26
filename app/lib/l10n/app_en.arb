@@ -384,5 +384,10 @@
   "channelSms": "SMS reminders",
   "channelCall": "Phone-call reminders",
   "featurePhoneMode": "Basic phone (no smartphone)",
-  "featurePhoneHelp": "Reminders go to their phone by SMS or call at each dose time; you manage the medicines here."
+  "featurePhoneHelp": "Reminders go to their phone by SMS or call at each dose time; you manage the medicines here.",
+  "trainingConsentTitle": "Help improve prescription reading",
+  "trainingConsentBody": "When on, photos of prescriptions you scan and confirm are shared to train our reader. Names, ages, phone numbers and addresses are blacked out, and a person checks every photo before use. You can turn this off at any time; unused photos are then deleted.",
+  "errTrainingDisabled": "Sharing is not available right now.",
+  "errTrainingNotConsented": "Turn on sharing in Settings first.",
+  "errInvalidLabel": "The prescription details could not be shared."
 }

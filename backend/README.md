@@ -31,6 +31,7 @@ uv run ruff format --check .
 | `GET /drugs/{id}` | One drug |
 | `POST /prescriptions/extract` (multipart `image`) | Prescription photo → medicines with per-field confidence. Needs `ANTHROPIC_API_KEY`, otherwise 503 |
 | `POST /schedules/generate` | Confirmed medicines → dose times and grouped reminders ([spec](../docs/SCHEDULE_SPEC.md)) |
+| `POST /training/examples` (multipart `image` + `label`) | Opt-in sharing of a confirmed scan: EXIF stripped, personal lines redacted, queued for human review (202) |
 | `POST /assistant/chat` | Bangla/English assistant turn: answers from the user's schedule; emergencies answered by rules (works without AI); proposed changes returned as `actions` for confirmation |
 
 Server job: `uv run python -m app.caregivers.job` sends missed-dose alerts to caregivers (Phase 6).
@@ -56,7 +57,8 @@ documented; clients localize it. The `message` is English, for developers.
 | `ai_refused`, `ai_failed`, `prescription_too_long` | 502 | extract |
 | `drug_not_found` | 404 | drugs |
 | `auth_required`, `auth_invalid` | 401 | extract, schedules (Supabase access token as `Authorization: Bearer`) |
-| `rate_limited` | 429 (`Retry-After`) | extract (per user: 5/min, 30/h, 100/day) |
+| `rate_limited` | 429 (`Retry-After`) | extract (per user: 5/min, 30/h, 100/day), assistant |
+| `training_disabled` (503), `training_not_consented` (403), `invalid_label` (422) | | training |
 | `invalid_dose_pattern`, `invalid_interval`, `invalid_duration`, `invalid_weekdays`, `invalid_meal_times`, `invalid_timezone`, `missing_dose`, `conflicting_dose` | 422 | schedules (with `medicine_id`) |
 
 Fields and warnings in a prescription result may carry a **notice** `{code, message, params}`:

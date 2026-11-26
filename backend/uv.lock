@@ -636,6 +636,7 @@ dependencies = [
     { name = "google-auth" },
     { name = "httpx2" },
     { name = "pillow" },
+    { name = "psycopg", extra = ["binary"] },
     { name = "pydantic-settings" },
     { name = "pyjwt", extra = ["crypto"] },
     { name = "python-multipart" },
@@ -649,7 +650,6 @@ dev = [
     { name = "astral" },
     { name = "httpx2" },
     { name = "hypothesis" },
-    { name = "psycopg", extra = ["binary"] },
     { name = "pytest" },
     { name = "ruff" },
 ]
@@ -661,6 +661,7 @@ requires-dist = [
     { name = "google-auth", specifier = ">=2.35" },
     { name = "httpx2", specifier = ">=2.16.2" },
     { name = "pillow", specifier = ">=13.0.0" },
+    { name = "psycopg", extras = ["binary"], specifier = ">=3.2" },
     { name = "pydantic-settings", specifier = ">=2.6" },
     { name = "pyjwt", extras = ["crypto"], specifier = ">=2.10" },
     { name = "python-multipart", specifier = ">=0.0.12" },
@@ -674,7 +675,6 @@ dev = [
     { name = "astral", specifier = ">=3.2" },
     { name = "httpx2", specifier = ">=2.16.2" },
     { name = "hypothesis", specifier = ">=6.120" },
-    { name = "psycopg", extras = ["binary"], specifier = ">=3.2" },
     { name = "pytest", specifier = ">=8.3" },
     { name = "ruff", specifier = ">=0.8" },
 ]

@@ -24,7 +24,10 @@
     "conflicting_dose",
     "auth_required",
     "auth_invalid",
-    "rate_limited"
+    "rate_limited",
+    "training_disabled",
+    "training_not_consented",
+    "invalid_label"
   ],
   "notices": [
     "name_unreadable",

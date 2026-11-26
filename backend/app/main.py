@@ -6,12 +6,13 @@ import anthropic
 from fastapi import FastAPI
 
 from app import __version__
-from app.api import assistant, drugs, health, prescriptions, schedules
+from app.api import assistant, drugs, health, prescriptions, schedules, training
 from app.assistant.service import AssistantService
 from app.config import Settings, get_settings
 from app.drugs.catalog import load_csv
 from app.drugs.matcher import DrugMatcher
 from app.observability import RequestIdMiddleware, init_sentry
+from app.prescriptions.local_reader import HybridReader, LocalModelReader
 from app.prescriptions.reader import ClaudePrescriptionReader
 from app.prescriptions.service import PrescriptionService
 from app.prescriptions.verifier import PrescriptionVerifier
@@ -37,6 +38,35 @@ def build_token_verifier(settings: Settings) -> TokenVerifier | None:
     )
 
 
+def build_reader(settings: Settings, cloud):
+    if settings.reader_mode == "cloud" or not settings.local_reader_url:
+        return cloud
+    local = LocalModelReader(settings.local_reader_url, settings.local_reader_model)
+    return local if settings.reader_mode == "local" else HybridReader(local, cloud)
+
+
+def build_training_service(settings: Settings):
+    from app.training.deid import NoLineDetector
+    from app.training.repository import PostgresTrainingRepository
+    from app.training.service import TrainingService
+    from app.training.storage import SupabaseStorageStore
+
+    needed = (
+        settings.database_url,
+        settings.supabase_url,
+        settings.supabase_service_role_key,
+        settings.training_pepper,
+    )
+    if not all(needed):
+        return None
+    return TrainingService(
+        PostgresTrainingRepository(settings.database_url),
+        SupabaseStorageStore(settings.supabase_url, settings.supabase_service_role_key),
+        NoLineDetector(),  # replace with TesseractLineDetector where OCR is installed
+        settings.training_pepper,
+    )
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     settings = get_settings()
@@ -52,9 +82,13 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
 
     app.state.prescription_service = None
     app.state.assistant_service = None
+    app.state.training_service = build_training_service(settings)
     if settings.anthropic_api_key:
         client = anthropic.Anthropic(api_key=settings.anthropic_api_key)
-        reader = ClaudePrescriptionReader(client, settings.reader_model, settings.reader_effort)
+        reader = build_reader(
+            settings,
+            ClaudePrescriptionReader(client, settings.reader_model, settings.reader_effort),
+        )
         app.state.prescription_service = PrescriptionService(reader, PrescriptionVerifier(matcher))
         app.state.assistant_service = AssistantService(
             client, matcher, settings.assistant_model, settings.assistant_effort
@@ -75,6 +109,7 @@ def create_app() -> FastAPI:
     app.include_router(prescriptions.router)
     app.include_router(schedules.router)
     app.include_router(assistant.router)
+    app.include_router(training.router)
     return app
 
 

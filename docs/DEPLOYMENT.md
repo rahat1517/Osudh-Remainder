@@ -18,6 +18,8 @@ psql "$DATABASE_URL" -f supabase/seed.sql              # drug catalogue
 ```
 
 Dashboard: enable Phone auth with an SMS provider, set OTP rate limits, enable JWT signing keys.
+Storage (only if collecting training data, Phase 11): create a **private** bucket `training-examples`
+with no public access and no client policies; only the service role writes and reads it.
 
 ## Backend
 
@@ -30,6 +32,8 @@ Environment variables (see `.env.example`):
 | `SUPABASE_JWT_SECRET` | legacy projects | HS256 token verification |
 | `ANTHROPIC_API_KEY` | yes | prescription reading |
 | `SENTRY_DSN` | optional | error monitoring (scrubbed) |
+| `READER_MODE`, `LOCAL_READER_URL`, `LOCAL_READER_MODEL` | optional | `hybrid` routes to a self-hosted model first (Phase 11) |
+| `DATABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `TRAINING_PEPPER` | optional | collect consented training examples (Phase 11) |
 
 ```bash
 docker build -t oshudh-api -f backend/Dockerfile .

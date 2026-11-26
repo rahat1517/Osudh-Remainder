@@ -20,6 +20,7 @@ from app.drugs.catalog import load_csv
 from app.drugs.matcher import DrugMatcher
 from app.drugs.models import Confidence
 from app.drugs.normalize import strength_numbers
+from app.main import build_reader
 from app.prescriptions.errors import PrescriptionError
 from app.prescriptions.reader import ClaudePrescriptionReader
 from app.prescriptions.schemas import MedicineResult, PrescriptionResult
@@ -121,6 +122,12 @@ def main(argv=None) -> int:
     p.add_argument("--yes", action="store_true", help="Allow real (billed) API calls")
     p.add_argument("--limit", type=int, help="Only the first N cases")
     p.add_argument("--variant", choices=["clean", "photo", "both"], default="both")
+    p.add_argument(
+        "--reader",
+        choices=["cloud", "local", "hybrid"],
+        default="cloud",
+        help="Which reader to evaluate (local/hybrid need LOCAL_READER_URL)",
+    )
     args = p.parse_args(argv)
 
     settings = get_settings()
@@ -138,7 +145,11 @@ def main(argv=None) -> int:
     generate()
     matcher = DrugMatcher(load_csv(settings.drugs_csv_path)[0])
     client = anthropic.Anthropic(api_key=settings.anthropic_api_key)
-    reader = ClaudePrescriptionReader(client, settings.reader_model, settings.reader_effort)
+    cloud = ClaudePrescriptionReader(client, settings.reader_model, settings.reader_effort)
+    reader = build_reader(settings.model_copy(update={"reader_mode": args.reader}), cloud)
+    if args.reader != "cloud" and reader is cloud:
+        print("error: --reader local/hybrid needs LOCAL_READER_URL", file=sys.stderr)
+        return 2
     service = PrescriptionService(reader, PrescriptionVerifier(matcher))
 
     tallies = {v: {f: Tally() for f in FIELDS} for v in variants}
@@ -161,7 +172,8 @@ def main(argv=None) -> int:
     lines = [
         f"# Prescription reader eval ({dt.date.today()})",
         "",
-        f"- Model: `{settings.reader_model}`, effort `{settings.reader_effort}`",
+        f"- Reader: `{args.reader}`; cloud model `{settings.reader_model}`, effort "
+        f"`{settings.reader_effort}`",
         f"- Cases: {len(cases)} fictional printed prescriptions × {', '.join(variants)}",
         "",
     ]
@@ -186,8 +198,11 @@ def main(argv=None) -> int:
     out_dir.mkdir(exist_ok=True)
     path = out_dir / f"{dt.datetime.now():%Y-%m-%d_%H%M}.md"
     path.write_text(report, encoding="utf-8")
+    if hasattr(reader, "routes"):
+        report += f"\nHybrid routing: {dict(reader.routes)}\n"
+        path.write_text(report, encoding="utf-8")
     print(report)
-    print(f"💾 {path}")
+    print(f"Report: {path}")
     return 0
 
 

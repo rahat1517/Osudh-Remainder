@@ -140,6 +140,19 @@ class MedicineDraft {
 
   bool get isReady => problems.isEmpty;
 
+  /// Confirmed values as a training label (no free text, so no personal data).
+  Map<String, dynamic> toTrainingLabel() => {
+    'name': name.value!.trim(),
+    'strength': _blankToNull(strength.value),
+    'dose_pattern': asNeeded && parseDosePattern(dose.value) == null
+        ? null
+        : normalizeDosePattern(dose.value),
+    'timing': timingJson[timing.value ?? Timing.notSpecified],
+    'duration_days': continueIndefinitely ? null : durationDays.value,
+    'continue_indefinitely': continueIndefinitely,
+    'as_needed': asNeeded,
+  };
+
   /// Row for the `medicines` table.
   Map<String, dynamic> toRow({
     required String prescriptionId,

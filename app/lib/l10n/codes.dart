@@ -32,6 +32,9 @@ String? localizeError(AppLocalizations l, String code) => switch (code) {
   'auth_required' => l.errAuthRequired,
   'auth_invalid' => l.errAuthInvalid,
   'rate_limited' => l.errRateLimited,
+  'training_disabled' => l.errTrainingDisabled,
+  'training_not_consented' => l.errTrainingNotConsented,
+  'invalid_label' => l.errInvalidLabel,
   'network_error' => l.errorNetwork,
   _ => null,
 };

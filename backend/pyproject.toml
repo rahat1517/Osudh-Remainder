@@ -16,6 +16,7 @@ dependencies = [
     "httpx2>=2.16.2",
     "pyjwt[crypto]>=2.10",
     "sentry-sdk[fastapi]>=2.20",
+    "psycopg[binary]>=3.2",
 ]
 
 [dependency-groups]
@@ -24,7 +25,6 @@ dev = [
     "httpx2>=2.16.2",
     "ruff>=0.8",
     "hypothesis>=6.120",
-    "psycopg[binary]>=3.2",
     "astral>=3.2",
 ]
 
@@ -49,3 +49,8 @@ select = ["E", "F", "I", "B", "UP", "SIM"]
 "eval/run_assistant_eval.py" = ["E501"]
 "app/escalation/engine.py" = ["E501"]
 "app/escalation/repository.py" = ["E501"]
+"app/training/deid.py" = ["E501"]
+"app/prescriptions/local_reader.py" = ["E501"]
+"app/main.py" = ["E501"]
+"tests/test_training.py" = ["E501"]
+"tests/db/test_training_data.py" = ["E501"]

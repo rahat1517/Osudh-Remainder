@@ -9,10 +9,12 @@ abstract interface class MedicineRepository {
   Future<List<Medicine>> activeMedicines();
 
   /// Saves the drafts as one prescription and confirms it. Every draft must be [MedicineDraft.isReady].
+  /// [forUserId] saves it for a patient the current user looks after (edit permission).
   Future<void> saveConfirmed(
     List<MedicineDraft> drafts, {
     required String source,
     String? imageQuality,
+    String? forUserId,
   });
 
   Future<void> stopMedicine(String id);
@@ -56,16 +58,22 @@ class SupabaseMedicineRepository implements MedicineRepository {
     List<MedicineDraft> drafts, {
     required String source,
     String? imageQuality,
+    String? forUserId,
   }) async {
     _checkReady(drafts);
+    // Without user_id the database would default to the signed-in user (the caregiver)
     final prescription = await _db
         .from('prescriptions')
-        .insert({'source': source, 'image_quality': imageQuality})
+        .insert({
+          'source': source,
+          'image_quality': imageQuality,
+          'user_id': ?forUserId,
+        })
         .select('id')
         .single();
     final id = prescription['id'] as String;
     await _db.from('medicines').insert([
-      for (final d in drafts) d.toRow(prescriptionId: id),
+      for (final d in drafts) d.toRow(prescriptionId: id, forUserId: forUserId),
     ]);
     await _db.rpc('confirm_prescription', params: {'prescription': id});
   }

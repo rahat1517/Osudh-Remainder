@@ -1,0 +1,42 @@
+[project]
+name = "oshudh-ml"
+version = "0.1.0"
+description = "Dataset export and fine-tuning for the self-hosted prescription reader"
+requires-python = ">=3.12"
+dependencies = [
+    "psycopg[binary]>=3.2",
+    "httpx2>=2.16.2",
+]
+
+[project.optional-dependencies]
+# GPU training stack (install on the training machine only)
+train = [
+    "torch>=2.5",
+    "transformers>=4.50",
+    "peft>=0.14",
+    "trl>=0.15",
+    "datasets>=3.2",
+    "pillow>=11",
+]
+
+[dependency-groups]
+dev = ["pytest>=8.3", "ruff>=0.8"]
+
+[tool.uv]
+package = false
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "SIM"]
+
+[tool.ruff.lint.per-file-ignores]
+"oshudh_ml/dataset.py" = ["E501"]
+"oshudh_ml/train_lora.py" = ["E501"]
+"tests/*.py" = ["E501"]
