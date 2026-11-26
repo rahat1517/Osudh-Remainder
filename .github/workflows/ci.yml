@@ -28,6 +28,13 @@ jobs:
         run: uv run ruff format --check .
       - name: Test
         run: uv run pytest
+      - name: Drug seed is up to date
+        run: |
+          uv run python -m app.drugs.importer ../database/seed/drugs_seed.csv --sql /tmp/seed.sql
+          diff -u ../supabase/seed.sql /tmp/seed.sql || {
+            echo "::error::supabase/seed.sql পুরোনো। importer আবার চালান (database/README.md দেখুন)।"
+            exit 1
+          }
 
   app:
     name: App (Flutter)

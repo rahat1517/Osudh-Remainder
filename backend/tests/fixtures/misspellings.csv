@@ -1,0 +1,57 @@
+query,expected_brand,expected_strength,kind
+Seclo 20,Seclo,20 mg,exact
+SECLO 20MG,Seclo,20 mg,case-unit
+Tab. Seclo-20mg,Seclo,20 mg,form-prefix
+Cap Seclo 40,Seclo,40 mg,form-prefix
+seclo২০,Seclo,20 mg,bangla-digit
+Sec1o 20,Seclo,20 mg,ocr-digit
+Secklo 20,Seclo,20 mg,typo
+Selco 20,Seclo,20 mg,transposition
+Maxpro 20,Maxpro,20 mg,exact
+Max pro 20,Maxpro,20 mg,split-word
+Maxpo 20,Maxpro,20 mg,typo
+Maxpr0 40,Maxpro,40 mg,ocr-digit
+Maxxpro 40,Maxpro,40 mg,typo
+Napa 500,Napa,500 mg,exact
+Napa500mg,Napa,500 mg,no-space
+Nappa,Napa,,typo
+Napa Ext,Napa Extend,665 mg,abbreviation
+Napa Extnd 665,Napa Extend,665 mg,abbreviation
+Napa Xtra,Napa Extra,500 mg + 65 mg,abbreviation
+Napa Extra,Napa Extra,500 mg + 65 mg,exact
+Ace Plus,Ace Plus,500 mg + 65 mg,exact
+Ace+,Ace Plus,500 mg + 65 mg,symbol
+Sergel 20,Sergel,20 mg,exact
+Sargel 20,Sergel,20 mg,typo
+Sergal 40,Sergel,40 mg,typo
+Losectil 20,Losectil,20 mg,exact
+Losectl 20,Losectil,20 mg,typo
+Lossectil,Losectil,,typo
+Pantonix 40,Pantonix,40 mg,exact
+Pantonex 20,Pantonix,20 mg,typo
+Fexo 120,Fexo,120 mg,exact
+Fexo-180,Fexo,180 mg,hyphen
+Alatrol,Alatrol,10 mg,exact
+Alatral 10,Alatrol,10 mg,typo
+Monas 10,Monas,10 mg,exact
+Monaas 10,Monas,10 mg,typo
+Azithrocin 500,Azithrocin,500 mg,exact
+Azitrocin 500,Azithrocin,500 mg,typo
+Zimax 500,Zimax,500 mg,exact
+Zymax 500,Zimax,500 mg,typo
+Cef-3 200,Cef-3,200 mg,exact
+Cef 3 400,Cef-3,400 mg,hyphen
+Ciprocin 500,Ciprocin,500 mg,exact
+Ciprosin 500,Ciprocin,500 mg,typo
+Amdocal 5,Amdocal,5 mg,exact
+Amdokal 5,Amdocal,5 mg,typo
+Camlodin 5,Camlodin,5 mg,exact
+Osartil 50,Osartil,50 mg,exact
+Osartyl 50,Osartil,50 mg,typo
+Comet 850,Comet,850 mg,exact
+Rosuva 10,Rosuva,10 mg,exact
+Rosuvaa 10,Rosuva,10 mg,typo
+Calbo D,Calbo D,500 mg + 200 IU,exact
+Calbo-D,Calbo D,500 mg + 200 IU,hyphen
+Disopan 0.5,Disopan,0.5 mg,decimal
+Orsaline N,Orsaline-N,,hyphen

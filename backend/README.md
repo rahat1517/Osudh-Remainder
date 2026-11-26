@@ -21,6 +21,23 @@ uv run ruff check .
 uv run ruff format --check .
 ```
 
+## API
+
+| Endpoint | কাজ |
+|---|---|
+| `GET /health` | Server চালু আছে কিনা |
+| `GET /drugs/search?q=maxp` | Autocomplete: brand বা generic নামে খোঁজা, ভুল বানানেও কাজ করে |
+| `POST /drugs/match` `{"text": "Tab. Sec1o 20mg"}` | প্রেসক্রিপশনের একটা লাইন → সবচেয়ে কাছের ওষুধ + confidence |
+| `GET /drugs/{id}` | একটা ওষুধের তথ্য |
+
+`/drugs/match`-এর confidence:
+
+| মান | মানে | অ্যাপে যা হবে |
+|---|---|---|
+| `high` | নাম প্রায় হুবহু, কাছাকাছি অন্য নাম নেই, শক্তি মিলেছে | নিজে পূরণ ✅ |
+| `medium` | সম্ভাব্য মিল, কিন্তু নিশ্চিত নয় (টাইপো, শক্তি না মেলা) | হলুদ চিহ্ন, "এটা কি ঠিক?" |
+| `low` | মিল পাওয়া যায়নি | খালি, ব্যবহারকারী বেছে নেবেন |
+
 ## কাঠামো
 
 ```
@@ -28,7 +45,8 @@ backend/
 ├── app/
 │   ├── main.py        ← FastAPI অ্যাপ
 │   ├── config.py      ← সেটিংস (.env থেকে)
-│   └── api/           ← endpoint-গুলো (health, পরে drugs, prescriptions…)
+│   ├── api/           ← endpoint-গুলো (health, drugs)
+│   └── drugs/         ← ওষুধের তালিকা: normalize, matcher, importer
 └── tests/
 ```
 

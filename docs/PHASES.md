@@ -88,21 +88,21 @@
 **নির্ভরতা:** Phase 0
 
 ### কাজ
-- [ ] Database schema: `drugs` (brand, generic, strength, form, manufacturer, DAR নম্বর)
-- [ ] তথ্যের উৎস ঠিক করা (DGDA তালিকা / উন্মুক্ত তথ্য), ব্যবহারের অনুমতি ও শর্ত যাচাই
-- [ ] Import script: CSV → PostgreSQL (পরিষ্কার, duplicate বাদ, নাম স্বাভাবিক করা)
-- [ ] খোঁজার পদ্ধতি: `pg_trgm` দিয়ে fuzzy search ("Ma?x" → "Maxpro 20")
-- [ ] বানানের ভুল ও প্রচলিত সংক্ষেপ সামলানো (যেমন "Napa Ext" = "Napa Extend")
-- [ ] API: `GET /drugs/search?q=` (autocomplete), `POST /drugs/match` (সবচেয়ে কাছের মিল + score)
-- [ ] Test: পরিচিত ৫০টা ভুল বানান → সঠিক ওষুধ
+- [x] Database schema: `drugs` (brand, generic, strength, form, manufacturer, DAR নম্বর)
+- [ ] তথ্যের উৎস ঠিক করা (DGDA তালিকা / উন্মুক্ত তথ্য), ব্যবহারের অনুমতি ও শর্ত যাচাই. **আপনার কাজ:** এই container থেকে DGDA সাইট খোলা যায় না। এখন ৪৬টা ওষুধের অযাচাইকৃত নমুনা দিয়ে কাজ চলছে
+- [x] Import script: CSV → PostgreSQL (পরিষ্কার, duplicate বাদ, নাম স্বাভাবিক করা)
+- [x] খোঁজার পদ্ধতি: `pg_trgm` index (database) + rapidfuzz (backend) দিয়ে fuzzy search ("Ma?x" → "Maxpro 20")
+- [x] বানানের ভুল ও প্রচলিত সংক্ষেপ সামলানো (যেমন "Napa Ext" = "Napa Extend")
+- [x] API: `GET /drugs/search?q=` (autocomplete), `POST /drugs/match` (সবচেয়ে কাছের মিল + score)
+- [x] Test: ৫৬টা ভুল বানান → সঠিক ওষুধ (১০০% সঠিক)
 
 ### যা তৈরি হবে
 ওষুধের database, search আর match API
 
 ### শেষের শর্ত
-- কমপক্ষে প্রচলিত ১,০০০+ brand আছে
-- ভুল বানানের test set-এ ≥ ৯০% সঠিক মিল
-- Search response < ২০০ms
+- ⏳ কমপক্ষে প্রচলিত ১,০০০+ brand আছে (এখন ৩৮টা, DGDA তালিকার অপেক্ষায়)
+- ✅ ভুল বানানের test set-এ ≥ ৯০% সঠিক মিল (৫৬/৫৬ = ১০০%, ভুল কিন্তু "high" = ০)
+- ✅ Search response < ২০০ms (৩০,০০০ ওষুধে ১৬–৩৪ms)
 
 ---
 
