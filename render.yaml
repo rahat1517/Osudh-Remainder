@@ -1,0 +1,29 @@
+# One-click deployment of the backend API on Render (https://render.com).
+# Render → New → Blueprint → pick this repository. Secrets marked `sync: false` are asked for once
+# in the Render dashboard and never stored in git.
+services:
+  - type: web
+    name: oshudh-api
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: .
+    region: singapore          # closest Render region to Bangladesh
+    plan: starter              # always on; the free plan sleeps and makes the first request slow
+    numInstances: 1            # rate limits are in-process; keep a single instance
+    healthCheckPath: /health
+    autoDeploy: true           # redeploys on every push to main (after CI is green on the PR)
+    envVars:
+      - key: PORT
+        value: "8000"
+      - key: ENVIRONMENT
+        value: production
+      - key: SUPABASE_URL
+        value: https://jbwttngkuewtoarhsipn.supabase.co
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      # Only for projects that still sign tokens with the legacy shared secret (Settings → JWT Keys)
+      - key: SUPABASE_JWT_SECRET
+        sync: false
+      # Optional: error monitoring
+      - key: SENTRY_DSN
+        sync: false
