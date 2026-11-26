@@ -49,7 +49,8 @@ oshudh-reminder/
 
 ## 📚 ডকুমেন্টেশন
 
-- [প্রকল্প পরিকল্পনা](docs/PLAN.md): পুরো ধারণা, architecture ও ধাপে ধাপে পরিকল্পনা
+- [প্রকল্প পরিকল্পনা](docs/PLAN.md): পুরো ধারণা ও architecture
+- [Phase অনুযায়ী কাজের পরিকল্পনা](docs/PHASES.md): ১২টা phase, প্রতিটার কাজ ও শেষের শর্ত
 
 ## ⚠️ দাবিত্যাগ (Disclaimer)
 
