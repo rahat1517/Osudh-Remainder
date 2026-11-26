@@ -1,12 +1,17 @@
 name: Pilot APK
 
 # Builds an installable APK wired to the production Supabase project and backend.
-# Run it from Actions → Pilot APK → Run workflow, then download the artifact.
+# Run it from Actions → Pilot APK → Run workflow. The APK is published as the `pilot` release, so it
+# can be downloaded on a phone from one fixed link (sign in to GitHub first; the repository is private):
+#   https://github.com/rahat1517/Osudh-Remainder/releases/download/pilot/oshudh-reminder.apk
 # The values below are public by design (the app ships them); secrets never go here.
 # Signed with the debug key unless release signing is configured: fine for sharing with pilot
 # testers, never for Play Store upload.
 on:
   workflow_dispatch:
+
+permissions:
+  contents: write   # publish the APK as the `pilot` release
 
 jobs:
   apk:
@@ -40,3 +45,15 @@ jobs:
           name: oshudh-pilot-apk
           path: app/build/app/outputs/flutter-apk/app-release.apk
           retention-days: 30
+      - name: Publish as the pilot release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cp build/app/outputs/flutter-apk/app-release.apk oshudh-reminder.apk
+          notes="Pilot build from ${GITHUB_SHA::7}. Install on Android 7.0+. Test sign-in: 01712345678 / 123456. Not for the Play Store."
+          if gh release view pilot >/dev/null 2>&1; then
+            gh release upload pilot oshudh-reminder.apk --clobber
+            gh release edit pilot --notes "$notes"
+          else
+            gh release create pilot oshudh-reminder.apk --title "Pilot APK" --notes "$notes" --prerelease --target "$GITHUB_SHA"
+          fi
