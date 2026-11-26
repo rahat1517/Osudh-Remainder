@@ -12,10 +12,22 @@
   "sendCode": "Send code",
   "otpTitle": "Enter the code",
   "otpSubtitle": "We sent a 6-digit code to {phone}",
-  "@otpSubtitle": {"placeholders": {"phone": {"type": "String"}}},
+  "@otpSubtitle": {
+    "placeholders": {
+      "phone": {
+        "type": "String"
+      }
+    }
+  },
   "verify": "Verify",
   "demoModeHint": "Demo mode: the code is {code}",
-  "@demoModeHint": {"placeholders": {"code": {"type": "String"}}},
+  "@demoModeHint": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
   "authInvalidCode": "The code is wrong or has expired",
   "authSmsFailed": "Could not send the SMS. Try again.",
   "homeTitle": "Today's medicines",
@@ -46,7 +58,13 @@
   "asNeeded": "Only when needed (SOS)",
   "looksRight": "Looks right",
   "writtenAs": "On the prescription: {text}",
-  "@writtenAs": {"placeholders": {"text": {"type": "String"}}},
+  "@writtenAs": {
+    "placeholders": {
+      "text": {
+        "type": "String"
+      }
+    }
+  },
   "problemNameRequired": "Enter the medicine name",
   "problemDoseInvalid": "Enter the dose like 1+0+1",
   "problemDurationRequired": "Enter the number of days or choose Continue",
@@ -60,12 +78,17 @@
   "saved": "Saved. Reminders are set.",
   "stopMedicine": "Stop this medicine",
   "stopConfirm": "Stop reminders for {name}? Only do this if your doctor told you to.",
-  "@stopConfirm": {"placeholders": {"name": {"type": "String"}}},
+  "@stopConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "cancel": "Cancel",
   "retry": "Try again",
   "errorNetwork": "No connection to the server. Check your internet.",
   "errorGeneric": "Something went wrong. Try again.",
-
   "errImageMissing": "No photo was received.",
   "errImageTooLarge": "The photo is too large (maximum 15 MB).",
   "errImageUnreadable": "This file is not a photo. Use a JPEG or PNG image.",
@@ -87,25 +110,87 @@
   "errInvalidTimezone": "Unknown time zone.",
   "errMissingDose": "Enter a dose.",
   "errConflictingDose": "Give either a dose pattern or an interval, not both.",
-
   "noticeNameUnreadable": "The name could not be read.",
   "noticeNameNotInCatalog": "This name is not in our medicine list. Check it carefully.",
   "noticeNameCorrected": "Written as \"{written}\" on the prescription.",
-  "@noticeNameCorrected": {"placeholders": {"written": {"type": "String"}}},
+  "@noticeNameCorrected": {
+    "placeholders": {
+      "written": {
+        "type": "String"
+      }
+    }
+  },
   "noticeStrengthNotInCatalog": "No {written} version is in our medicine list.",
-  "@noticeStrengthNotInCatalog": {"placeholders": {"written": {"type": "String"}}},
+  "@noticeStrengthNotInCatalog": {
+    "placeholders": {
+      "written": {
+        "type": "String"
+      }
+    }
+  },
   "noticeStrengthSuggested": "Not written on the prescription; {suggested} suggested.",
-  "@noticeStrengthSuggested": {"placeholders": {"suggested": {"type": "String"}}},
+  "@noticeStrengthSuggested": {
+    "placeholders": {
+      "suggested": {
+        "type": "String"
+      }
+    }
+  },
   "noticeDoseUnreadable": "Could not understand \"{written}\".",
-  "@noticeDoseUnreadable": {"placeholders": {"written": {"type": "String"}}},
+  "@noticeDoseUnreadable": {
+    "placeholders": {
+      "written": {
+        "type": "String"
+      }
+    }
+  },
   "noticeDoseMissing": "No dose is written.",
   "noticeDoseAsNeeded": "Take only when needed.",
   "noticeTimingNotSpecified": "Before or after food is not written.",
   "noticeDurationUnclear": "The duration is unclear.",
   "noticeDurationOutOfRange": "Unusual duration ({days} days).",
-  "@noticeDurationOutOfRange": {"placeholders": {"days": {"type": "String"}}},
+  "@noticeDurationOutOfRange": {
+    "placeholders": {
+      "days": {
+        "type": "String"
+      }
+    }
+  },
   "noticeDurationMissing": "How long to take it is not written.",
   "noticeImagePoorQuality": "The photo is unclear. Check everything or take a new photo.",
   "noticeNoMedicinesFound": "No medicines were found. Add them manually or take a new photo.",
-  "noticeReviewHighlightedFields": "Compare the highlighted fields with the prescription."
+  "noticeReviewHighlightedFields": "Compare the highlighted fields with the prescription.",
+  "alarmTitle": "Time for your medicine",
+  "alarmChannelName": "Medicine reminders",
+  "alarmSpeech": "It is time to take {names}.",
+  "@alarmSpeech": {
+    "placeholders": {
+      "names": {
+        "type": "String"
+      }
+    }
+  },
+  "alarmTaken": "Taken",
+  "alarmSnooze": "In 10 minutes",
+  "alarmSkip": "Skip",
+  "snoozeLimit": "You have snoozed 3 times. Take it now or skip.",
+  "horizonNoticeTitle": "Keep your reminders running",
+  "horizonNoticeBody": "Open the app so we can schedule the next week of reminders.",
+  "setupTitle": "Reminder settings",
+  "setupIntro": "These settings make sure alarms ring on time, even when the phone is locked or offline.",
+  "setupNotifications": "Allow notifications",
+  "setupExactAlarms": "Allow exact alarms",
+  "setupFullScreen": "Show alarms on the lock screen",
+  "setupBattery": "Stop the phone from closing the app",
+  "setupBatteryHelp": "Find this app in the list and choose \"No restrictions\" or turn on \"Auto start\".",
+  "setupOpen": "Open",
+  "remindersScheduled": "{count} reminders set for the next 7 days",
+  "@remindersScheduled": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "offlineNotice": "Offline: showing saved medicines"
 }

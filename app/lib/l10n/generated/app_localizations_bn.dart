@@ -333,4 +333,68 @@ class AppLocalizationsBn extends AppLocalizations {
   @override
   String get noticeReviewHighlightedFields =>
       'হলুদ চিহ্নিত ঘরগুলো প্রেসক্রিপশনের সাথে মিলিয়ে দেখুন।';
+
+  @override
+  String get alarmTitle => 'ওষুধ খাওয়ার সময়';
+
+  @override
+  String get alarmChannelName => 'ওষুধের রিমাইন্ডার';
+
+  @override
+  String alarmSpeech(String names) {
+    return 'এখন আপনার $names খাওয়ার সময়।';
+  }
+
+  @override
+  String get alarmTaken => 'খেয়েছি';
+
+  @override
+  String get alarmSnooze => '১০ মিনিট পরে';
+
+  @override
+  String get alarmSkip => 'বাদ দিলাম';
+
+  @override
+  String get snoozeLimit => '৩ বার পিছিয়েছেন। এখন খেয়ে নিন অথবা বাদ দিন।';
+
+  @override
+  String get horizonNoticeTitle => 'রিমাইন্ডার চালু রাখুন';
+
+  @override
+  String get horizonNoticeBody =>
+      'অ্যাপটি একবার খুলুন, তাহলে পরের সপ্তাহের রিমাইন্ডার সেট হয়ে যাবে।';
+
+  @override
+  String get setupTitle => 'রিমাইন্ডার সেটিংস';
+
+  @override
+  String get setupIntro =>
+      'ফোন লক বা ইন্টারনেট বন্ধ থাকলেও যেন সময়মতো অ্যালার্ম বাজে, সেজন্য এই সেটিংসগুলো চালু করুন।';
+
+  @override
+  String get setupNotifications => 'নোটিফিকেশনের অনুমতি দিন';
+
+  @override
+  String get setupExactAlarms => 'ঠিক সময়ে অ্যালার্মের অনুমতি দিন';
+
+  @override
+  String get setupFullScreen => 'লক স্ক্রিনে অ্যালার্ম দেখান';
+
+  @override
+  String get setupBattery => 'ফোন যেন অ্যাপটি বন্ধ করে না দেয়';
+
+  @override
+  String get setupBatteryHelp =>
+      'তালিকায় এই অ্যাপটি খুঁজে \"No restrictions\" বেছে নিন অথবা \"Auto start\" চালু করুন।';
+
+  @override
+  String get setupOpen => 'খুলুন';
+
+  @override
+  String remindersScheduled(int count) {
+    return 'আগামী ৭ দিনের জন্য $countটি রিমাইন্ডার সেট হয়েছে';
+  }
+
+  @override
+  String get offlineNotice => 'ইন্টারনেট নেই: সংরক্ষিত ওষুধ দেখানো হচ্ছে';
 }

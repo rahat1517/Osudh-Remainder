@@ -1,11 +1,13 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
+import '../alarms/alarm_runtime.dart';
 import '../l10n/generated/app_localizations.dart';
 import '../state/app_state.dart';
 import 'confirm_screen.dart';
 import 'medicines_screen.dart';
 import 'scan_screen.dart';
+import 'setup_screen.dart';
 
 String formatClock(DateTime wall) =>
     '${wall.hour.toString().padLeft(2, '0')}:${wall.minute.toString().padLeft(2, '0')}';
@@ -25,6 +27,15 @@ class HomeScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(l.homeTitle),
         actions: [
+          IconButton(
+            tooltip: l.setupTitle,
+            icon: const Icon(Icons.alarm),
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => SetupScreen(notifications: notificationsPlugin),
+              ),
+            ),
+          ),
           IconButton(
             tooltip: l.myMedicines,
             icon: const Icon(Icons.medication_outlined),
@@ -50,6 +61,18 @@ class HomeScreen extends StatelessWidget {
             : ListView(
                 padding: const EdgeInsets.all(16),
                 children: [
+                  if (state.offline)
+                    Card(
+                      child: ListTile(
+                        leading: const Icon(Icons.cloud_off),
+                        title: Text(l.offlineNotice),
+                      ),
+                    ),
+                  if (state.scheduledAlarms > 0)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: Text(l.remindersScheduled(state.scheduledAlarms)),
+                    ),
                   for (final r in reminders)
                     Card(
                       color: identical(r, next)

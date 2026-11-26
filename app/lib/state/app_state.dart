@@ -1,5 +1,8 @@
 import 'package:flutter/foundation.dart';
 
+import '../alarms/alarm_service.dart';
+import '../alarms/dose_log_sync.dart';
+import '../alarms/local_store.dart';
 import '../data/auth_repository.dart';
 import '../data/backend_api.dart';
 import '../data/medicine_draft.dart';
@@ -21,9 +24,27 @@ class AppState extends ChangeNotifier {
     required this.auth,
     required this.medicines,
     required this.api,
+    this.store,
+    this.alarms,
+    this.logSync,
     DateTime Function()? clock,
     this.utcOffset = const Duration(hours: 6),
   }) : _clock = clock ?? DateTime.now;
+
+  /// Offline cache; when the server is unreachable the app keeps working from it.
+  final LocalStore? store;
+
+  /// Keeps OS alarms in step with [active].
+  final AlarmService? alarms;
+
+  /// Uploads the local dose log when online.
+  final DoseLogSync? logSync;
+
+  /// True when the last refresh used the offline cache.
+  bool offline = false;
+
+  /// Dose alarms scheduled by the last sync.
+  int scheduledAlarms = 0;
 
   final AuthRepository auth;
   final MedicineRepository medicines;
@@ -52,10 +73,31 @@ class AppState extends ChangeNotifier {
     try {
       settings = await medicines.loadSettings();
       active = await medicines.activeMedicines();
+      offline = false;
+      await store?.saveSettings(settings);
+      await store?.saveMedicines(active);
+      await _uploadLogs();
+    } on Exception {
+      final cache = store;
+      if (cache == null) rethrow;
+      // Offline: keep working from the cache so reminders never stop
+      settings = cache.loadSettings();
+      active = cache.loadMedicines();
+      offline = true;
     } finally {
+      scheduledAlarms = await alarms?.sync() ?? 0;
       loading = false;
       notifyListeners();
     }
+  }
+
+  Future<void> _uploadLogs() async {
+    final cache = store;
+    final sync = logSync;
+    if (cache == null || sync == null) return;
+    final pending = cache.unsyncedLogs();
+    if (pending.isEmpty) return;
+    await cache.markSynced(await sync.upload(pending, utcOffset: utcOffset));
   }
 
   Future<void> confirm(
@@ -78,7 +120,9 @@ class AppState extends ChangeNotifier {
 
   Future<void> signOut() async {
     await auth.signOut();
+    await store?.clear();
     active = const [];
+    scheduledAlarms = await alarms?.sync() ?? 0;
     notifyListeners();
   }
 

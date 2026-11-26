@@ -215,6 +215,21 @@ class Medicine {
   String get label =>
       strength == null || strength!.isEmpty ? name : '$name $strength';
 
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'name': name,
+    'strength': strength,
+    'form': form,
+    'drug_id': drugId,
+    'dose_pattern': dosePattern,
+    'interval_hours': intervalHours,
+    'timing': timingJson[timing],
+    'duration_days': durationDays,
+    'weekdays': weekdays,
+    'as_needed': asNeeded,
+    'start_at': startAt.toUtc().toIso8601String(),
+  };
+
   /// Input for the schedule engine, with [startAt] converted to wall-clock time in a fixed-offset
   /// zone (Asia/Dhaka is UTC+6 with no daylight saving).
   MedicineInput toScheduleInput({

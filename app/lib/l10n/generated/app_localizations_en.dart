@@ -337,4 +337,68 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get noticeReviewHighlightedFields =>
       'Compare the highlighted fields with the prescription.';
+
+  @override
+  String get alarmTitle => 'Time for your medicine';
+
+  @override
+  String get alarmChannelName => 'Medicine reminders';
+
+  @override
+  String alarmSpeech(String names) {
+    return 'It is time to take $names.';
+  }
+
+  @override
+  String get alarmTaken => 'Taken';
+
+  @override
+  String get alarmSnooze => 'In 10 minutes';
+
+  @override
+  String get alarmSkip => 'Skip';
+
+  @override
+  String get snoozeLimit => 'You have snoozed 3 times. Take it now or skip.';
+
+  @override
+  String get horizonNoticeTitle => 'Keep your reminders running';
+
+  @override
+  String get horizonNoticeBody =>
+      'Open the app so we can schedule the next week of reminders.';
+
+  @override
+  String get setupTitle => 'Reminder settings';
+
+  @override
+  String get setupIntro =>
+      'These settings make sure alarms ring on time, even when the phone is locked or offline.';
+
+  @override
+  String get setupNotifications => 'Allow notifications';
+
+  @override
+  String get setupExactAlarms => 'Allow exact alarms';
+
+  @override
+  String get setupFullScreen => 'Show alarms on the lock screen';
+
+  @override
+  String get setupBattery => 'Stop the phone from closing the app';
+
+  @override
+  String get setupBatteryHelp =>
+      'Find this app in the list and choose \"No restrictions\" or turn on \"Auto start\".';
+
+  @override
+  String get setupOpen => 'Open';
+
+  @override
+  String remindersScheduled(int count) {
+    return '$count reminders set for the next 7 days';
+  }
+
+  @override
+  String get offlineNotice => 'Offline: showing saved medicines';
 }

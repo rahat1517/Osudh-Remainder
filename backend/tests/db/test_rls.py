@@ -134,3 +134,37 @@ def test_deleting_the_user_removes_all_their_data(db):
     db.execute("delete from auth.users where id = %s", (user,))
     for table in ("profiles", "prescriptions", "medicines"):
         assert db.execute(f"select count(*) from {table}").fetchone()[0] == 0
+
+
+# --- Phase 5: dose logs ---------------------------------------------------------------------
+
+
+def _log(db, medicine_id, status="taken", at="2026-11-26 21:00+06"):
+    return db.execute(
+        "insert into dose_logs (medicine_id, scheduled_at, status, acted_at) "
+        "values (%s, %s, %s, now()) on conflict (medicine_id, scheduled_at) "
+        "do update set status = excluded.status returning id",
+        (medicine_id, at, status),
+    ).fetchone()[0]
+
+
+def test_dose_logs_are_private_and_upsert_by_dose(db):
+    alice, bob = new_user(db), new_user(db)
+    with as_user(db, alice):
+        med = _medicine(db, _prescription(db, "confirmed"))
+        first = _log(db, med, "skipped")
+        second = _log(db, med, "taken")  # same dose: replaces the earlier action
+        assert first == second
+        assert db.execute("select status from dose_logs").fetchone()[0] == "taken"
+    with as_user(db, bob):
+        assert db.execute("select count(*) from dose_logs").fetchone()[0] == 0
+        with fails_with(db, psycopg.errors.InsufficientPrivilege):
+            _log(db, med)
+
+
+def test_dose_log_status_is_checked(db):
+    user = new_user(db)
+    with as_user(db, user):
+        med = _medicine(db, _prescription(db, "confirmed"))
+        with fails_with(db, psycopg.errors.CheckViolation):
+            _log(db, med, status="maybe")
