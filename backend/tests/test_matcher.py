@@ -3,14 +3,14 @@ import csv
 from app.drugs.models import Confidence
 
 
-def _load_cases(data_dir):
-    with (data_dir / "misspellings.csv").open(encoding="utf-8") as f:
+def _load_cases(fixtures_dir):
+    with (fixtures_dir / "misspellings.csv").open(encoding="utf-8") as f:
         return list(csv.DictReader(f))
 
 
-def test_misspelling_accuracy_at_least_90_percent(matcher, data_dir):
+def test_misspelling_accuracy_at_least_90_percent(matcher, fixtures_dir):
     """Phase 1-এর শেষের শর্ত: ভুল বানানের test set-এ ≥ ৯০% সঠিক মিল।"""
-    cases = _load_cases(data_dir)
+    cases = _load_cases(fixtures_dir)
     assert len(cases) >= 50
     failures = []
     for case in cases:

@@ -15,5 +15,5 @@ def matcher() -> DrugMatcher:
 
 
 @pytest.fixture
-def data_dir() -> Path:
-    return Path(__file__).parent / "data"
+def fixtures_dir() -> Path:
+    return Path(__file__).parent / "fixtures"
