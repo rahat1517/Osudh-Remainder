@@ -17,6 +17,8 @@ dependencies = [
     "pyjwt[crypto]>=2.10",
     "sentry-sdk[fastapi]>=2.20",
     "psycopg[binary]>=3.2",
+    "rapidocr-onnxruntime>=1.4.4",
+    "opencv-python-headless>=4.10",
 ]
 
 [dependency-groups]
@@ -29,6 +31,9 @@ dev = [
 ]
 
 [tool.uv]
+# rapidocr-onnxruntime asks for the GUI build of OpenCV, which needs desktop libraries (libGL) the
+# slim server image lacks. The headless build provides the same `cv2` module.
+override-dependencies = ["opencv-python; sys_platform == 'never'"]
 package = false
 
 [tool.pytest.ini_options]

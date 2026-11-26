@@ -1,6 +1,7 @@
 # Prescription reader evaluation
 
-Unit tests use a fake AI. This eval measures real accuracy against the Claude API.
+Unit tests use a fake AI. This eval measures real accuracy, against the Claude API or the free
+PaddleOCR reader.
 **Run it again whenever the prompt, the model or the verification rules change.**
 
 ## Contents
@@ -25,7 +26,17 @@ uv run python -m eval.run_eval --yes --limit 2    # quick check: 4 API calls
 uv run python -m eval.run_eval --yes              # full run: 20 API calls
 ```
 
-Reports are written to `eval/reports/`.
+The free PaddleOCR reader needs no key and makes no paid calls:
+
+```bash
+uv run python -m eval.run_eval --reader ocr
+```
+
+Reports are written to `eval/reports/`. `ocr-baseline-2026-11-26.md` is the first PaddleOCR run with
+the pretrained models: names 93–97% and strengths 89–93% correct, and **no field wrong while marked
+`high`**. Doses, timing and durations written in Bangla script are not read yet (the pretrained
+models only know Latin script); the app then asks the user to fill them in. A fine-tuned recognition
+model (see `ml/README.md`) is what closes that gap.
 
 ## Phase 2 targets
 

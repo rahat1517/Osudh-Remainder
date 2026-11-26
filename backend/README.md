@@ -29,7 +29,7 @@ uv run ruff format --check .
 | `GET /drugs/search?q=maxp` | Autocomplete by brand or generic name; tolerates misspellings |
 | `POST /drugs/match` `{"text": "Tab. Sec1o 20mg"}` | One prescription line → closest drug + confidence |
 | `GET /drugs/{id}` | One drug |
-| `POST /prescriptions/extract` (multipart `image`) | Prescription photo → medicines with per-field confidence. Needs `ANTHROPIC_API_KEY`, otherwise 503 |
+| `POST /prescriptions/extract` (multipart `image`) | Prescription photo → medicines with per-field confidence. Read by Claude when `ANTHROPIC_API_KEY` is set, otherwise by the free PaddleOCR reader (`READER_MODE`, see below) |
 | `POST /schedules/generate` | Confirmed medicines → dose times and grouped reminders ([spec](../docs/SCHEDULE_SPEC.md)) |
 | `POST /training/examples` (multipart `image` + `label`) | Opt-in sharing of a confirmed scan: EXIF stripped, personal lines redacted, queued for human review (202) |
 | `POST /assistant/chat` | Bangla/English assistant turn: answers from the user's schedule; emergencies answered by rules (works without AI); proposed changes returned as `actions` for confirmation |
@@ -85,6 +85,12 @@ Fields and warnings in a prescription result may carry a **notice** `{code, mess
 image → prepare (resize, strip EXIF/GPS) → Agent 1: Claude (read) → Agent 2: rules (verify) → result
 ```
 
+- **Readers** (`READER_MODE`): `auto` (default: Claude if `ANTHROPIC_API_KEY` is set, otherwise
+  PaddleOCR), `cloud`, `ocr`, `local` (self-hosted vision model) or `hybrid` (self-hosted first,
+  Claude when unsure). The free reader (`app/prescriptions/ocr_reader.py`) runs PaddleOCR's ONNX
+  models on the server CPU and turns the text into medicines with fixed rules
+  (`app/prescriptions/text_parser.py`); a fine-tuned recognition model is loaded from
+  `OCR_REC_MODEL_PATH`.
 - **Agent 1** (`app/prescriptions/reader.py`): Claude vision with structured output. Instructions in
   `prompt.py`.
 - **Agent 2** (`app/prescriptions/verifier.py`): rules, not AI. Matches names against the catalogue,
