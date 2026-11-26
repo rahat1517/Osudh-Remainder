@@ -216,3 +216,33 @@ def test_pill_count_cannot_be_negative(db):
         med = _medicine(db, _prescription(db, "confirmed"))
         with fails_with(db, psycopg.errors.CheckViolation):
             db.execute("update medicines set pills_on_hand = -1 where id = %s", (med,))
+
+
+# --- Hardening: privileged functions are not callable by signed-out clients -----------------
+
+
+@pytest.mark.parametrize(
+    "call",
+    [
+        "select accept_caregiver_invite('ABCDEFGH')",
+        "select revoke_caregiver_link(gen_random_uuid())",
+        "select confirm_prescription(gen_random_uuid())",
+        "select is_caregiver_of(gen_random_uuid())",
+        "select create_caregiver_invite('view')",
+        "select delete_my_account()",
+        "select set_reminder_channels(gen_random_uuid(), true, true, false)",
+        "select set_training_consent(true)",
+    ],
+)
+def test_anonymous_clients_cannot_call_privileged_functions(db, call):
+    new_user(db)
+    with as_user(db, None), fails_with(db, psycopg.errors.InsufficientPrivilege):
+        db.execute(call)
+
+
+def test_no_client_role_may_execute_the_sign_up_trigger(db):
+    for role in ("anon", "authenticated"):
+        allowed = db.execute(
+            "select has_function_privilege(%s, 'public.handle_new_user()', 'execute')", (role,)
+        ).fetchone()[0]
+        assert not allowed, role
