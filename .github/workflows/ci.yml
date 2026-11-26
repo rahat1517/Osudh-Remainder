@@ -73,7 +73,7 @@ jobs:
           exit 1
       - name: PaddleOCR works inside the image (memory and speed)
         run: |
-          docker exec api python -c "
+          docker exec api /srv/backend/.venv/bin/python -c "
           import io, resource, time
           from PIL import Image, ImageDraw, ImageFont
           from app.prescriptions.ocr_reader import OcrPrescriptionReader, RapidOcrEngine
