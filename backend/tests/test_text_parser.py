@@ -235,3 +235,9 @@ def test_a_pattern_glued_to_a_letter_is_never_certain():
     # Regression: "V2+o+1/2" (OCR for "½+0+½") was read as 2+0+0.5 with high confidence
     m = only("1. Tab. Disopan 0.5mg V2+o+1/2")
     assert m.dose_confidence != Confidence.HIGH
+
+
+def test_strength_glued_to_the_name_is_split():
+    m = only("2.Tab.Ciprocin500 1BD PC x7days")
+    assert (m.name, m.strength, m.duration_days) == ("Ciprocin", "500", 7)
+    assert only("Tab. Cef-3 200 mg 1+0+1").name == "Cef-3"  # digits that belong to the name

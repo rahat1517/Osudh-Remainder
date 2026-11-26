@@ -149,3 +149,19 @@ def test_paddleocr_reads_a_printed_prescription():
     assert by_name["Seclo"].duration_days == 30
     assert by_name["Napa"].dose_pattern == "1+1+1"
     assert by_name["Alatrol"].as_needed
+
+
+def test_engine_is_tuned_for_a_small_cpu():
+    from app.prescriptions.ocr_reader import SMALL_CPU_SETTINGS
+
+    assert SMALL_CPU_SETTINGS["intra_op_num_threads"] == 1
+    assert SMALL_CPU_SETTINGS["use_cls"] is False
+
+
+def test_warm_up_loads_the_models_once(monkeypatch):
+    engine = RapidOcrEngine()
+    loads = []
+    monkeypatch.setattr(engine, "_load", lambda: loads.append(1) or object())
+    engine.warm_up()
+    engine.warm_up()
+    assert loads == [1]
