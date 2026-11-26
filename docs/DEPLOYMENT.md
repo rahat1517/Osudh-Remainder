@@ -42,6 +42,13 @@ docker run -p 8000:8000 --env-file backend/.env oshudh-api
 
 Put it behind HTTPS. Check `GET /health`.
 
+### Render (one click)
+
+`render.yaml` describes the service. In Render: **New → Blueprint → this repository**, enter
+`ANTHROPIC_API_KEY` when asked (and `SUPABASE_JWT_SECRET` only for legacy-secret projects), then
+**Apply**. Render builds `backend/Dockerfile`, runs it in Singapore behind HTTPS, checks `/health`,
+and redeploys on every push to `main`. Use the service URL as the app's `BACKEND_URL`.
+
 ## Job secrets (GitHub)
 
 Repository → Settings → Secrets → Actions: `DATABASE_URL` (Supabase connection string with a
