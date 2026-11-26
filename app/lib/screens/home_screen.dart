@@ -5,6 +5,7 @@ import '../alarms/alarm_runtime.dart';
 import '../l10n/generated/app_localizations.dart';
 import '../state/app_state.dart';
 import 'confirm_screen.dart';
+import 'family_screen.dart';
 import 'medicines_screen.dart';
 import 'scan_screen.dart';
 import 'setup_screen.dart';
@@ -36,6 +37,14 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
           ),
+          if (state.caregivers != null)
+            IconButton(
+              tooltip: l.familyTitle,
+              icon: const Icon(Icons.family_restroom),
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(builder: (_) => const FamilyScreen()),
+              ),
+            ),
           IconButton(
             tooltip: l.myMedicines,
             icon: const Icon(Icons.medication_outlined),

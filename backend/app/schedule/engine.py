@@ -280,6 +280,18 @@ def schedule_medicine(med: MedicineInput, settings: ScheduleSettings) -> Medicin
     return _summary(_plan(med, settings), tz)
 
 
+def occurrences_for(
+    medicines: Iterable[MedicineInput],
+    settings: ScheduleSettings,
+    window_start: datetime,
+    window_end: datetime,
+) -> list[Occurrence]:
+    """Occurrences of all medicines in [window_start, window_end). Each medicine needs a start."""
+    tz = validate_settings(settings)
+    plans = [_plan(m, settings) for m in medicines]
+    return occurrences_between(plans, tz, window_start, window_end)
+
+
 def generate(request: ScheduleRequest) -> ScheduleResponse:
     settings = request.settings
     tz = validate_settings(settings)

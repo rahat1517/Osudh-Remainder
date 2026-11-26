@@ -18,7 +18,26 @@ class AppConfig {
     this.supabasePublishableKey = const String.fromEnvironment(
       'SUPABASE_PUBLISHABLE_KEY',
     ),
+    this.firebaseApiKey = const String.fromEnvironment('FIREBASE_API_KEY'),
+    this.firebaseAppId = const String.fromEnvironment('FIREBASE_APP_ID'),
+    this.firebaseSenderId = const String.fromEnvironment('FIREBASE_SENDER_ID'),
+    this.firebaseProjectId = const String.fromEnvironment(
+      'FIREBASE_PROJECT_ID',
+    ),
   });
+
+  /// Firebase Cloud Messaging for caregiver alerts (optional).
+  final String firebaseApiKey;
+  final String firebaseAppId;
+  final String firebaseSenderId;
+  final String firebaseProjectId;
+
+  bool get hasFirebase => [
+    firebaseApiKey,
+    firebaseAppId,
+    firebaseSenderId,
+    firebaseProjectId,
+  ].every((v) => v.isNotEmpty);
 
   final String backendUrl;
   final String supabaseUrl;

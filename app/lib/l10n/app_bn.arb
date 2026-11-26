@@ -195,5 +195,46 @@
       }
     }
   },
-  "offlineNotice": "ইন্টারনেট নেই: সংরক্ষিত ওষুধ দেখানো হচ্ছে"
+  "offlineNotice": "ইন্টারনেট নেই: সংরক্ষিত ওষুধ দেখানো হচ্ছে",
+  "caregiverAlertsChannel": "পরিবারের সতর্কবার্তা",
+  "familyTitle": "পরিবার",
+  "familyIntro": "পরিবারের সদস্যরা দেখতে পারবেন ওষুধ খাওয়া হলো কিনা, আর কোনো ডোজ বাদ গেলে খবর পাবেন।",
+  "inviteCaregiver": "পরিবারের সদস্যকে আমন্ত্রণ",
+  "permissionView": "আমার ওষুধ দেখতে পারবেন",
+  "permissionEdit": "আমার ওষুধ দেখতে ও যোগ করতে পারবেন",
+  "inviteCodeTitle": "আমন্ত্রণ কোড",
+  "inviteCodeHelp": "কোডটি আপনার পরিবারের সদস্যকে দিন। এটা একবারই, ২৪ ঘণ্টার জন্য কাজ করবে।",
+  "shareCode": "আমার ওষুধ রিমাইন্ডার আমন্ত্রণ কোড: {code}",
+  "@shareCode": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "iAmCaregiver": "আমি কারো দেখাশোনা করি",
+  "enterInviteCode": "আমন্ত্রণ কোডটি লিখুন",
+  "acceptInvite": "যুক্ত হোন",
+  "inviteInvalid": "কোডটি ভুল, ব্যবহৃত অথবা মেয়াদোত্তীর্ণ।",
+  "inviteOwn": "নিজের কোড নিজে ব্যবহার করা যাবে না।",
+  "myCaregivers": "যাঁরা আমার দেখাশোনা করেন",
+  "peopleICareFor": "যাঁদের আমি দেখাশোনা করি",
+  "noLinks": "এখনো কেউ নেই।",
+  "unnamedPerson": "পরিবারের সদস্য",
+  "revoke": "বাদ দিন",
+  "revokeConfirm": "{name}-কে বাদ দেবেন? তিনি আর ওষুধের তথ্য দেখতে পাবেন না।",
+  "@revokeConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "stateTaken": "খেয়েছেন",
+  "stateSkipped": "বাদ দিয়েছেন",
+  "stateMissed": "খাওয়া হয়নি",
+  "stateDue": "এখন খাওয়ার সময়",
+  "stateUpcoming": "আসছে",
+  "addForPatient": "তাঁর জন্য প্রেসক্রিপশন যোগ করুন",
+  "dashboardEmpty": "আজ কোনো ডোজ নেই।"
 }

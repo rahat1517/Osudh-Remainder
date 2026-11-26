@@ -397,4 +397,91 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get offlineNotice => 'ইন্টারনেট নেই: সংরক্ষিত ওষুধ দেখানো হচ্ছে';
+
+  @override
+  String get caregiverAlertsChannel => 'পরিবারের সতর্কবার্তা';
+
+  @override
+  String get familyTitle => 'পরিবার';
+
+  @override
+  String get familyIntro =>
+      'পরিবারের সদস্যরা দেখতে পারবেন ওষুধ খাওয়া হলো কিনা, আর কোনো ডোজ বাদ গেলে খবর পাবেন।';
+
+  @override
+  String get inviteCaregiver => 'পরিবারের সদস্যকে আমন্ত্রণ';
+
+  @override
+  String get permissionView => 'আমার ওষুধ দেখতে পারবেন';
+
+  @override
+  String get permissionEdit => 'আমার ওষুধ দেখতে ও যোগ করতে পারবেন';
+
+  @override
+  String get inviteCodeTitle => 'আমন্ত্রণ কোড';
+
+  @override
+  String get inviteCodeHelp =>
+      'কোডটি আপনার পরিবারের সদস্যকে দিন। এটা একবারই, ২৪ ঘণ্টার জন্য কাজ করবে।';
+
+  @override
+  String shareCode(String code) {
+    return 'আমার ওষুধ রিমাইন্ডার আমন্ত্রণ কোড: $code';
+  }
+
+  @override
+  String get iAmCaregiver => 'আমি কারো দেখাশোনা করি';
+
+  @override
+  String get enterInviteCode => 'আমন্ত্রণ কোডটি লিখুন';
+
+  @override
+  String get acceptInvite => 'যুক্ত হোন';
+
+  @override
+  String get inviteInvalid => 'কোডটি ভুল, ব্যবহৃত অথবা মেয়াদোত্তীর্ণ।';
+
+  @override
+  String get inviteOwn => 'নিজের কোড নিজে ব্যবহার করা যাবে না।';
+
+  @override
+  String get myCaregivers => 'যাঁরা আমার দেখাশোনা করেন';
+
+  @override
+  String get peopleICareFor => 'যাঁদের আমি দেখাশোনা করি';
+
+  @override
+  String get noLinks => 'এখনো কেউ নেই।';
+
+  @override
+  String get unnamedPerson => 'পরিবারের সদস্য';
+
+  @override
+  String get revoke => 'বাদ দিন';
+
+  @override
+  String revokeConfirm(String name) {
+    return '$name-কে বাদ দেবেন? তিনি আর ওষুধের তথ্য দেখতে পাবেন না।';
+  }
+
+  @override
+  String get stateTaken => 'খেয়েছেন';
+
+  @override
+  String get stateSkipped => 'বাদ দিয়েছেন';
+
+  @override
+  String get stateMissed => 'খাওয়া হয়নি';
+
+  @override
+  String get stateDue => 'এখন খাওয়ার সময়';
+
+  @override
+  String get stateUpcoming => 'আসছে';
+
+  @override
+  String get addForPatient => 'তাঁর জন্য প্রেসক্রিপশন যোগ করুন';
+
+  @override
+  String get dashboardEmpty => 'আজ কোনো ডোজ নেই।';
 }

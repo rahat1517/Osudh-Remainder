@@ -49,6 +49,18 @@ Future<String?> initNotifications({
     onDidReceiveNotificationResponse: onResponse,
     onDidReceiveBackgroundNotificationResponse: onBackgroundAlarmAction,
   );
+  // Channel used by the server's missed-dose push notifications (see backend notifier)
+  await notificationsPlugin
+      .resolvePlatformSpecificImplementation<
+        AndroidFlutterLocalNotificationsPlugin
+      >()
+      ?.createNotificationChannel(
+        AndroidNotificationChannel(
+          'caregiver_alerts',
+          lookupAppLocalizations(const Locale('bn')).caregiverAlertsChannel,
+          importance: Importance.high,
+        ),
+      );
   final launch = await notificationsPlugin.getNotificationAppLaunchDetails();
   if (launch?.didNotificationLaunchApp ?? false) {
     return launch!.notificationResponse?.payload;
