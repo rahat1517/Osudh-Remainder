@@ -4,7 +4,12 @@ name: Missed-dose alerts and SMS/call reminders
 #   DATABASE_URL          privileged PostgreSQL URL of the Supabase project
 #   FCM_SERVICE_ACCOUNT   Firebase service-account JSON (contents)
 #   SMS_GATEWAY_URL, SMS_API_KEY, SMS_SENDER_ID, VOICE_GATEWAY_URL, VOICE_API_KEY (optional)
-# Without them the job exits immediately.
+#
+# Off by default: set the repository variable ALERTS_ENABLED=true (Settings → Secrets and variables →
+# Actions → Variables) to turn it on. While off, the job is skipped and uses no Actions minutes.
+# Cost note: every run is billed as at least one minute, so every 5 minutes is ~8,600 min/month. That
+# is more than the 2,000 free minutes of a private repository (public repositories are free). Keep the
+# 5-minute cadence: feature-phone reminders are only sent within 15 minutes of the dose.
 on:
   schedule:
     - cron: "*/5 * * * *"
@@ -16,6 +21,7 @@ concurrency:
 
 jobs:
   alert:
+    if: vars.ALERTS_ENABLED == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     defaults:

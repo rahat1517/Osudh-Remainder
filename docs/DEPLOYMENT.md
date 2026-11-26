@@ -6,7 +6,7 @@
 |---|---|---|
 | Database, auth | Supabase project (region: Singapore or Mumbai, closest to Bangladesh) | Apply `supabase/migrations`, load `supabase/seed.sql` |
 | Backend API | Any container host (Fly.io, Railway, Render, Cloud Run) | `backend/Dockerfile`, one instance (in-process rate limits) |
-| Missed-dose job | GitHub Actions schedule (`.github/workflows/missed-dose-alerts.yml`) or the host's cron | every 5 minutes |
+| Missed-dose job | GitHub Actions schedule (`.github/workflows/missed-dose-alerts.yml`) or the host's cron | every 5 minutes; off until the `ALERTS_ENABLED=true` repository variable is set |
 | Push | Firebase project (Cloud Messaging) | service account for the job, app config via `--dart-define` |
 
 ## Supabase
@@ -48,6 +48,18 @@ Put it behind HTTPS. Check `GET /health`.
 `ANTHROPIC_API_KEY` when asked (and `SUPABASE_JWT_SECRET` only for legacy-secret projects), then
 **Apply**. Render builds `backend/Dockerfile`, runs it in Singapore behind HTTPS, checks `/health`,
 and redeploys on every push to `main`. Use the service URL as the app's `BACKEND_URL`.
+
+## Running at no cost
+
+| Part | Free option | Limit |
+|---|---|---|
+| Supabase | Free plan | pauses after a week with no activity |
+| Backend | Render `plan: free` (default in `render.yaml`) | sleeps after 15 min idle; first request ~1 min |
+| Prescription reading | leave `ANTHROPIC_API_KEY` unset | the app asks users to add medicines manually |
+| Reminders and alarms | on the phone, offline | none |
+| Caregiver push alerts | Firebase Cloud Messaging is free; the job needs Actions minutes | private repo: 2,000 min/month is not enough for a 5-minute job; a public repo is free |
+| SMS / voice calls | leave off | each message costs money |
+| Distribution | share the APK directly for the pilot | Play Store needs a one-time $25 developer fee |
 
 ## Job secrets (GitHub)
 

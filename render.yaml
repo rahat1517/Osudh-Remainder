@@ -8,7 +8,8 @@ services:
     dockerfilePath: ./backend/Dockerfile
     dockerContext: .
     region: singapore          # closest Render region to Bangladesh
-    plan: starter              # always on; the free plan sleeps and makes the first request slow
+    plan: free                 # $0; sleeps after 15 min idle (first request then takes ~1 min).
+                               # Switch to `starter` (always on) when there is a budget.
     numInstances: 1            # rate limits are in-process; keep a single instance
     healthCheckPath: /health
     autoDeploy: true           # redeploys on every push to main (after CI is green on the PR)
@@ -19,6 +20,7 @@ services:
         value: production
       - key: SUPABASE_URL
         value: https://jbwttngkuewtoarhsipn.supabase.co
+      # Optional: without it the API still runs; the app tells users to add medicines manually.
       - key: ANTHROPIC_API_KEY
         sync: false
       # Only for projects that still sign tokens with the legacy shared secret (Settings → JWT Keys)
