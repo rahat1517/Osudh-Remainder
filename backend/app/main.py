@@ -6,7 +6,7 @@ import anthropic
 from fastapi import FastAPI
 
 from app import __version__
-from app.api import drugs, health, prescriptions
+from app.api import drugs, health, prescriptions, schedules
 from app.config import get_settings
 from app.drugs.catalog import load_csv
 from app.drugs.matcher import DrugMatcher
@@ -43,6 +43,7 @@ def create_app() -> FastAPI:
     app.include_router(health.router)
     app.include_router(drugs.router)
     app.include_router(prescriptions.router)
+    app.include_router(schedules.router)
     return app
 
 

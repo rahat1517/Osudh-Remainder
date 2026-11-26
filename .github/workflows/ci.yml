@@ -58,6 +58,33 @@ jobs:
       - name: Test
         run: flutter test
 
+  schedule-parity:
+    name: Schedule engine parity (Python vs Dart)
+    runs-on: ubuntu-latest
+    needs: [backend, app]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: 3.50.1
+          cache: true
+      - name: Export random cases with Python answers
+        working-directory: backend
+        run: |
+          uv sync --locked
+          uv run python -m scripts.export_schedule_parity --out "$RUNNER_TEMP/parity.json" --count 2000
+      - name: Dart must give identical answers
+        working-directory: app
+        run: |
+          flutter pub get
+          flutter test test/schedule_parity_test.dart
+        env:
+          SCHEDULE_PARITY_VECTORS: ${{ runner.temp }}/parity.json
+
   android-build:
     name: Android debug APK
     runs-on: ubuntu-latest

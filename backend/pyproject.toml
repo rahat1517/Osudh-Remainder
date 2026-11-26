@@ -19,6 +19,7 @@ dev = [
     "pytest>=8.3",
     "httpx2>=2.16.2",
     "ruff>=0.8",
+    "hypothesis>=6.120",
 ]
 
 [tool.uv]
