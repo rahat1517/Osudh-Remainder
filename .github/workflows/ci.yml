@@ -71,6 +71,27 @@ jobs:
           done
           docker logs api
           exit 1
+      - name: PaddleOCR works inside the image (memory and speed)
+        run: |
+          docker exec api python -c "
+          import io, resource, time
+          from PIL import Image, ImageDraw, ImageFont
+          from app.prescriptions.ocr_reader import OcrPrescriptionReader, RapidOcrEngine
+          from app.prescriptions.images import prepare_image
+          img = Image.new('RGB', (1200, 500), 'white')
+          d = ImageDraw.Draw(img)
+          f = ImageFont.load_default(size=34)
+          d.text((60, 60), '1. Tab. Seclo 20 mg', fill='black', font=f)
+          d.text((60, 140), '1+0+1  khabar age  30 din', fill='black', font=f)
+          buf = io.BytesIO(); img.save(buf, format='JPEG')
+          t = time.time()
+          r = OcrPrescriptionReader(RapidOcrEngine()).read(prepare_image(buf.getvalue()))
+          m = r.medicines[0]
+          assert (m.name, m.dose_pattern, m.duration_days) == ('Seclo', '1+0+1', 30), r
+          mb = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss // 1024
+          print(f'OCR ok in {time.time() - t:.1f}s, peak memory {mb} MB')
+          assert mb < 450, 'too much memory for a 512 MB instance'
+          "
 
   database:
     name: Database (migrations and row-level security)

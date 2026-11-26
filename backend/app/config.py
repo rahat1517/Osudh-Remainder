@@ -57,10 +57,18 @@ class Settings(BaseSettings):
     max_calls_per_patient_day: int = 3
     escalation_monthly_budget_bdt: float = 5000.0
 
-    # Self-hosted reader and hybrid routing (Phase 11): cloud | local | hybrid
-    reader_mode: str = "cloud"
+    # Prescription reader:
+    #   auto   Claude if ANTHROPIC_API_KEY is set, otherwise the free PaddleOCR reader
+    #   cloud  Claude only
+    #   ocr    PaddleOCR + rules only (free, on this server)
+    #   local  self-hosted vision-language model (LOCAL_READER_URL) only
+    #   hybrid self-hosted first (the model at LOCAL_READER_URL, else PaddleOCR); Claude when unsure
+    reader_mode: str = "auto"
     local_reader_url: str | None = None
     local_reader_model: str = "oshudh-reader"
+    # Fine-tuned PaddleOCR recognition model (ONNX) and its character list; pretrained if unset
+    ocr_rec_model_path: str | None = None
+    ocr_rec_keys_path: str | None = None
 
     # Training-data collection (Phase 11). Needs DATABASE_URL, the service-role key for the private
     # storage bucket, and a secret pepper for grouping keys.

@@ -13,6 +13,7 @@ from app.drugs.catalog import load_csv
 from app.drugs.matcher import DrugMatcher
 from app.observability import RequestIdMiddleware, init_sentry
 from app.prescriptions.local_reader import HybridReader, LocalModelReader
+from app.prescriptions.ocr_reader import OcrPrescriptionReader, RapidOcrEngine
 from app.prescriptions.reader import ClaudePrescriptionReader
 from app.prescriptions.service import PrescriptionService
 from app.prescriptions.verifier import PrescriptionVerifier
@@ -38,11 +39,40 @@ def build_token_verifier(settings: Settings) -> TokenVerifier | None:
     )
 
 
+READER_MODES = {"auto", "cloud", "ocr", "local", "hybrid"}
+
+
+def build_ocr_reader(settings: Settings):
+    return OcrPrescriptionReader(
+        RapidOcrEngine(settings.ocr_rec_model_path, settings.ocr_rec_keys_path)
+    )
+
+
 def build_reader(settings: Settings, cloud):
-    if settings.reader_mode == "cloud" or not settings.local_reader_url:
+    """The prescription reader for `settings.reader_mode`; None if reading is unavailable.
+
+    `cloud` is the Claude reader, or None without an API key.
+    """
+    mode = settings.reader_mode
+    if mode not in READER_MODES:
+        raise RuntimeError(f"READER_MODE must be one of {sorted(READER_MODES)}, not {mode!r}")
+    if mode == "auto":
+        return cloud or build_ocr_reader(settings)
+    if mode == "cloud":
         return cloud
-    local = LocalModelReader(settings.local_reader_url, settings.local_reader_model)
-    return local if settings.reader_mode == "local" else HybridReader(local, cloud)
+    if mode == "ocr":
+        return build_ocr_reader(settings)
+    if mode == "local":
+        if not settings.local_reader_url:
+            raise RuntimeError("READER_MODE=local needs LOCAL_READER_URL")
+        return LocalModelReader(settings.local_reader_url, settings.local_reader_model)
+    # hybrid
+    local = (
+        LocalModelReader(settings.local_reader_url, settings.local_reader_model)
+        if settings.local_reader_url
+        else build_ocr_reader(settings)
+    )
+    return HybridReader(local, cloud) if cloud else local
 
 
 def build_training_service(settings: Settings):
@@ -83,18 +113,21 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     app.state.prescription_service = None
     app.state.assistant_service = None
     app.state.training_service = build_training_service(settings)
+    cloud = None
     if settings.anthropic_api_key:
         client = anthropic.Anthropic(api_key=settings.anthropic_api_key)
-        reader = build_reader(
-            settings,
-            ClaudePrescriptionReader(client, settings.reader_model, settings.reader_effort),
-        )
-        app.state.prescription_service = PrescriptionService(reader, PrescriptionVerifier(matcher))
+        cloud = ClaudePrescriptionReader(client, settings.reader_model, settings.reader_effort)
         app.state.assistant_service = AssistantService(
             client, matcher, settings.assistant_model, settings.assistant_effort
         )
     else:
-        logger.warning("ANTHROPIC_API_KEY is not set: prescription reading is disabled")
+        logger.warning("ANTHROPIC_API_KEY is not set: the assistant is disabled")
+    reader = build_reader(settings, cloud)
+    if reader is None:
+        logger.warning("No prescription reader for READER_MODE=%s", settings.reader_mode)
+    else:
+        logger.info("Prescription reader: %s", type(reader).__name__)
+        app.state.prescription_service = PrescriptionService(reader, PrescriptionVerifier(matcher))
     yield
 
 

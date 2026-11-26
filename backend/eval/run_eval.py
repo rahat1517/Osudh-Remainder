@@ -1,4 +1,7 @@
-"""Measures prescription-reader accuracy (calls the real Claude API, so it costs money).
+"""Measures prescription-reader accuracy.
+
+The cloud and hybrid readers call the real Claude API, so they cost money; `--reader ocr`
+(PaddleOCR, on this machine) is free.
 
     export ANTHROPIC_API_KEY=...
     uv run python -m eval.run_eval --yes                 # all cases (20 images)
@@ -124,31 +127,35 @@ def main(argv=None) -> int:
     p.add_argument("--variant", choices=["clean", "photo", "both"], default="both")
     p.add_argument(
         "--reader",
-        choices=["cloud", "local", "hybrid"],
+        choices=["cloud", "local", "hybrid", "ocr"],
         default="cloud",
-        help="Which reader to evaluate (local/hybrid need LOCAL_READER_URL)",
+        help="Which reader to evaluate (local needs LOCAL_READER_URL; ocr is free)",
     )
     args = p.parse_args(argv)
 
     settings = get_settings()
-    if not settings.anthropic_api_key:
+    billed = args.reader in ("cloud", "hybrid")
+    if billed and not settings.anthropic_api_key:
         print("error: ANTHROPIC_API_KEY is not set", file=sys.stderr)
         return 2
     cases = load_cases()[: args.limit]
     variants = ["clean", "photo"] if args.variant == "both" else [args.variant]
     n_calls = len(cases) * len(variants)
-    if not args.yes:
+    if billed and not args.yes:
         model = settings.reader_model
         print(f"This makes {n_calls} billed Claude API calls ({model}). Re-run with --yes.")
         return 1
 
     generate()
     matcher = DrugMatcher(load_csv(settings.drugs_csv_path)[0])
-    client = anthropic.Anthropic(api_key=settings.anthropic_api_key)
-    cloud = ClaudePrescriptionReader(client, settings.reader_model, settings.reader_effort)
-    reader = build_reader(settings.model_copy(update={"reader_mode": args.reader}), cloud)
-    if args.reader != "cloud" and reader is cloud:
-        print("error: --reader local/hybrid needs LOCAL_READER_URL", file=sys.stderr)
+    cloud = None
+    if billed:
+        client = anthropic.Anthropic(api_key=settings.anthropic_api_key)
+        cloud = ClaudePrescriptionReader(client, settings.reader_model, settings.reader_effort)
+    try:
+        reader = build_reader(settings.model_copy(update={"reader_mode": args.reader}), cloud)
+    except RuntimeError as e:
+        print(f"error: {e}", file=sys.stderr)
         return 2
     service = PrescriptionService(reader, PrescriptionVerifier(matcher))
 
