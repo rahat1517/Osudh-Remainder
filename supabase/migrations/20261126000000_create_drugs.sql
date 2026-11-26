@@ -35,3 +35,5 @@ create policy "drugs are readable by everyone"
     using (true);
 
 -- No insert/update/delete policies: only the service role (backend, importer) can write.
+-- Explicit grant, so access does not depend on the project's default-privilege settings.
+grant select on public.drugs to anon, authenticated;

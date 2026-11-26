@@ -1,8 +1,9 @@
 import 'package:material_ui/material_ui.dart';
 
 import '../l10n/generated/app_localizations.dart';
+import 'auth_screens.dart';
 
-/// First screen. Login and onboarding start from here in Phase 4.
+/// First screen for signed-out users.
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
 
@@ -39,9 +40,9 @@ class WelcomeScreen extends StatelessWidget {
               ),
               const Spacer(),
               FilledButton(
-                onPressed: () =>
-                    ScaffoldMessenger.of(context)
-                        .showSnackBar(SnackBar(content: Text(l10n.comingSoon))),
+                onPressed: () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(builder: (_) => const PhoneScreen()),
+                ),
                 child: Text(l10n.getStarted),
               ),
               const SizedBox(height: 16),

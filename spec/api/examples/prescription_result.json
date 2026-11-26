@@ -1,0 +1,239 @@
+{
+  "image_quality": "readable_with_effort",
+  "medicines": [
+    {
+      "raw_text": "Tab. Seclo 20mg 1+0+1 খাবারের আগে ১ মাস",
+      "name": {
+        "value": "Seclo",
+        "confidence": "high",
+        "note": null
+      },
+      "matched_drug": {
+        "drug": {
+          "id": 9,
+          "brand": "Seclo",
+          "strength": "20 mg",
+          "generic": "Omeprazole",
+          "form": "Capsule",
+          "manufacturer": "Square Pharmaceuticals",
+          "source": "dev-seed",
+          "verified": false
+        },
+        "score": 100.0,
+        "strength_matched": true
+      },
+      "alternatives": [],
+      "strength": {
+        "value": "20 mg",
+        "confidence": "high",
+        "note": null
+      },
+      "dose": {
+        "value": "1+0+1",
+        "confidence": "high",
+        "note": null
+      },
+      "timing": {
+        "value": "before_meal",
+        "confidence": "high",
+        "note": null
+      },
+      "duration": {
+        "value": {
+          "days": 30,
+          "continue_indefinitely": false
+        },
+        "confidence": "high",
+        "note": null
+      },
+      "as_needed": false,
+      "other_instructions": null
+    },
+    {
+      "raw_text": "Tab. Sargel 20mg 1+0+1 AC 14 days",
+      "name": {
+        "value": "Sergel",
+        "confidence": "medium",
+        "note": {
+          "code": "name_corrected",
+          "message": "Written as 'Sargel' on the prescription",
+          "params": {
+            "written": "Sargel",
+            "matched": "Sergel"
+          }
+        }
+      },
+      "matched_drug": {
+        "drug": {
+          "id": 14,
+          "brand": "Sergel",
+          "strength": "20 mg",
+          "generic": "Esomeprazole",
+          "form": "Capsule",
+          "manufacturer": "Healthcare Pharmaceuticals",
+          "source": "dev-seed",
+          "verified": false
+        },
+        "score": 83.3,
+        "strength_matched": true
+      },
+      "alternatives": [
+        {
+          "drug": {
+            "id": 15,
+            "brand": "Sergel",
+            "strength": "40 mg",
+            "generic": "Esomeprazole",
+            "form": "Capsule",
+            "manufacturer": "Healthcare Pharmaceuticals",
+            "source": "dev-seed",
+            "verified": false
+          },
+          "score": 68.3,
+          "strength_matched": false
+        },
+        {
+          "drug": {
+            "id": 9,
+            "brand": "Seclo",
+            "strength": "20 mg",
+            "generic": "Omeprazole",
+            "form": "Capsule",
+            "manufacturer": "Square Pharmaceuticals",
+            "source": "dev-seed",
+            "verified": false
+          },
+          "score": 54.5,
+          "strength_matched": true
+        },
+        {
+          "drug": {
+            "id": 35,
+            "brand": "Osartil",
+            "strength": "50 mg",
+            "generic": "Losartan Potassium",
+            "form": "Tablet",
+            "manufacturer": "Incepta Pharmaceuticals",
+            "source": "dev-seed",
+            "verified": false
+          },
+          "score": 46.5,
+          "strength_matched": false
+        },
+        {
+          "drug": {
+            "id": 10,
+            "brand": "Seclo",
+            "strength": "40 mg",
+            "generic": "Omeprazole",
+            "form": "Capsule",
+            "manufacturer": "Square Pharmaceuticals",
+            "source": "dev-seed",
+            "verified": false
+          },
+          "score": 39.5,
+          "strength_matched": false
+        }
+      ],
+      "strength": {
+        "value": "20 mg",
+        "confidence": "high",
+        "note": null
+      },
+      "dose": {
+        "value": "1+0+1",
+        "confidence": "high",
+        "note": null
+      },
+      "timing": {
+        "value": "before_meal",
+        "confidence": "high",
+        "note": null
+      },
+      "duration": {
+        "value": {
+          "days": 14,
+          "continue_indefinitely": false
+        },
+        "confidence": "high",
+        "note": null
+      },
+      "as_needed": false,
+      "other_instructions": null
+    },
+    {
+      "raw_text": "Tab. Napa Extend SOS",
+      "name": {
+        "value": "Napa Extend",
+        "confidence": "high",
+        "note": null
+      },
+      "matched_drug": {
+        "drug": {
+          "id": 3,
+          "brand": "Napa Extend",
+          "strength": "665 mg",
+          "generic": "Paracetamol",
+          "form": "Tablet (Extended Release)",
+          "manufacturer": "Beximco Pharmaceuticals",
+          "source": "dev-seed",
+          "verified": false
+        },
+        "score": 100.0,
+        "strength_matched": null
+      },
+      "alternatives": [],
+      "strength": {
+        "value": "665 mg",
+        "confidence": "medium",
+        "note": {
+          "code": "strength_suggested",
+          "message": "No strength on the prescription; suggested from the catalogue",
+          "params": {
+            "suggested": "665 mg"
+          }
+        }
+      },
+      "dose": {
+        "value": null,
+        "confidence": "high",
+        "note": {
+          "code": "dose_as_needed",
+          "message": "Take when needed",
+          "params": {}
+        }
+      },
+      "timing": {
+        "value": "not_specified",
+        "confidence": "high",
+        "note": {
+          "code": "timing_not_specified",
+          "message": "Before or after food is not written",
+          "params": {}
+        }
+      },
+      "duration": {
+        "value": {
+          "days": null,
+          "continue_indefinitely": false
+        },
+        "confidence": "medium",
+        "note": {
+          "code": "duration_missing",
+          "message": "How long to take it is not written",
+          "params": {}
+        }
+      },
+      "as_needed": true,
+      "other_instructions": null
+    }
+  ],
+  "requires_confirmation": true,
+  "warnings": [
+    {
+      "code": "review_highlighted_fields",
+      "message": "Compare the highlighted fields with the paper",
+      "params": {}
+    }
+  ]
+}

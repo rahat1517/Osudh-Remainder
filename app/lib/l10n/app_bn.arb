@@ -1,10 +1,166 @@
 {
   "@@locale": "bn",
   "appTitle": "ওষুধ রিমাইন্ডার",
-  "@appTitle": { "description": "App name shown in the title bar and launcher" },
+  "@appTitle": {
+    "description": "App name shown in the title bar and launcher"
+  },
   "welcomeTitle": "স্বাগতম!",
   "welcomeSubtitle": "প্রেসক্রিপশনের ছবি তুলুন, বাকিটা আমরা মনে রাখব।",
   "getStarted": "শুরু করুন",
   "comingSoon": "শীঘ্রই আসছে",
-  "disclaimer": "এই অ্যাপ ডাক্তারের পরামর্শের বিকল্প নয়।"
+  "disclaimer": "এই অ্যাপ ডাক্তারের পরামর্শের বিকল্প নয়।",
+  "phoneTitle": "আপনার মোবাইল নম্বর",
+  "phoneHint": "01XXXXXXXXX",
+  "phoneInvalid": "সঠিক বাংলাদেশি মোবাইল নম্বর দিন",
+  "sendCode": "কোড পাঠান",
+  "otpTitle": "কোডটি লিখুন",
+  "otpSubtitle": "{phone} নম্বরে ৬ সংখ্যার একটি কোড পাঠানো হয়েছে",
+  "@otpSubtitle": {
+    "placeholders": {
+      "phone": {
+        "type": "String"
+      }
+    }
+  },
+  "verify": "যাচাই করুন",
+  "demoModeHint": "ডেমো মোড: কোড {code}",
+  "@demoModeHint": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "authInvalidCode": "কোডটি ভুল অথবা মেয়াদ শেষ",
+  "authSmsFailed": "SMS পাঠানো যায়নি। আবার চেষ্টা করুন।",
+  "homeTitle": "আজকের ওষুধ",
+  "homeEmpty": "এখনো কোনো ওষুধ নেই। শুরু করতে প্রেসক্রিপশন স্ক্যান করুন।",
+  "nextDose": "পরের",
+  "done": "শেষ",
+  "scanPrescription": "প্রেসক্রিপশন স্ক্যান",
+  "addManually": "নিজে যোগ করুন",
+  "myMedicines": "আমার ওষুধ",
+  "signOut": "সাইন আউট",
+  "scanTitle": "প্রেসক্রিপশন স্ক্যান",
+  "takePhoto": "ছবি তুলুন",
+  "chooseFromGallery": "গ্যালারি থেকে বেছে নিন",
+  "scanTips": "প্রেসক্রিপশনটা আলোতে সমান করে রাখুন, পুরো পাতা যেন ছবিতে আসে।",
+  "reading": "প্রেসক্রিপশন পড়া হচ্ছে…",
+  "confirmTitle": "মিলিয়ে দেখে নিশ্চিত করুন",
+  "confirmHelp": "হলুদ চিহ্নিত প্রতিটা ঘর প্রেসক্রিপশনের সাথে মিলিয়ে দেখুন।",
+  "confirmButton": "নিশ্চিত করুন",
+  "addAnother": "আরেকটা ওষুধ যোগ করুন",
+  "removeMedicine": "বাদ দিন",
+  "fieldName": "ওষুধের নাম",
+  "fieldStrength": "শক্তি (mg)",
+  "fieldDose": "ডোজ (সকাল+দুপুর+রাত)",
+  "fieldDoseHint": "১+০+১",
+  "fieldTiming": "কখন খাবেন",
+  "fieldDuration": "কত দিন",
+  "continueIndefinitely": "চলবে (শেষ তারিখ নেই)",
+  "asNeeded": "শুধু প্রয়োজন হলে (SOS)",
+  "looksRight": "ঠিক আছে",
+  "writtenAs": "প্রেসক্রিপশনে লেখা: {text}",
+  "@writtenAs": {
+    "placeholders": {
+      "text": {
+        "type": "String"
+      }
+    }
+  },
+  "problemNameRequired": "ওষুধের নাম লিখুন",
+  "problemDoseInvalid": "ডোজ লিখুন, যেমন ১+০+১",
+  "problemDurationRequired": "কত দিন লিখুন, অথবা \"চলবে\" বেছে নিন",
+  "problemNeedsReview": "হলুদ চিহ্নিত ঘরগুলো মিলিয়ে দেখুন",
+  "timingBeforeMeal": "খাবারের আগে",
+  "timingAfterMeal": "খাবারের পরে",
+  "timingWithMeal": "খাবারের সাথে",
+  "timingEmptyStomach": "খালি পেটে",
+  "timingBedtime": "ঘুমানোর আগে",
+  "timingNotSpecified": "লেখা নেই",
+  "saved": "সংরক্ষণ হয়েছে। রিমাইন্ডার চালু হয়েছে।",
+  "stopMedicine": "এই ওষুধ বন্ধ করুন",
+  "stopConfirm": "{name}-এর রিমাইন্ডার বন্ধ করবেন? শুধু ডাক্তার বললে বন্ধ করুন।",
+  "@stopConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "cancel": "বাতিল",
+  "retry": "আবার চেষ্টা করুন",
+  "errorNetwork": "সার্ভারের সাথে সংযোগ নেই। ইন্টারনেট দেখুন।",
+  "errorGeneric": "কিছু একটা সমস্যা হয়েছে। আবার চেষ্টা করুন।",
+  "errImageMissing": "কোনো ছবি পাওয়া যায়নি।",
+  "errImageTooLarge": "ছবিটা অনেক বড় (সর্বোচ্চ ১৫ MB)।",
+  "errImageUnreadable": "এটা ছবি নয়। JPEG বা PNG ছবি দিন।",
+  "errImageFormatUnsupported": "শুধু JPEG, PNG বা WebP ছবি দেওয়া যাবে।",
+  "errImageTooSmall": "ছবিটা খুব ছোট। প্রেসক্রিপশনের কাছ থেকে তুলুন।",
+  "errNotAPrescription": "এটা প্রেসক্রিপশন মনে হচ্ছে না।",
+  "errAiNotConfigured": "এখন প্রেসক্রিপশন পড়া যাচ্ছে না। ওষুধগুলো নিজে যোগ করুন।",
+  "errAiRateLimited": "এখন অনেক অনুরোধ আসছে। এক মিনিট পরে চেষ্টা করুন।",
+  "errAiUnavailable": "প্রেসক্রিপশন পড়ার সেবায় সংযোগ হচ্ছে না। আবার চেষ্টা করুন।",
+  "errAiRefused": "এই ছবিটা পড়া যায়নি। ওষুধগুলো নিজে যোগ করুন।",
+  "errAiFailed": "প্রেসক্রিপশন পড়া যায়নি। আবার চেষ্টা করুন।",
+  "errPrescriptionTooLong": "প্রেসক্রিপশনটা অনেক বড়। দুই ভাগে দুটো ছবি তুলুন।",
+  "errDrugNotFound": "ওষুধটি পাওয়া যায়নি।",
+  "errInvalidDosePattern": "ডোজ সঠিক নয়। ১+০+১ এর মতো লিখুন।",
+  "errInvalidInterval": "কত ঘণ্টা পরপর, সেটা ২৪ ঘণ্টাকে সমান ভাগ করতে হবে।",
+  "errInvalidDuration": "দিনের সংখ্যা ১ থেকে ৩৬৫-এর মধ্যে হতে হবে।",
+  "errInvalidWeekdays": "সপ্তাহের অন্তত একটা দিন বেছে নিন।",
+  "errInvalidMealTimes": "খাবারের সময়গুলো দিনের ক্রম অনুযায়ী হতে হবে।",
+  "errInvalidTimezone": "অজানা সময় অঞ্চল।",
+  "errMissingDose": "ডোজ লিখুন।",
+  "errConflictingDose": "ডোজ অথবা কত ঘণ্টা পরপর, যেকোনো একটা দিন।",
+  "noticeNameUnreadable": "নাম পড়া যায়নি।",
+  "noticeNameNotInCatalog": "এই নাম আমাদের ওষুধের তালিকায় নেই। ভালো করে মিলিয়ে দেখুন।",
+  "noticeNameCorrected": "প্রেসক্রিপশনে লেখা \"{written}\"।",
+  "@noticeNameCorrected": {
+    "placeholders": {
+      "written": {
+        "type": "String"
+      }
+    }
+  },
+  "noticeStrengthNotInCatalog": "{written} শক্তির ওষুধ আমাদের তালিকায় নেই।",
+  "@noticeStrengthNotInCatalog": {
+    "placeholders": {
+      "written": {
+        "type": "String"
+      }
+    }
+  },
+  "noticeStrengthSuggested": "প্রেসক্রিপশনে লেখা নেই; তালিকা থেকে {suggested} প্রস্তাব করা হয়েছে।",
+  "@noticeStrengthSuggested": {
+    "placeholders": {
+      "suggested": {
+        "type": "String"
+      }
+    }
+  },
+  "noticeDoseUnreadable": "\"{written}\" বোঝা যায়নি।",
+  "@noticeDoseUnreadable": {
+    "placeholders": {
+      "written": {
+        "type": "String"
+      }
+    }
+  },
+  "noticeDoseMissing": "ডোজ লেখা নেই।",
+  "noticeDoseAsNeeded": "শুধু প্রয়োজন হলে খাবেন।",
+  "noticeTimingNotSpecified": "খাবারের আগে না পরে, লেখা নেই।",
+  "noticeDurationUnclear": "কত দিন খাবেন, পরিষ্কার নয়।",
+  "noticeDurationOutOfRange": "অস্বাভাবিক মেয়াদ ({days} দিন)।",
+  "@noticeDurationOutOfRange": {
+    "placeholders": {
+      "days": {
+        "type": "String"
+      }
+    }
+  },
+  "noticeDurationMissing": "কত দিন খেতে হবে লেখা নেই।",
+  "noticeImagePoorQuality": "ছবিটা অস্পষ্ট। সব মিলিয়ে দেখুন অথবা আবার ছবি তুলুন।",
+  "noticeNoMedicinesFound": "কোনো ওষুধ পাওয়া যায়নি। নিজে যোগ করুন অথবা আবার ছবি তুলুন।",
+  "noticeReviewHighlightedFields": "হলুদ চিহ্নিত ঘরগুলো প্রেসক্রিপশনের সাথে মিলিয়ে দেখুন।"
 }
