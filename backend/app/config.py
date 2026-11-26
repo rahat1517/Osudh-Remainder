@@ -45,6 +45,18 @@ class Settings(BaseSettings):
     assistant_effort: str = "low"
     assistant_rate_limits: list[tuple[int, float]] = [(10, 60), (100, 86400)]
 
+    # SMS and voice-call reminders (Phase 10). Without a gateway, the job only logs messages.
+    sms_gateway_url: str | None = None
+    sms_api_key: str | None = None
+    sms_sender_id: str | None = None
+    voice_gateway_url: str | None = None
+    voice_api_key: str | None = None
+    sms_segment_bdt: float = 0.35
+    call_bdt: float = 1.0
+    max_sms_per_patient_day: int = 6
+    max_calls_per_patient_day: int = 3
+    escalation_monthly_budget_bdt: float = 5000.0
+
     # Optional error monitoring. Personal data is scrubbed before sending.
     sentry_dsn: str | None = None
 

@@ -41,7 +41,9 @@ Put it behind HTTPS. Check `GET /health`.
 ## Job secrets (GitHub)
 
 Repository → Settings → Secrets → Actions: `DATABASE_URL` (Supabase connection string with a
-privileged role) and `FCM_SERVICE_ACCOUNT` (JSON contents).
+privileged role) and `FCM_SERVICE_ACCOUNT` (JSON contents). For SMS/voice reminders also
+`SMS_GATEWAY_URL`, `SMS_API_KEY`, `SMS_SENDER_ID`, `VOICE_GATEWAY_URL`, `VOICE_API_KEY`. If your provider
+uses different field names, add an adapter next to `backend/app/escalation/gateways.py`.
 
 ## App
 

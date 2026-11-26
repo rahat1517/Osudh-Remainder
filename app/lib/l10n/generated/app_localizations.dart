@@ -1249,6 +1249,36 @@ abstract class AppLocalizations {
   /// In bn, this message translates to:
   /// **'রমজানের সময়সূচি বন্ধ করুন'**
   String get ramadanOff;
+
+  /// No description provided for @channelsHelp.
+  ///
+  /// In bn, this message translates to:
+  /// **'কোনো ডোজ \"খেয়েছি\" চিহ্নিত না হলে: ৩০ মিনিট পরে SMS আর ৪৫ মিনিট পরে ফোন কল। এর জন্য আপনার কোনো খরচ নেই।'**
+  String get channelsHelp;
+
+  /// No description provided for @channelSms.
+  ///
+  /// In bn, this message translates to:
+  /// **'SMS রিমাইন্ডার'**
+  String get channelSms;
+
+  /// No description provided for @channelCall.
+  ///
+  /// In bn, this message translates to:
+  /// **'ফোন কলে রিমাইন্ডার'**
+  String get channelCall;
+
+  /// No description provided for @featurePhoneMode.
+  ///
+  /// In bn, this message translates to:
+  /// **'সাধারণ ফোন (স্মার্টফোন নেই)'**
+  String get featurePhoneMode;
+
+  /// No description provided for @featurePhoneHelp.
+  ///
+  /// In bn, this message translates to:
+  /// **'প্রতিটি ডোজের সময় তাঁর ফোনে SMS বা কল যাবে; ওষুধগুলো আপনি এখান থেকে দেখাশোনা করবেন।'**
+  String get featurePhoneHelp;
 }
 
 class _AppLocalizationsDelegate

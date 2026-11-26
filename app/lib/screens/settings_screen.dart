@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../l10n/generated/app_localizations.dart';
 import '../state/app_state.dart';
+import '../widgets/reminder_channels_tile.dart';
 import 'ramadan_screen.dart';
 import 'report_screen.dart';
 
@@ -57,6 +58,11 @@ class SettingsScreen extends StatelessWidget {
             subtitle: Text('${l.privacySummary}\n$privacyPolicyUrl'),
             isThreeLine: true,
           ),
+          if (state.channels != null && state.auth.currentUserId != null)
+            ReminderChannelsTile(
+              repository: state.channels!,
+              patientId: state.auth.currentUserId!,
+            ),
           ListTile(
             leading: const Icon(Icons.insights),
             title: Text(l.reportTitle),

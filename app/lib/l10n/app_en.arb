@@ -379,5 +379,10 @@
   },
   "ramadanConflicts": "These medicines have doses during fasting hours. Ask your doctor how to take them during Ramadan:",
   "ramadanOn": "Turn on Ramadan times",
-  "ramadanOff": "Turn off Ramadan times"
+  "ramadanOff": "Turn off Ramadan times",
+  "channelsHelp": "If a dose is not marked as taken: an SMS after 30 minutes and a phone call after 45 minutes. Normal SMS/call rates do not apply to you.",
+  "channelSms": "SMS reminders",
+  "channelCall": "Phone-call reminders",
+  "featurePhoneMode": "Basic phone (no smartphone)",
+  "featurePhoneHelp": "Reminders go to their phone by SMS or call at each dose time; you manage the medicines here."
 }

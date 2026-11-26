@@ -658,4 +658,21 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get ramadanOff => 'রমজানের সময়সূচি বন্ধ করুন';
+
+  @override
+  String get channelsHelp =>
+      'কোনো ডোজ \"খেয়েছি\" চিহ্নিত না হলে: ৩০ মিনিট পরে SMS আর ৪৫ মিনিট পরে ফোন কল। এর জন্য আপনার কোনো খরচ নেই।';
+
+  @override
+  String get channelSms => 'SMS রিমাইন্ডার';
+
+  @override
+  String get channelCall => 'ফোন কলে রিমাইন্ডার';
+
+  @override
+  String get featurePhoneMode => 'সাধারণ ফোন (স্মার্টফোন নেই)';
+
+  @override
+  String get featurePhoneHelp =>
+      'প্রতিটি ডোজের সময় তাঁর ফোনে SMS বা কল যাবে; ওষুধগুলো আপনি এখান থেকে দেখাশোনা করবেন।';
 }

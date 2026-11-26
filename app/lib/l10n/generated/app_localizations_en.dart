@@ -663,4 +663,21 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get ramadanOff => 'Turn off Ramadan times';
+
+  @override
+  String get channelsHelp =>
+      'If a dose is not marked as taken: an SMS after 30 minutes and a phone call after 45 minutes. Normal SMS/call rates do not apply to you.';
+
+  @override
+  String get channelSms => 'SMS reminders';
+
+  @override
+  String get channelCall => 'Phone-call reminders';
+
+  @override
+  String get featurePhoneMode => 'Basic phone (no smartphone)';
+
+  @override
+  String get featurePhoneHelp =>
+      'Reminders go to their phone by SMS or call at each dose time; you manage the medicines here.';
 }
