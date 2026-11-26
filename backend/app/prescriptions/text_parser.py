@@ -213,6 +213,8 @@ _BARE_STRENGTH_RE = re.compile(r"(?<=[A-Za-z])\s+(\d{2,4}(?:\.\d+)?)(?=\s|$)")
 
 def _split_name(rest: str) -> tuple[str | None, str | None]:
     """'Seclo 20 mg 1+0+1' → ('Seclo', '20 mg')."""
+    # "Ciprocin500" → "Ciprocin 500" (a name never ends in digits glued to letters)
+    rest = re.sub(r"(?<=[A-Za-z]{3})(?=\d{2,4}(?:\D|$))", " ", rest)
     strength_m = _STRENGTH_RE.search(rest)
     dose_m = _DOSE_RE.search(rest)
     # A bare number after the name is a strength without its unit: "Ciprocin 500 1BD"

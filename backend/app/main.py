@@ -127,6 +127,9 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         logger.warning("No prescription reader for READER_MODE=%s", settings.reader_mode)
     else:
         logger.info("Prescription reader: %s", type(reader).__name__)
+        for r in (reader, getattr(reader, "_local", None)):
+            if isinstance(r, OcrPrescriptionReader):
+                r.warm_up_in_background()
         app.state.prescription_service = PrescriptionService(reader, PrescriptionVerifier(matcher))
     yield
 

@@ -78,6 +78,20 @@ def _union(row: list[OcrLine]) -> tuple[tuple[float, float], ...]:
     return ((min(xs), min(ys)), (max(xs), min(ys)), (max(xs), max(ys)), (min(xs), max(ys)))
 
 
+# Tuned for a small shared CPU (e.g. Render's free instance, a fraction of one core):
+# - one thread: ONNX Runtime's idle threads spin, and many threads on a tiny CPU quota spend it
+#   waiting instead of working (a scan took over a minute with the defaults);
+# - no angle classifier: photos are already upright (EXIF orientation is applied beforehand);
+# - text detection on the image scaled to at most 960 px, instead of enlarged to at least 736 px.
+SMALL_CPU_SETTINGS = {
+    "intra_op_num_threads": 1,
+    "inter_op_num_threads": 1,
+    "use_cls": False,
+    "det_limit_side_len": 960,
+    "det_limit_type": "max",
+}
+
+
 class RapidOcrEngine:
     """PaddleOCR models through RapidOCR (ONNX Runtime). Loaded once, on first use."""
 
@@ -90,13 +104,19 @@ class RapidOcrEngine:
     def _load(self):
         from rapidocr_onnxruntime import RapidOCR
 
-        kwargs = {}
+        kwargs: dict[str, object] = dict(SMALL_CPU_SETTINGS)
         if self._rec_model_path:
             kwargs["rec_model_path"] = self._rec_model_path
             if self._rec_keys_path:
                 kwargs["rec_keys_path"] = self._rec_keys_path
             logger.info("Using fine-tuned OCR recognition model %s", self._rec_model_path)
         return RapidOCR(**kwargs)
+
+    def warm_up(self) -> None:
+        """Load the models now (in the background at startup) rather than on the first scan."""
+        with self._lock:
+            if self._engine is None:
+                self._engine = self._load()
 
     def lines(self, image: bytes) -> list[OcrLine]:
         with self._lock:  # ONNX sessions are shared; keep memory flat on a small instance
@@ -112,6 +132,11 @@ class RapidOcrEngine:
 class OcrPrescriptionReader:
     def __init__(self, engine: OcrEngine):
         self._engine = engine
+
+    def warm_up_in_background(self) -> None:
+        warm = getattr(self._engine, "warm_up", None)
+        if warm:
+            threading.Thread(target=warm, name="ocr-warm-up", daemon=True).start()
 
     def read(self, image: PreparedImage) -> PrescriptionExtraction:
         try:
