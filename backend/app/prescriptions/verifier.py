@@ -35,7 +35,9 @@ class PrescriptionVerifier:
     def verify(self, extraction: PrescriptionExtraction) -> PrescriptionResult:
         warnings: list[str] = []
         # ছবি খারাপ হলে কোনো ঘরই "নিশ্চিত" ধরা হবে না
-        cap = Confidence.MEDIUM if extraction.image_quality == ImageQuality.POOR else Confidence.HIGH
+        cap = (
+            Confidence.MEDIUM if extraction.image_quality == ImageQuality.POOR else Confidence.HIGH
+        )
         if extraction.image_quality == ImageQuality.POOR:
             warnings.append("ছবিটা অস্পষ্ট। সব তথ্য ভালো করে মিলিয়ে দেখুন, অথবা আবার ছবি তুলুন।")
 
@@ -94,7 +96,9 @@ class PrescriptionVerifier:
         if best.drug.brand.lower() != m.name.strip().lower():
             note = f'প্রেসক্রিপশনে লেখা "{m.name}"'
         name = FieldResult[str](value=best.drug.brand, confidence=name_conf, note=note)
-        alternatives = [c for c in match.candidates if c is not best] if name_conf != Confidence.HIGH else []
+        alternatives = (
+            [c for c in match.candidates if c is not best] if name_conf != Confidence.HIGH else []
+        )
 
         strength = self._verify_strength(m, best.drug.strength, best.strength_matched, cap)
         return name, best, alternatives, strength

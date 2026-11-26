@@ -33,13 +33,21 @@ class ImageQuality(StrEnum):
 # Agent ১-এর output (Claude structured output)
 # ---------------------------------------------------------------------------
 class ExtractedMedicine(BaseModel):
-    raw_text: str = Field(description="The medicine line exactly as written, for the user to compare")
-    form: str | None = Field(description="Tab, Cap, Syp, Inj, Drop, Cream... as written; null if absent")
+    raw_text: str = Field(
+        description="The medicine line exactly as written, for the user to compare"
+    )
+    form: str | None = Field(
+        description="Tab, Cap, Syp, Inj, Drop, Cream... as written; null if absent"
+    )
     name: str | None = Field(description="Brand or generic name as written; null if unreadable")
     name_confidence: Confidence
-    strength: str | None = Field(description='e.g. "20 mg", "500 mg", "120 mg/5 ml"; null if absent')
+    strength: str | None = Field(
+        description='e.g. "20 mg", "500 mg", "120 mg/5 ml"; null if absent'
+    )
     strength_confidence: Confidence
-    dose_raw: str | None = Field(description="Dose instruction exactly as written, e.g. ১+০+১, BD, 1 tsf TDS")
+    dose_raw: str | None = Field(
+        description="Dose instruction exactly as written, e.g. ১+০+১, BD, 1 tsf TDS"
+    )
     dose_pattern: str | None = Field(
         description='Canonical "morning+noon+night" counts with ASCII digits, e.g. "1+0+1", '
         '"0.5+0+0.5", "1+1+1+1" for four times; null if not determinable'
@@ -53,7 +61,8 @@ class ExtractedMedicine(BaseModel):
     duration_confidence: Confidence
     as_needed: bool = Field(description="True for SOS / PRN / প্রয়োজনে (no fixed schedule)")
     other_instructions: str | None = Field(
-        description="Any other instruction for this medicine (e.g. ব্যথা হলে, পানিতে গুলে); null if none"
+        description="Any other instruction for this medicine "
+        "(e.g. ব্যথা হলে, পানিতে গুলে); null if none"
     )
 
 
