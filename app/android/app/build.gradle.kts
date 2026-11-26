@@ -6,7 +6,8 @@ plugins {
 
 android {
     namespace = "com.oshudh.oshudh_reminder"
-    compileSdk = flutter.compileSdkVersion
+    // flutter_local_notifications requires compiling against API 37 (backward compatible)
+    compileSdk = 37
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
