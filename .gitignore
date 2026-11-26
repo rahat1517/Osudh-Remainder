@@ -1,15 +1,17 @@
 # ============================================================
 # Patient data: must never enter the repository
 # ============================================================
-data/
-datasets/
-prescriptions/
-# Exception: source code folder (images inside it are still ignored below)
-!backend/app/prescriptions/
-uploads/
-patient_data/
-ml/data/
-backend/eval/out/
+# Anchored to the repository root on purpose: an unanchored "data/" also matched source folders
+# such as app/lib/data/ and silently kept code out of git. Images and PDFs are blocked
+# everywhere below, whatever folder they are in.
+/data/
+/datasets/
+/prescriptions/
+/uploads/
+/patient_data/
+/ml/data/
+/backend/eval/out/
+/backend/.hypothesis/
 *.dcm
 
 # Prescription photos and scans, so none are committed by accident.
