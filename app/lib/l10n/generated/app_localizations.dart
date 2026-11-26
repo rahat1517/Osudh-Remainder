@@ -679,6 +679,120 @@ abstract class AppLocalizations {
   /// In bn, this message translates to:
   /// **'হলুদ চিহ্নিত ঘরগুলো প্রেসক্রিপশনের সাথে মিলিয়ে দেখুন।'**
   String get noticeReviewHighlightedFields;
+
+  /// No description provided for @alarmTitle.
+  ///
+  /// In bn, this message translates to:
+  /// **'ওষুধ খাওয়ার সময়'**
+  String get alarmTitle;
+
+  /// No description provided for @alarmChannelName.
+  ///
+  /// In bn, this message translates to:
+  /// **'ওষুধের রিমাইন্ডার'**
+  String get alarmChannelName;
+
+  /// No description provided for @alarmSpeech.
+  ///
+  /// In bn, this message translates to:
+  /// **'এখন আপনার {names} খাওয়ার সময়।'**
+  String alarmSpeech(String names);
+
+  /// No description provided for @alarmTaken.
+  ///
+  /// In bn, this message translates to:
+  /// **'খেয়েছি'**
+  String get alarmTaken;
+
+  /// No description provided for @alarmSnooze.
+  ///
+  /// In bn, this message translates to:
+  /// **'১০ মিনিট পরে'**
+  String get alarmSnooze;
+
+  /// No description provided for @alarmSkip.
+  ///
+  /// In bn, this message translates to:
+  /// **'বাদ দিলাম'**
+  String get alarmSkip;
+
+  /// No description provided for @snoozeLimit.
+  ///
+  /// In bn, this message translates to:
+  /// **'৩ বার পিছিয়েছেন। এখন খেয়ে নিন অথবা বাদ দিন।'**
+  String get snoozeLimit;
+
+  /// No description provided for @horizonNoticeTitle.
+  ///
+  /// In bn, this message translates to:
+  /// **'রিমাইন্ডার চালু রাখুন'**
+  String get horizonNoticeTitle;
+
+  /// No description provided for @horizonNoticeBody.
+  ///
+  /// In bn, this message translates to:
+  /// **'অ্যাপটি একবার খুলুন, তাহলে পরের সপ্তাহের রিমাইন্ডার সেট হয়ে যাবে।'**
+  String get horizonNoticeBody;
+
+  /// No description provided for @setupTitle.
+  ///
+  /// In bn, this message translates to:
+  /// **'রিমাইন্ডার সেটিংস'**
+  String get setupTitle;
+
+  /// No description provided for @setupIntro.
+  ///
+  /// In bn, this message translates to:
+  /// **'ফোন লক বা ইন্টারনেট বন্ধ থাকলেও যেন সময়মতো অ্যালার্ম বাজে, সেজন্য এই সেটিংসগুলো চালু করুন।'**
+  String get setupIntro;
+
+  /// No description provided for @setupNotifications.
+  ///
+  /// In bn, this message translates to:
+  /// **'নোটিফিকেশনের অনুমতি দিন'**
+  String get setupNotifications;
+
+  /// No description provided for @setupExactAlarms.
+  ///
+  /// In bn, this message translates to:
+  /// **'ঠিক সময়ে অ্যালার্মের অনুমতি দিন'**
+  String get setupExactAlarms;
+
+  /// No description provided for @setupFullScreen.
+  ///
+  /// In bn, this message translates to:
+  /// **'লক স্ক্রিনে অ্যালার্ম দেখান'**
+  String get setupFullScreen;
+
+  /// No description provided for @setupBattery.
+  ///
+  /// In bn, this message translates to:
+  /// **'ফোন যেন অ্যাপটি বন্ধ করে না দেয়'**
+  String get setupBattery;
+
+  /// No description provided for @setupBatteryHelp.
+  ///
+  /// In bn, this message translates to:
+  /// **'তালিকায় এই অ্যাপটি খুঁজে \"No restrictions\" বেছে নিন অথবা \"Auto start\" চালু করুন।'**
+  String get setupBatteryHelp;
+
+  /// No description provided for @setupOpen.
+  ///
+  /// In bn, this message translates to:
+  /// **'খুলুন'**
+  String get setupOpen;
+
+  /// No description provided for @remindersScheduled.
+  ///
+  /// In bn, this message translates to:
+  /// **'আগামী ৭ দিনের জন্য {count}টি রিমাইন্ডার সেট হয়েছে'**
+  String remindersScheduled(int count);
+
+  /// No description provided for @offlineNotice.
+  ///
+  /// In bn, this message translates to:
+  /// **'ইন্টারনেট নেই: সংরক্ষিত ওষুধ দেখানো হচ্ছে'**
+  String get offlineNotice;
 }
 
 class _AppLocalizationsDelegate

@@ -162,5 +162,38 @@
   "noticeDurationMissing": "কত দিন খেতে হবে লেখা নেই।",
   "noticeImagePoorQuality": "ছবিটা অস্পষ্ট। সব মিলিয়ে দেখুন অথবা আবার ছবি তুলুন।",
   "noticeNoMedicinesFound": "কোনো ওষুধ পাওয়া যায়নি। নিজে যোগ করুন অথবা আবার ছবি তুলুন।",
-  "noticeReviewHighlightedFields": "হলুদ চিহ্নিত ঘরগুলো প্রেসক্রিপশনের সাথে মিলিয়ে দেখুন।"
+  "noticeReviewHighlightedFields": "হলুদ চিহ্নিত ঘরগুলো প্রেসক্রিপশনের সাথে মিলিয়ে দেখুন।",
+  "alarmTitle": "ওষুধ খাওয়ার সময়",
+  "alarmChannelName": "ওষুধের রিমাইন্ডার",
+  "alarmSpeech": "এখন আপনার {names} খাওয়ার সময়।",
+  "@alarmSpeech": {
+    "placeholders": {
+      "names": {
+        "type": "String"
+      }
+    }
+  },
+  "alarmTaken": "খেয়েছি",
+  "alarmSnooze": "১০ মিনিট পরে",
+  "alarmSkip": "বাদ দিলাম",
+  "snoozeLimit": "৩ বার পিছিয়েছেন। এখন খেয়ে নিন অথবা বাদ দিন।",
+  "horizonNoticeTitle": "রিমাইন্ডার চালু রাখুন",
+  "horizonNoticeBody": "অ্যাপটি একবার খুলুন, তাহলে পরের সপ্তাহের রিমাইন্ডার সেট হয়ে যাবে।",
+  "setupTitle": "রিমাইন্ডার সেটিংস",
+  "setupIntro": "ফোন লক বা ইন্টারনেট বন্ধ থাকলেও যেন সময়মতো অ্যালার্ম বাজে, সেজন্য এই সেটিংসগুলো চালু করুন।",
+  "setupNotifications": "নোটিফিকেশনের অনুমতি দিন",
+  "setupExactAlarms": "ঠিক সময়ে অ্যালার্মের অনুমতি দিন",
+  "setupFullScreen": "লক স্ক্রিনে অ্যালার্ম দেখান",
+  "setupBattery": "ফোন যেন অ্যাপটি বন্ধ করে না দেয়",
+  "setupBatteryHelp": "তালিকায় এই অ্যাপটি খুঁজে \"No restrictions\" বেছে নিন অথবা \"Auto start\" চালু করুন।",
+  "setupOpen": "খুলুন",
+  "remindersScheduled": "আগামী ৭ দিনের জন্য {count}টি রিমাইন্ডার সেট হয়েছে",
+  "@remindersScheduled": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "offlineNotice": "ইন্টারনেট নেই: সংরক্ষিত ওষুধ দেখানো হচ্ছে"
 }
