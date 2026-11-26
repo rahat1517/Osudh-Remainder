@@ -6,7 +6,8 @@ import anthropic
 from fastapi import FastAPI
 
 from app import __version__
-from app.api import drugs, health, prescriptions, schedules
+from app.api import assistant, drugs, health, prescriptions, schedules
+from app.assistant.service import AssistantService
 from app.config import Settings, get_settings
 from app.drugs.catalog import load_csv
 from app.drugs.matcher import DrugMatcher
@@ -41,6 +42,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     settings = get_settings()
     app.state.token_verifier = build_token_verifier(settings)
     app.state.ai_rate_limiter = SlidingWindowLimiter(settings.ai_rate_limits)
+    app.state.assistant_rate_limiter = SlidingWindowLimiter(settings.assistant_rate_limits)
     catalog, report = load_csv(settings.drugs_csv_path)
     for err in report.errors:
         logger.warning("Drug catalogue error: %s", err)
@@ -49,10 +51,14 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     logger.info("Loaded %d drugs", len(catalog))
 
     app.state.prescription_service = None
+    app.state.assistant_service = None
     if settings.anthropic_api_key:
         client = anthropic.Anthropic(api_key=settings.anthropic_api_key)
         reader = ClaudePrescriptionReader(client, settings.reader_model, settings.reader_effort)
         app.state.prescription_service = PrescriptionService(reader, PrescriptionVerifier(matcher))
+        app.state.assistant_service = AssistantService(
+            client, matcher, settings.assistant_model, settings.assistant_effort
+        )
     else:
         logger.warning("ANTHROPIC_API_KEY is not set: prescription reading is disabled")
     yield
@@ -68,6 +74,7 @@ def create_app() -> FastAPI:
     app.include_router(drugs.router)
     app.include_router(prescriptions.router)
     app.include_router(schedules.router)
+    app.include_router(assistant.router)
     return app
 
 

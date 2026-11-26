@@ -242,5 +242,37 @@
   "privacySummary": "Your prescriptions and medicines are visible only to you and the family members you invite. Prescription photos are never stored.",
   "deleteAccount": "Delete my account",
   "deleteAccountConfirm": "This permanently deletes your account, medicines, history and family links. This cannot be undone.",
-  "deleteAccountButton": "Delete permanently"
+  "deleteAccountButton": "Delete permanently",
+  "assistantTitle": "Ask about your medicines",
+  "assistantHint": "Type or speak your question",
+  "assistantIntro": "Ask things like \"When is my next medicine?\" I cannot change doses; for that, ask your doctor.",
+  "assistantListening": "Listening…",
+  "assistantVoiceUnavailable": "Voice input is not available on this phone.",
+  "call999": "Call 999",
+  "actionStop": "Stop reminders for {name}?",
+  "@actionStop": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "actionMealTime": "Change {meal} to {time}?",
+  "@actionMealTime": {
+    "placeholders": {
+      "meal": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "actionConfirm": "Confirm",
+  "actionDone": "Done",
+  "mealBreakfast": "breakfast",
+  "mealLunch": "lunch",
+  "mealEvening": "evening snack",
+  "mealDinner": "dinner",
+  "mealBedtime": "bedtime"
 }

@@ -4,6 +4,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/widgets.dart' show Size;
 import 'package:flutter_test/flutter_test.dart';
+import 'package:oshudh_reminder/data/assistant.dart';
 import 'package:oshudh_reminder/data/auth_repository.dart';
 import 'package:oshudh_reminder/data/backend_api.dart';
 import 'package:oshudh_reminder/data/medicine_repository.dart';
@@ -32,6 +33,20 @@ class FakeBackendApi implements BackendApi {
     extractCalls++;
     if (error != null) throw error!;
     return scan ?? PrescriptionScan.fromJson(exampleScanJson());
+  }
+
+  /// Replies returned by the assistant, in order.
+  final List<AssistantReply> assistantReplies = [];
+  final List<Map<String, dynamic>> assistantContexts = [];
+
+  @override
+  Future<AssistantReply> askAssistant(
+    List<ChatTurn> history,
+    Map<String, dynamic> context,
+  ) async {
+    assistantContexts.add(context);
+    if (error != null) throw error!;
+    return assistantReplies.removeAt(0);
   }
 
   @override

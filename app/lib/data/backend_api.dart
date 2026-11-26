@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:http/http.dart' as http;
 
+import 'assistant.dart';
 import 'models.dart';
 
 /// An error from the backend with a stable [code] (spec/api/codes.json), or `network_error`.
@@ -23,6 +24,11 @@ abstract interface class BackendApi {
   });
 
   Future<List<Drug>> searchDrugs(String query, {int limit = 8});
+
+  Future<AssistantReply> askAssistant(
+    List<ChatTurn> history,
+    Map<String, dynamic> context,
+  );
 }
 
 class HttpBackendApi implements BackendApi {
@@ -69,6 +75,32 @@ class HttpBackendApi implements BackendApi {
       for (final c in _decode(response) as List)
         Drug.fromJson((c as Map)['drug'] as Map<String, dynamic>),
     ];
+  }
+
+  @override
+  Future<AssistantReply> askAssistant(
+    List<ChatTurn> history,
+    Map<String, dynamic> context,
+  ) async {
+    final body = jsonEncode({
+      // The backend accepts at most 20 messages; older turns add little
+      'messages': [
+        for (final t
+            in history.length > 20
+                ? history.sublist(history.length - 20)
+                : history)
+          t.toJson(),
+      ],
+      'context': context,
+    });
+    final response = await _send(
+      () => _client.post(
+        Uri.parse('$baseUrl/assistant/chat'),
+        headers: {..._headers, 'Content-Type': 'application/json'},
+        body: body,
+      ),
+    );
+    return AssistantReply.fromJson(_decode(response) as Map<String, dynamic>);
   }
 
   Future<http.Response> _send(Future<http.Response> Function() call) async {
