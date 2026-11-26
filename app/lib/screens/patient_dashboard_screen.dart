@@ -5,6 +5,7 @@ import '../caregivers/caregiver_models.dart';
 import '../caregivers/dashboard.dart';
 import '../l10n/generated/app_localizations.dart';
 import '../state/app_state.dart';
+import '../widgets/reminder_channels_tile.dart';
 import 'confirm_screen.dart';
 import 'home_screen.dart' show formatClock;
 
@@ -74,6 +75,15 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen> {
               child: ListView(
                 padding: const EdgeInsets.all(16),
                 children: [
+                  if (widget.link.permission == CaregiverPermission.edit &&
+                      context.read<AppState>().channels != null)
+                    Card(
+                      child: ReminderChannelsTile(
+                        repository: context.read<AppState>().channels!,
+                        patientId: widget.link.patientId,
+                        showFeaturePhone: true,
+                      ),
+                    ),
                   if (rows.isEmpty) Text(l.dashboardEmpty),
                   for (final r in rows)
                     Card(

@@ -15,6 +15,7 @@ import 'config/app_config.dart';
 import 'data/auth_repository.dart';
 import 'data/backend_api.dart';
 import 'data/medicine_repository.dart';
+import 'data/reminder_channels.dart';
 import 'l10n/generated/app_localizations.dart';
 import 'screens/alarm_screen.dart';
 import 'screens/home_screen.dart';
@@ -46,6 +47,7 @@ Future<void> main() async {
       alarms: alarms,
       logSync: SupabaseDoseLogSync(client),
       caregivers: SupabaseCaregiverRepository(client),
+      channels: SupabaseReminderChannelsRepository(client),
     );
     final push = config.hasFirebase
         ? FirebasePushRegistration(

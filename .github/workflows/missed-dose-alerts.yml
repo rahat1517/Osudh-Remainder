@@ -1,8 +1,9 @@
-name: Missed-dose alerts
+name: Missed-dose alerts and SMS/call reminders
 
 # Runs the caregiver alert job every 5 minutes. Requires repository secrets:
 #   DATABASE_URL          privileged PostgreSQL URL of the Supabase project
 #   FCM_SERVICE_ACCOUNT   Firebase service-account JSON (contents)
+#   SMS_GATEWAY_URL, SMS_API_KEY, SMS_SENDER_ID, VOICE_GATEWAY_URL, VOICE_API_KEY (optional)
 # Without them the job exits immediately.
 on:
   schedule:
@@ -23,6 +24,11 @@ jobs:
     env:
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
       FCM_SERVICE_ACCOUNT: ${{ secrets.FCM_SERVICE_ACCOUNT }}
+      SMS_GATEWAY_URL: ${{ secrets.SMS_GATEWAY_URL }}
+      SMS_API_KEY: ${{ secrets.SMS_API_KEY }}
+      SMS_SENDER_ID: ${{ secrets.SMS_SENDER_ID }}
+      VOICE_GATEWAY_URL: ${{ secrets.VOICE_GATEWAY_URL }}
+      VOICE_API_KEY: ${{ secrets.VOICE_API_KEY }}
     steps:
       - name: Check configuration
         id: config
@@ -49,3 +55,4 @@ jobs:
             export FCM_SERVICE_ACCOUNT_FILE="$RUNNER_TEMP/fcm.json"
           fi
           uv run python -m app.caregivers.job
+          uv run python -m app.escalation.job

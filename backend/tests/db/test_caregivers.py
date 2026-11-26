@@ -130,3 +130,40 @@ def test_invites_are_private_to_the_patient(db, family):
     _invite(db, patient)
     with as_user(db, caregiver):
         assert db.execute("select count(*) from caregiver_invites").fetchone()[0] == 0
+
+
+# --- Phase 10: reminder channels ---------------------------------------------------------------
+
+
+def _channels(db, patient):
+    return db.execute(
+        "select sms_reminders, call_reminders, feature_phone_mode from profiles where id = %s",
+        (patient,),
+    ).fetchone()
+
+
+def test_reminder_channels_are_off_by_default(db, family):
+    patient, *_ = family
+    assert _channels(db, patient) == (False, False, False)
+
+
+def test_patient_and_edit_caregiver_may_set_channels(db, family):
+    patient, caregiver, stranger, _ = family
+    with as_user(db, patient):
+        db.execute("select set_reminder_channels(%s, true, false, false)", (patient,))
+    assert _channels(db, patient) == (True, False, False)
+
+    _accept(db, caregiver, _invite(db, patient, "edit"))
+    with as_user(db, caregiver):
+        db.execute("select set_reminder_channels(%s, true, true, true)", (patient,))
+    assert _channels(db, patient) == (True, True, True)
+
+    with as_user(db, stranger), fails_with(db, psycopg.errors.InsufficientPrivilege):
+        db.execute("select set_reminder_channels(%s, false, false, false)", (patient,))
+
+
+def test_view_caregiver_may_not_set_channels(db, family):
+    patient, caregiver, *_ = family
+    _accept(db, caregiver, _invite(db, patient, "view"))
+    with as_user(db, caregiver), fails_with(db, psycopg.errors.InsufficientPrivilege):
+        db.execute("select set_reminder_channels(%s, true, true, true)", (patient,))

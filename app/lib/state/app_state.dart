@@ -9,6 +9,7 @@ import '../data/backend_api.dart';
 import '../data/medicine_draft.dart';
 import '../alarms/dose_log.dart';
 import '../data/medicine_repository.dart';
+import '../data/reminder_channels.dart';
 import '../insights/insights.dart';
 import '../data/models.dart';
 import '../schedule/schedule_engine.dart';
@@ -30,10 +31,14 @@ class AppState extends ChangeNotifier {
     this.store,
     this.alarms,
     this.caregivers,
+    this.channels,
     this.logSync,
     DateTime Function()? clock,
     this.utcOffset = const Duration(hours: 6),
   }) : _clock = clock ?? DateTime.now;
+
+  /// SMS/call reminder settings (Phase 10).
+  final ReminderChannelsRepository? channels;
 
   /// Caregiver links and patient dashboards (Phase 6).
   final CaregiverRepository? caregivers;

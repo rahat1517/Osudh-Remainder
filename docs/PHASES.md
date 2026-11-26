@@ -21,7 +21,7 @@ Legend: ✅ done · ⏳ blocked on an external input · ⬜ not started
 | | **MVP launch** | | **~3-4 months** | |
 | **8** | Bangla AI assistant | backend, app | 2 weeks | ✅ (live eval ⏳) |
 | **9** | Learning, refills and Ramadan mode | backend, app | 2 weeks | ✅ |
-| **10** | SMS and voice-call escalation | backend | 1-2 weeks | ⬜ |
+| **10** | SMS and voice-call escalation | backend | 1-2 weeks | ✅ (gateway contract ⏳) |
 | **11** | Data flywheel and self-hosted model (hybrid) | ml, backend | 4-6 weeks | ⬜ |
 
 Estimates assume one developer working with an AI assistant.
@@ -294,16 +294,25 @@ checked for Dhaka, Chattogram, Sylhet and five more divisional cities
 
 ---
 
-## Phase 10: SMS and voice-call escalation ⬜
+## Phase 10: SMS and voice-call escalation ✅ (gateway contract ⏳)
 
-- [ ] Bangladeshi SMS gateway integration
-- [ ] Automated voice calls with a recorded Bangla message
-- [ ] Escalation rules: alarm → 30 min → SMS/call → caregiver
-- [ ] Feature-phone mode: caregiver manages the schedule, patient receives calls/SMS
-- [ ] Cost controls: daily limits, premium tier
-- [ ] Opt-in and opt-out
+- [x] Opt-in channels per patient (`sms_reminders`, `call_reminders`, off by default); patients set their
+      own, edit caregivers may set them for the patient (`set_reminder_channels`; 3 database tests)
+- [x] Escalation: dose not marked taken after 30 min → SMS, after 45 min → voice call; grouped per dose time;
+      Bangla (with Bangla digits) or English text
+- [x] Feature-phone mode: reminders by SMS/call at dose time for patients without a smartphone, managed by
+      a caregiver in the app
+- [x] Each (medicine, dose time, channel, reason) sent at most once (`escalation_events`, unique)
+- [x] Cost controls: per-patient daily limits (6 SMS, 3 calls), global monthly budget, cost per message
+      recorded (Bangla SMS counted as 70-character Unicode segments); over-limit attempts recorded, not retried
+- [x] Gateway adapters: HTTP SMS ("api_key / senderid / number / message", the common Bangladeshi form) and
+      HTTP voice (`{to, language, text}`); without a gateway the job only logs
+- [x] Job runs every 5 minutes in the scheduled workflow; end-to-end test on PostgreSQL
+- [x] App: SMS/call switches in settings; feature-phone switch on the caregiver dashboard
+- [ ] Choose providers, sign contracts, register a sender ID, set the gateway secrets. **Owner action.**
 
-**Exit criteria:** ≥ 95% of SMS and calls delivered on time · monthly cost per user tracked and capped
+**Exit criteria:** ⏳ ≥ 95% of SMS and calls delivered on time (needs a live gateway; sending, retries
+and de-duplication are tested) · ✅ monthly cost per user tracked and capped
 
 ---
 
