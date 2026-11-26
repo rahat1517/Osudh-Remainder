@@ -18,6 +18,9 @@ abstract interface class MedicineRepository {
   Future<void> stopMedicine(String id);
 
   Future<ScheduleSettings> loadSettings();
+
+  /// Saves the user's meal and bed times.
+  Future<void> saveSettings(ScheduleSettings settings);
 }
 
 void _checkReady(List<MedicineDraft> drafts) {
@@ -71,8 +74,30 @@ class SupabaseMedicineRepository implements MedicineRepository {
       .eq('id', id);
 
   @override
+  Future<void> saveSettings(ScheduleSettings s) async {
+    String t(int m) =>
+        '${(m ~/ 60).toString().padLeft(2, '0')}:${(m % 60).toString().padLeft(2, '0')}';
+    final userId = _db.auth.currentUser!.id;
+    await _db
+        .from('profiles')
+        .update({
+          'breakfast': t(s.breakfast),
+          'lunch': t(s.lunch),
+          'evening': t(s.evening),
+          'dinner': t(s.dinner),
+          'bedtime': t(s.bedtime),
+          'updated_at': DateTime.now().toUtc().toIso8601String(),
+        })
+        .eq('id', userId);
+  }
+
+  @override
   Future<ScheduleSettings> loadSettings() async {
-    final p = await _db.from('profiles').select().single();
+    final p = await _db
+        .from('profiles')
+        .select()
+        .eq('id', _db.auth.currentUser!.id)
+        .single();
     return ScheduleSettings(
       breakfast: _clock(p['breakfast'] as String),
       lunch: _clock(p['lunch'] as String),
@@ -131,4 +156,7 @@ class InMemoryMedicineRepository implements MedicineRepository {
 
   @override
   Future<ScheduleSettings> loadSettings() async => settings;
+
+  @override
+  Future<void> saveSettings(ScheduleSettings s) async => settings = s;
 }

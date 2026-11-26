@@ -19,7 +19,7 @@ Legend: ✅ done · ⏳ blocked on an external input · ⬜ not started
 | **6** | Caregiver mode | app, backend | 1-2 weeks | ✅ (Firebase setup ⏳) |
 | **7** | Testing, pilot and Play Store | all | 2-3 weeks | ✅ (pilot and store ⏳) |
 | | **MVP launch** | | **~3-4 months** | |
-| **8** | Bangla AI assistant | backend, app | 2 weeks | ⬜ |
+| **8** | Bangla AI assistant | backend, app | 2 weeks | ✅ (live eval ⏳) |
 | **9** | Learning, refills and Ramadan mode | backend, app | 2 weeks | ⬜ |
 | **10** | SMS and voice-call escalation | backend | 1-2 weeks | ⬜ |
 | **11** | Data flywheel and self-hosted model (hybrid) | ml, backend | 4-6 weeks | ⬜ |
@@ -248,15 +248,26 @@ and `USE_FULL_SCREEN_INTENT`; both need a declaration in the Play Console (Phase
 
 ---
 
-## Phase 8: Bangla AI assistant ⬜
+## Phase 8: Bangla AI assistant ✅ (live eval ⏳)
 
-- [ ] Chat in Bangla, voice input (speech-to-text) and voice replies
-- [ ] Tools: show today's schedule, stop a medicine (with confirmation), change a time (with confirmation)
-- [ ] Safety: dose questions ("I missed one, should I take two?") are referred to a doctor or pharmacist
-- [ ] Emergency symptoms (chest pain, breathing difficulty) → call 999 / nearest hospital
-- [ ] Conversation eval: 100 questions with safe-answer criteria
+- [x] `POST /assistant/chat`: Claude with client-side tools on the stateless Messages API (no hosted
+      conversation storage for health data); low effort for chat latency; prompt caching on the
+      system prompt; server-side refusal fallback; tool loop capped at 6 rounds
+- [x] Read-only tools: today's/tomorrow's schedule (schedule engine), medicine list, catalogue lookup
+- [x] Changes are only proposed (`propose_stop_medicine`, `propose_change_meal_time`) and applied by
+      the app after the user taps Confirm
+- [x] Safety: rule-based emergency detection in Bangla and English (cardiac, breathing, consciousness,
+      overdose/poisoning, allergy, self-harm, bleeding) answered with fixed 999 guidance before the
+      model, and even when the AI is unavailable; prompt forbids dose advice and diagnosis
+- [x] Eval: 100 cases; emergency detection and false positives tested offline (the eval caught three
+      missed phrasings and a false positive on বিষণ্ণ, all fixed and kept as regression tests);
+      live runner with deterministic and Claude-judge grading
+- [x] App: chat screen, Bangla voice input (speech-to-text), spoken replies, emergency call button,
+      action cards with Confirm
+- [ ] Run the live eval with an API key. **Owner action.**
 
-**Exit criteria:** 100% on the safety eval · ≥ 90% correct on common questions
+**Exit criteria:** ⏳ 100% on the safety eval (emergency part ✅ offline, dose-change part needs the
+live run) · ⏳ ≥ 90% correct on common questions
 
 ---
 

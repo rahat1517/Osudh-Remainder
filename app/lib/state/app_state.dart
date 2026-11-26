@@ -123,6 +123,21 @@ class AppState extends ChangeNotifier {
     await refresh();
   }
 
+  /// Moves a meal or bed time; reminders tied to it move with it.
+  Future<void> updateMealTime(String meal, int minutes) async {
+    final s = settings;
+    final updated = ScheduleSettings(
+      breakfast: meal == 'breakfast' ? minutes : s.breakfast,
+      lunch: meal == 'lunch' ? minutes : s.lunch,
+      evening: meal == 'evening' ? minutes : s.evening,
+      dinner: meal == 'dinner' ? minutes : s.dinner,
+      bedtime: meal == 'bedtime' ? minutes : s.bedtime,
+    );
+    validateSettings(updated); // throws ScheduleException(invalid_meal_times)
+    await medicines.saveSettings(updated);
+    await refresh();
+  }
+
   Future<void> deleteAccount() async {
     await auth.deleteAccount();
     await _clearLocal();

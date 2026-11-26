@@ -514,4 +514,55 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get deleteAccountButton => 'চিরতরে মুছে দিন';
+
+  @override
+  String get assistantTitle => 'ওষুধ নিয়ে জিজ্ঞেস করুন';
+
+  @override
+  String get assistantHint => 'প্রশ্ন লিখুন বা বলুন';
+
+  @override
+  String get assistantIntro =>
+      'জিজ্ঞেস করতে পারেন, যেমন \"পরের ওষুধ কখন?\" আমি ডোজ বদলাতে পারি না; সেজন্য ডাক্তারকে জিজ্ঞেস করুন।';
+
+  @override
+  String get assistantListening => 'শুনছি…';
+
+  @override
+  String get assistantVoiceUnavailable =>
+      'এই ফোনে কথা বলে প্রশ্ন করা যাচ্ছে না।';
+
+  @override
+  String get call999 => '৯৯৯-এ ফোন করুন';
+
+  @override
+  String actionStop(String name) {
+    return '$name-এর রিমাইন্ডার বন্ধ করবেন?';
+  }
+
+  @override
+  String actionMealTime(String meal, String time) {
+    return '$meal-এর সময় $time করবেন?';
+  }
+
+  @override
+  String get actionConfirm => 'নিশ্চিত করুন';
+
+  @override
+  String get actionDone => 'হয়ে গেছে';
+
+  @override
+  String get mealBreakfast => 'নাস্তা';
+
+  @override
+  String get mealLunch => 'দুপুরের খাবার';
+
+  @override
+  String get mealEvening => 'বিকেলের নাস্তা';
+
+  @override
+  String get mealDinner => 'রাতের খাবার';
+
+  @override
+  String get mealBedtime => 'ঘুম';
 }

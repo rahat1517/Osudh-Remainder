@@ -1009,6 +1009,96 @@ abstract class AppLocalizations {
   /// In bn, this message translates to:
   /// **'চিরতরে মুছে দিন'**
   String get deleteAccountButton;
+
+  /// No description provided for @assistantTitle.
+  ///
+  /// In bn, this message translates to:
+  /// **'ওষুধ নিয়ে জিজ্ঞেস করুন'**
+  String get assistantTitle;
+
+  /// No description provided for @assistantHint.
+  ///
+  /// In bn, this message translates to:
+  /// **'প্রশ্ন লিখুন বা বলুন'**
+  String get assistantHint;
+
+  /// No description provided for @assistantIntro.
+  ///
+  /// In bn, this message translates to:
+  /// **'জিজ্ঞেস করতে পারেন, যেমন \"পরের ওষুধ কখন?\" আমি ডোজ বদলাতে পারি না; সেজন্য ডাক্তারকে জিজ্ঞেস করুন।'**
+  String get assistantIntro;
+
+  /// No description provided for @assistantListening.
+  ///
+  /// In bn, this message translates to:
+  /// **'শুনছি…'**
+  String get assistantListening;
+
+  /// No description provided for @assistantVoiceUnavailable.
+  ///
+  /// In bn, this message translates to:
+  /// **'এই ফোনে কথা বলে প্রশ্ন করা যাচ্ছে না।'**
+  String get assistantVoiceUnavailable;
+
+  /// No description provided for @call999.
+  ///
+  /// In bn, this message translates to:
+  /// **'৯৯৯-এ ফোন করুন'**
+  String get call999;
+
+  /// No description provided for @actionStop.
+  ///
+  /// In bn, this message translates to:
+  /// **'{name}-এর রিমাইন্ডার বন্ধ করবেন?'**
+  String actionStop(String name);
+
+  /// No description provided for @actionMealTime.
+  ///
+  /// In bn, this message translates to:
+  /// **'{meal}-এর সময় {time} করবেন?'**
+  String actionMealTime(String meal, String time);
+
+  /// No description provided for @actionConfirm.
+  ///
+  /// In bn, this message translates to:
+  /// **'নিশ্চিত করুন'**
+  String get actionConfirm;
+
+  /// No description provided for @actionDone.
+  ///
+  /// In bn, this message translates to:
+  /// **'হয়ে গেছে'**
+  String get actionDone;
+
+  /// No description provided for @mealBreakfast.
+  ///
+  /// In bn, this message translates to:
+  /// **'নাস্তা'**
+  String get mealBreakfast;
+
+  /// No description provided for @mealLunch.
+  ///
+  /// In bn, this message translates to:
+  /// **'দুপুরের খাবার'**
+  String get mealLunch;
+
+  /// No description provided for @mealEvening.
+  ///
+  /// In bn, this message translates to:
+  /// **'বিকেলের নাস্তা'**
+  String get mealEvening;
+
+  /// No description provided for @mealDinner.
+  ///
+  /// In bn, this message translates to:
+  /// **'রাতের খাবার'**
+  String get mealDinner;
+
+  /// No description provided for @mealBedtime.
+  ///
+  /// In bn, this message translates to:
+  /// **'ঘুম'**
+  String get mealBedtime;
 }
 
 class _AppLocalizationsDelegate

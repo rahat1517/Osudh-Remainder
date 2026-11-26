@@ -109,4 +109,8 @@ class _FlakyRepository implements MedicineRepository {
 
   @override
   Future<void> stopMedicine(String id) => inner.stopMedicine(id);
+
+  @override
+  Future<void> saveSettings(ScheduleSettings settings) =>
+      inner.saveSettings(settings);
 }

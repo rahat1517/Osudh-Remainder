@@ -2,8 +2,11 @@ import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
 import '../alarms/alarm_runtime.dart';
+import '../alarms/speaker.dart';
+import '../assistant/voice_input.dart';
 import '../l10n/generated/app_localizations.dart';
 import '../state/app_state.dart';
+import 'assistant_screen.dart';
 import 'confirm_screen.dart';
 import 'family_screen.dart';
 import 'medicines_screen.dart';
@@ -29,6 +32,18 @@ class HomeScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(l.homeTitle),
         actions: [
+          IconButton(
+            tooltip: l.assistantTitle,
+            icon: const Icon(Icons.support_agent),
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => AssistantScreen(
+                  voice: SpeechVoiceInput(),
+                  speaker: TtsSpeaker(),
+                ),
+              ),
+            ),
+          ),
           IconButton(
             tooltip: l.setupTitle,
             icon: const Icon(Icons.alarm),

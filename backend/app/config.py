@@ -40,6 +40,11 @@ class Settings(BaseSettings):
     # Prescription reads per user: (max, window seconds) pairs
     ai_rate_limits: list[tuple[int, float]] = [(5, 60), (30, 3600), (100, 86400)]
 
+    # Assistant (Phase 8): chat works best at low effort
+    assistant_model: str = "claude-opus-5-5"
+    assistant_effort: str = "low"
+    assistant_rate_limits: list[tuple[int, float]] = [(10, 60), (100, 86400)]
+
     # Optional error monitoring. Personal data is scrubbed before sending.
     sentry_dsn: str | None = None
 

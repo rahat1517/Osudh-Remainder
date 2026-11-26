@@ -519,4 +519,55 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get deleteAccountButton => 'Delete permanently';
+
+  @override
+  String get assistantTitle => 'Ask about your medicines';
+
+  @override
+  String get assistantHint => 'Type or speak your question';
+
+  @override
+  String get assistantIntro =>
+      'Ask things like \"When is my next medicine?\" I cannot change doses; for that, ask your doctor.';
+
+  @override
+  String get assistantListening => 'Listening…';
+
+  @override
+  String get assistantVoiceUnavailable =>
+      'Voice input is not available on this phone.';
+
+  @override
+  String get call999 => 'Call 999';
+
+  @override
+  String actionStop(String name) {
+    return 'Stop reminders for $name?';
+  }
+
+  @override
+  String actionMealTime(String meal, String time) {
+    return 'Change $meal to $time?';
+  }
+
+  @override
+  String get actionConfirm => 'Confirm';
+
+  @override
+  String get actionDone => 'Done';
+
+  @override
+  String get mealBreakfast => 'breakfast';
+
+  @override
+  String get mealLunch => 'lunch';
+
+  @override
+  String get mealEvening => 'evening snack';
+
+  @override
+  String get mealDinner => 'dinner';
+
+  @override
+  String get mealBedtime => 'bedtime';
 }

@@ -31,6 +31,7 @@ uv run ruff format --check .
 | `GET /drugs/{id}` | One drug |
 | `POST /prescriptions/extract` (multipart `image`) | Prescription photo → medicines with per-field confidence. Needs `ANTHROPIC_API_KEY`, otherwise 503 |
 | `POST /schedules/generate` | Confirmed medicines → dose times and grouped reminders ([spec](../docs/SCHEDULE_SPEC.md)) |
+| `POST /assistant/chat` | Bangla/English assistant turn: answers from the user's schedule; emergencies answered by rules (works without AI); proposed changes returned as `actions` for confirmation |
 
 Server job: `uv run python -m app.caregivers.job` sends missed-dose alerts to caregivers (Phase 6).
 
@@ -105,9 +106,23 @@ backend/
 └── tests/               Unit, property-based and conformance tests
 ```
 
+## Assistant (Phase 8)
+
+```
+message → emergency rules (bn/en) ──match──► fixed "call 999" reply (no AI)
+            │ no match
+            ▼
+         Claude + tools: get_schedule, list_medicines, lookup_drug (read-only)
+                          propose_stop_medicine, propose_change_meal_time (suggest only)
+            ▼
+         reply + actions → app shows actions, applies them only after Confirm
+```
+
+Uses the stateless Messages API (not a hosted agent service), so health conversations are not stored
+outside our control. Evaluated by `eval/run_assistant_eval.py` (100 cases).
+
 ## Planned
 
-- Agent 4: Bangla assistant (Phase 8)
 - Agent 5: learning and monitoring (Phase 9)
 
 Never put API keys in code; use `.env`.

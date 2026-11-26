@@ -40,3 +40,9 @@ target-version = "py312"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP", "SIM"]
+
+[tool.ruff.lint.per-file-ignores]
+# Natural-language content (AI instructions, fixed safety messages) reads better unwrapped
+"app/assistant/prompt.py" = ["E501"]
+"app/assistant/safety.py" = ["E501"]
+"eval/run_assistant_eval.py" = ["E501"]
