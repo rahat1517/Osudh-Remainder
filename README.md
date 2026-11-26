@@ -26,16 +26,30 @@ oshudh-reminder/
 ├── app/          ← Flutter মোবাইল অ্যাপ
 ├── backend/      ← API server (প্রেসক্রিপশন পড়া, AI agent)
 ├── ml/           ← Local LLM fine-tuning (পরবর্তী ধাপ)
-├── database/     ← Supabase migration, ওষুধের database
+├── database/     ← ওষুধের database-এর script
+├── supabase/     ← Supabase কনফিগারেশন ও migration
 └── docs/         ← পরিকল্পনা ও ডিজাইন
 ```
+
+## 🚀 দ্রুত শুরু
+
+```bash
+# Backend
+cd backend && uv sync && uv run uvicorn app.main:app --reload
+
+# App
+cd app && flutter pub get && flutter run
+```
+
+বিস্তারিত: [backend/README.md](backend/README.md), [app/README.md](app/README.md), [CONTRIBUTING.md](CONTRIBUTING.md)
 
 ## 🛠️ প্রযুক্তি
 
 | অংশ | প্রযুক্তি |
 |---|---|
 | মোবাইল অ্যাপ | Flutter |
-| Backend + Database | Supabase (PostgreSQL) |
+| Backend | Python + FastAPI |
+| Database ও Auth | Supabase (PostgreSQL) |
 | প্রেসক্রিপশন পড়া | Claude API (vision), পরে fine-tuned local model (hybrid) |
 | বাংলা voice | Text-to-Speech / Speech-to-Text |
 | অ্যালার্ম | Android AlarmManager (offline, AI ছাড়া) |

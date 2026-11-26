@@ -1,0 +1,10 @@
+{
+  "@@locale": "bn",
+  "appTitle": "ওষুধ রিমাইন্ডার",
+  "@appTitle": { "description": "অ্যাপের নাম" },
+  "welcomeTitle": "স্বাগতম!",
+  "welcomeSubtitle": "প্রেসক্রিপশনের ছবি তুলুন, বাকিটা আমরা মনে রাখব।",
+  "getStarted": "শুরু করুন",
+  "comingSoon": "শীঘ্রই আসছে",
+  "disclaimer": "এই অ্যাপ ডাক্তারের পরামর্শের বিকল্প নয়।"
+}

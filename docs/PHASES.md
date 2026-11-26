@@ -61,14 +61,16 @@
 **নির্ভরতা:** নেই
 
 ### কাজ
-- [ ] GitHub repository-তে push, `main` branch সুরক্ষা
-- [ ] Backend: FastAPI প্রকল্প (`backend/`), `/health` endpoint, settings (`.env` পড়া)
-- [ ] Backend: test setup (pytest), lint (ruff)
-- [ ] App: `flutter create` দিয়ে প্রকল্প (`app/`), বাংলা font (Hind Siliguri / Noto Sans Bengali), থিম
-- [ ] App: বাংলা/ইংরেজি localization কাঠামো (বাংলা default)
-- [ ] Supabase: প্রকল্প তৈরি, local dev setup (`supabase/` ফোল্ডার)
-- [ ] GitHub Actions CI: backend test + lint, Flutter analyze + test
-- [ ] `CONTRIBUTING.md`: branch, commit, কোড লেখার নিয়ম
+- [x] GitHub repository-তে push
+- [ ] `main` branch সুরক্ষা (GitHub Settings → Branches, আপনাকে করতে হবে)
+- [x] Backend: FastAPI প্রকল্প (`backend/`), `/health` endpoint, settings (`.env` পড়া)
+- [x] Backend: test setup (pytest), lint (ruff)
+- [x] App: `flutter create` দিয়ে প্রকল্প (`app/`), বাংলা font (Hind Siliguri / Noto Sans Bengali), থিম
+- [x] App: বাংলা/ইংরেজি localization কাঠামো (বাংলা default)
+- [x] Supabase: local dev setup (`supabase/` ফোল্ডার)
+- [ ] Supabase: cloud প্রকল্প তৈরি (আপনার account লাগবে, Phase 1-এর আগে)
+- [x] GitHub Actions CI: backend test + lint, Flutter analyze + test
+- [x] `CONTRIBUTING.md`: branch, commit, কোড লেখার নিয়ম
 
 ### যা তৈরি হবে
 চালু হওয়া backend server, খালি Flutter অ্যাপ (বাংলা স্বাগত স্ক্রিন), Supabase প্রকল্প, সবুজ CI

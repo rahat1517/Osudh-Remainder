@@ -19,6 +19,7 @@ ml/data/
 *.pdf
 !docs/samples/**
 !app/assets/**
+!app/android/app/src/main/res/**
 
 # ============================================================
 # 🔑 গোপন তথ্য — API key, password
@@ -55,6 +56,7 @@ __pycache__/
 venv/
 .pytest_cache/
 .mypy_cache/
+.ruff_cache/
 .ipynb_checkpoints/
 
 # ============================================================
