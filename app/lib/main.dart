@@ -18,7 +18,7 @@ class OshudhApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light(),
       darkTheme: AppTheme.dark(),
-      // বাংলা default। পরে সেটিংস থেকে ইংরেজি বেছে নেওয়া যাবে।
+      // Bangla by default; English will be selectable in settings.
       locale: const Locale('bn'),
       supportedLocales: AppLocalizations.supportedLocales,
       localizationsDelegates: const [

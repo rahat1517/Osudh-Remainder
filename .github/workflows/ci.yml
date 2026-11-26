@@ -32,7 +32,7 @@ jobs:
         run: |
           uv run python -m app.drugs.importer ../database/seed/drugs_seed.csv --sql /tmp/seed.sql
           diff -u ../supabase/seed.sql /tmp/seed.sql || {
-            echo "::error::supabase/seed.sql পুরোনো। importer আবার চালান (database/README.md দেখুন)।"
+            echo "::error::supabase/seed.sql is stale. Re-run the importer (see database/README.md)."
             exit 1
           }
 

@@ -1,10 +1,10 @@
-"""প্রেসক্রিপশন পাঠকের নির্ভুলতা মাপা (আসল Claude API ডাকে, তাই খরচ হয়)।
+"""Measures prescription-reader accuracy (calls the real Claude API, so it costs money).
 
     export ANTHROPIC_API_KEY=...
-    uv run python -m eval.run_eval --yes                 # সব case (২০টা ছবি)
-    uv run python -m eval.run_eval --yes --limit 2       # দ্রুত পরীক্ষা
+    uv run python -m eval.run_eval --yes                 # all cases (20 images)
+    uv run python -m eval.run_eval --yes --limit 2       # quick check
 
-ফলাফল: eval/reports/<তারিখ>.md
+Report: eval/reports/<timestamp>.md
 """
 
 import argparse
@@ -20,7 +20,8 @@ from app.drugs.catalog import load_csv
 from app.drugs.matcher import DrugMatcher
 from app.drugs.models import Confidence
 from app.drugs.normalize import strength_numbers
-from app.prescriptions.reader import ClaudePrescriptionReader, ReaderError
+from app.prescriptions.errors import PrescriptionError
+from app.prescriptions.reader import ClaudePrescriptionReader
 from app.prescriptions.schemas import MedicineResult, PrescriptionResult
 from app.prescriptions.service import PrescriptionService
 from app.prescriptions.verifier import PrescriptionVerifier
@@ -56,7 +57,7 @@ def _find(expected: dict, medicines: list[MedicineResult]) -> MedicineResult | N
 
 
 def _check(field_name: str, exp: dict, m: MedicineResult) -> bool | None:
-    """None = এই ঘর এই case-এ মাপা হয় না।"""
+    """None means the field is not measured for this case."""
     match field_name:
         case "name":
             return (m.name.value or "").lower() == exp["brand"].lower()
@@ -91,13 +92,13 @@ def score(
     for exp in expected:
         m = _find(exp, result.medicines)
         if m is None:
-            log.append(f"- ❌ `{tag}` **{exp['brand']}**: পাওয়া যায়নি")
+            log.append(f"- MISSING `{tag}` **{exp['brand']}**: not found")
             for f in FIELDS:
                 tallies[f].add(False, Confidence.LOW)
             continue
         found.append(m)
         if exp.get("as_needed") and not m.as_needed:
-            log.append(f"- ❌ `{tag}` **{exp['brand']}**: as_needed ধরা পড়েনি")
+            log.append(f"- WRONG `{tag}` **{exp['brand']}**: as_needed not detected")
         for f in FIELDS:
             ok = _check(f, exp, m)
             if ok is None:
@@ -106,31 +107,32 @@ def score(
             tallies[f].add(ok, conf)
             if not ok:
                 got = getattr(m, f).value
-                mark = "🚨 ভুল কিন্তু HIGH" if conf == Confidence.HIGH else f"⚠️ ভুল ({conf})"
-                log.append(f"- {mark} `{tag}` **{exp['brand']}** {f}: পাওয়া `{got}`, সঠিক `{exp}`")
+                mark = "WRONG BUT HIGH" if conf == Confidence.HIGH else f"WRONG ({conf})"
+                log.append(
+                    f"- {mark} `{tag}` **{exp['brand']}** {f}: got `{got}`, expected `{exp}`"
+                )
     extra = [m for m in result.medicines if m not in found]
     for m in extra:
-        log.append(f"- ℹ️ `{tag}` অতিরিক্ত: `{m.raw_text}` (name conf {m.name.confidence})")
+        log.append(f"- EXTRA `{tag}`: `{m.raw_text}` (name confidence {m.name.confidence})")
 
 
 def main(argv=None) -> int:
     p = argparse.ArgumentParser()
-    p.add_argument("--yes", action="store_true", help="আসল API ডাকার অনুমতি (খরচ হবে)")
-    p.add_argument("--limit", type=int, help="প্রথম N টা case")
+    p.add_argument("--yes", action="store_true", help="Allow real (billed) API calls")
+    p.add_argument("--limit", type=int, help="Only the first N cases")
     p.add_argument("--variant", choices=["clean", "photo", "both"], default="both")
     args = p.parse_args(argv)
 
     settings = get_settings()
     if not settings.anthropic_api_key:
-        print("❌ ANTHROPIC_API_KEY নেই", file=sys.stderr)
+        print("error: ANTHROPIC_API_KEY is not set", file=sys.stderr)
         return 2
     cases = load_cases()[: args.limit]
     variants = ["clean", "photo"] if args.variant == "both" else [args.variant]
     n_calls = len(cases) * len(variants)
     if not args.yes:
-        print(
-            f"এটা {n_calls} বার Claude API ডাকবে ({settings.reader_model}), খরচ হবে। চালাতে --yes দিন।"
-        )
+        model = settings.reader_model
+        print(f"This makes {n_calls} billed Claude API calls ({model}). Re-run with --yes.")
         return 1
 
     generate()
@@ -148,8 +150,8 @@ def main(argv=None) -> int:
             raw = (EVAL_DIR / "out" / f"{case['id']}__{v}.jpg").read_bytes()
             try:
                 result = service.extract(raw)
-            except ReaderError as e:
-                log.append(f"- ❌ `{tag}`: {e}")
+            except PrescriptionError as e:
+                log.append(f"- MISSING `{tag}`: {e.code}: {e.message}")
                 for _ in case["expected"]:
                     for f in FIELDS:
                         tallies[v][f].add(False, Confidence.LOW)
@@ -157,17 +159,17 @@ def main(argv=None) -> int:
             score(result, case["expected"], tallies[v], log, tag)
 
     lines = [
-        f"# প্রেসক্রিপশন পাঠক: eval রিপোর্ট ({dt.date.today()})",
+        f"# Prescription reader eval ({dt.date.today()})",
         "",
         f"- Model: `{settings.reader_model}`, effort `{settings.reader_effort}`",
-        f"- Case: {len(cases)}টা কাল্পনিক ছাপা প্রেসক্রিপশন × {', '.join(variants)}",
+        f"- Cases: {len(cases)} fictional printed prescriptions × {', '.join(variants)}",
         "",
     ]
     for v in variants:
         lines += [
             f"## {v}",
             "",
-            "| ঘর | নির্ভুলতা | HIGH-এর মধ্যে সঠিক | ভুল কিন্তু HIGH |",
+            "| Field | Accuracy | Correct among HIGH | Wrong but HIGH |",
             "|---|---|---|---|",
         ]
         for f in FIELDS:
@@ -177,7 +179,7 @@ def main(argv=None) -> int:
             high = f"{hc}/{hn} ({hc / hn:.0%})" if hn else "—"
             lines.append(f"| {f} | {acc} | {high} | {hn - hc} |")
         lines.append("")
-    lines += ["## বিস্তারিত", "", *(log or ["সব ঠিক ✅"]), ""]
+    lines += ["## Details", "", *(log or ["All correct."]), ""]
 
     report = "\n".join(lines)
     out_dir = EVAL_DIR / "reports"

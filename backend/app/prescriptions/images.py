@@ -1,9 +1,10 @@
-"""আপলোড করা ছবি AI-তে পাঠানোর আগে প্রস্তুত করা।
+"""Prepares an uploaded image before it is sent to the AI.
 
-- শুধু JPEG / PNG / WebP গ্রহণ
-- বড় ছবি ছোট করা (দ্রুত ও কম খরচ; এর বেশি বড় ছবিতে নির্ভুলতা বাড়ে না)
-- ফোনের ছবিতে থাকা EXIF তথ্য (GPS অবস্থান, ফোনের মডেল, সময়) মুছে ফেলা: রোগীর গোপনীয়তার জন্য
-- ছবি ঘোরানো থাকলে (EXIF orientation) সোজা করা
+- Accepts JPEG, PNG and WebP only
+- Downscales large photos (faster and cheaper; larger images do not improve accuracy)
+- Removes all metadata (EXIF GPS location, phone model, timestamps) for patient privacy,
+  by re-encoding the pixels into a fresh JPEG
+- Applies the EXIF orientation so rotated phone photos arrive upright
 """
 
 import io
@@ -11,14 +12,12 @@ from dataclasses import dataclass
 
 from PIL import Image, ImageOps, UnidentifiedImageError
 
+from app.prescriptions.errors import ImageError
+
 ALLOWED_FORMATS = {"JPEG": "image/jpeg", "PNG": "image/png", "WEBP": "image/webp"}
 MAX_UPLOAD_BYTES = 15 * 1024 * 1024
 MAX_LONG_EDGE = 1568
 MIN_SHORT_EDGE = 300
-
-
-class ImageError(ValueError):
-    """ব্যবহারকারীকে দেখানোর মতো বার্তাসহ ত্রুটি (বাংলা)।"""
 
 
 @dataclass(frozen=True)
@@ -31,27 +30,26 @@ class PreparedImage:
 
 def prepare_image(raw: bytes) -> PreparedImage:
     if not raw:
-        raise ImageError("ছবি পাওয়া যায়নি।")
+        raise ImageError("image_missing", "No image was uploaded")
     if len(raw) > MAX_UPLOAD_BYTES:
-        raise ImageError("ছবিটা অনেক বড় (সর্বোচ্চ ১৫ MB)।")
+        raise ImageError("image_too_large", "The image is larger than 15 MB")
     try:
         img = Image.open(io.BytesIO(raw))
         fmt = img.format
         img.load()
     except (UnidentifiedImageError, OSError) as e:
-        raise ImageError("এটা ছবি মনে হচ্ছে না। JPEG বা PNG ছবি দিন।") from e
+        raise ImageError("image_unreadable", "The file is not a readable image") from e
     if fmt not in ALLOWED_FORMATS:
-        raise ImageError("শুধু JPEG, PNG বা WebP ছবি দেওয়া যাবে।")
+        raise ImageError("image_format_unsupported", "Only JPEG, PNG and WebP images are accepted")
 
     img = ImageOps.exif_transpose(img)
     if min(img.size) < MIN_SHORT_EDGE:
-        raise ImageError("ছবিটা খুব ছোট। প্রেসক্রিপশনের কাছ থেকে আবার ছবি তুলুন।")
+        raise ImageError("image_too_small", "The image is too small to read")
     if max(img.size) > MAX_LONG_EDGE:
         img.thumbnail((MAX_LONG_EDGE, MAX_LONG_EDGE), Image.Resampling.LANCZOS)
 
     if img.mode not in ("RGB", "L"):
         img = img.convert("RGB")
     out = io.BytesIO()
-    # নতুন করে JPEG বানানো হয়, তাই আসল ফাইলের কোনো EXIF/metadata থাকে না
-    img.save(out, format="JPEG", quality=90)
+    img.save(out, format="JPEG", quality=90)  # fresh encode: no metadata survives
     return PreparedImage(out.getvalue(), "image/jpeg", img.width, img.height)

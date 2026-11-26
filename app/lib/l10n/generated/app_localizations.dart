@@ -98,7 +98,7 @@ abstract class AppLocalizations {
     Locale('en'),
   ];
 
-  /// অ্যাপের নাম
+  /// App name shown in the title bar and launcher
   ///
   /// In bn, this message translates to:
   /// **'ওষুধ রিমাইন্ডার'**

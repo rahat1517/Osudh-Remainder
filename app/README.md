@@ -1,16 +1,16 @@
-# 📱 app/: Flutter মোবাইল অ্যাপ
+# App
 
-Flutter 3.50 (Android প্রথম)। ভাষা: বাংলা (default) ও ইংরেজি। Font: Hind Siliguri।
+Flutter 3.50, Android first. Languages: Bangla (default) and English. Font: Hind Siliguri.
 
-## চালানোর নিয়ম
+## Run
 
 ```bash
 cd app
 flutter pub get
-flutter run          # সংযুক্ত Android ফোন বা emulator-এ
+flutter run          # on a connected Android phone or emulator
 ```
 
-## Test ও Lint
+## Test and lint
 
 ```bash
 dart format lib test
@@ -18,27 +18,40 @@ flutter analyze
 flutter test
 ```
 
-## কাঠামো
+## Layout
 
 ```
 app/
 ├── lib/
-│   ├── main.dart            ← অ্যাপের শুরু, ভাষা ও থিম
-│   ├── theme/app_theme.dart ← রং, font, বড় বাটন
-│   ├── screens/             ← স্ক্রিনগুলো
-│   └── l10n/                ← সব লেখা: app_bn.arb (বাংলা), app_en.arb (ইংরেজি)
-├── assets/fonts/            ← Hind Siliguri (SIL Open Font License)
-└── test/
+│   ├── main.dart            App entry, locale and theme
+│   ├── theme/app_theme.dart Colours, font, large touch targets
+│   ├── screens/             Screens
+│   ├── schedule/            Offline schedule engine (mirrors the backend; see docs/SCHEDULE_SPEC.md)
+│   └── l10n/                All user-facing text: app_bn.arb (Bangla), app_en.arb (English)
+├── assets/fonts/            Hind Siliguri (SIL Open Font License)
+└── test/                    Widget tests, schedule conformance and parity tests
 ```
 
-## নতুন লেখা যোগ করার নিয়ম
+## Adding user-facing text
 
-1. `lib/l10n/app_bn.arb` আর `app_en.arb` দুটোতেই একই key যোগ করুন
-2. `flutter gen-l10n` চালান
-3. কোডে ব্যবহার করুন: `AppLocalizations.of(context).yourKey`
+1. Add the same key to both `lib/l10n/app_bn.arb` and `app_en.arb`.
+2. Run `flutter gen-l10n`.
+3. Use it: `AppLocalizations.of(context).yourKey`.
 
-## পরিকল্পিত অংশ
+Backend error and notice codes (see `backend/README.md`) are mapped to localized text here.
 
-- Onboarding, লগইন, scan ও confirm স্ক্রিন (Phase 4)
-- Offline alarm engine ও বাংলা voice (Phase 5)
-- Caregiver স্ক্রিন (Phase 6)
+## Schedule engine parity
+
+`test/schedule_conformance_test.dart` runs the shared vectors in `spec/schedule/vectors.json`.
+`test/schedule_parity_test.dart` compares the Dart engine with the Python engine on random inputs:
+
+```bash
+cd ../backend && uv run python -m scripts.export_schedule_parity --out /tmp/parity.json
+cd ../app && SCHEDULE_PARITY_VECTORS=/tmp/parity.json flutter test test/schedule_parity_test.dart
+```
+
+## Planned
+
+- Onboarding, login, scan and confirm screens (Phase 4)
+- Offline alarm engine and Bangla voice (Phase 5)
+- Caregiver screens (Phase 6)

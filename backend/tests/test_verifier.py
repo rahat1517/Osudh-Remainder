@@ -41,8 +41,9 @@ def test_typo_is_corrected_but_not_high(verifier):
     m = verify_one(verifier, name="Sargel", strength="20 mg")
     assert m.name.value == "Sergel"
     assert m.name.confidence == M
-    assert "Sargel" in m.name.note
-    assert m.alternatives  # বিকল্প দেখানো হবে
+    assert m.name.note.code == "name_corrected"
+    assert m.name.note.params == {"written": "Sargel", "matched": "Sergel"}
+    assert m.alternatives  # other candidates are offered
 
 
 def test_unknown_drug_keeps_ai_reading_without_high(verifier):

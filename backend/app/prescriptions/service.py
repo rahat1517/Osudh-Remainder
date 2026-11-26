@@ -1,17 +1,14 @@
+from app.prescriptions.errors import NotAPrescriptionError
 from app.prescriptions.images import prepare_image
-from app.prescriptions.reader import Reader, ReaderError
+from app.prescriptions.reader import Reader
 from app.prescriptions.schemas import PrescriptionResult
 from app.prescriptions.verifier import PrescriptionVerifier
 
 
-class NotAPrescriptionError(ReaderError):
-    pass
-
-
 class PrescriptionService:
-    """ছবি → প্রস্তুত → Agent ১ (পড়া) → Agent ২ (যাচাই) → ফলাফল।
+    """Image → prepare → Agent 1 (read) → Agent 2 (verify) → result.
 
-    ছবি কোথাও সংরক্ষণ করা হয় না; শুধু memory-তে থাকে।
+    The image is never stored; it only lives in memory for the duration of the request.
     """
 
     def __init__(self, reader: Reader, verifier: PrescriptionVerifier):
@@ -22,7 +19,5 @@ class PrescriptionService:
         image = prepare_image(raw_image)
         extraction = self._reader.read(image)
         if not extraction.is_prescription:
-            raise NotAPrescriptionError(
-                "not a prescription", "এটা প্রেসক্রিপশন মনে হচ্ছে না। প্রেসক্রিপশনের ছবি দিন।"
-            )
+            raise NotAPrescriptionError()
         return self._verifier.verify(extraction)

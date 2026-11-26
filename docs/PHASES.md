@@ -1,378 +1,294 @@
-# 🗺️ সম্পূর্ণ কাজের পরিকল্পনা: Phase অনুযায়ী
+# Roadmap
 
-এই ফাইলে পুরো প্রকল্প **১২টা phase**-এ ভাগ করা আছে।
-প্রতিটা phase-এ লেখা আছে লক্ষ্য, কোন phase আগে শেষ হতে হবে, কাজের তালিকা, কী তৈরি হবে আর কখন phase "শেষ" ধরা হবে।
+The project is split into twelve phases. Each phase lists its goal, dependencies, tasks and exit
+criteria. Work happens on one branch per phase; a phase is done when its exit criteria are verified
+and reported.
 
-> **কাজের নিয়ম:** আপনি বলবেন *"Phase X শুরু করো"*। আমি সেই phase-এর কাজ করব,
-> আলাদা branch-এ commit করব, আর শেষে "শেষের শর্ত"-গুলো যাচাই করে রিপোর্ট দেব।
+Legend: ✅ done · ⏳ blocked on an external input · ⬜ not started
 
----
+## Overview
 
-## 📌 সারসংক্ষেপ
+| Phase | Name | Area | Estimate | Status |
+|---|---|---|---|---|
+| **0** | Foundation and setup | all | 1 week | ✅ |
+| **1** | Bangladeshi drug catalogue | database, backend | 1-2 weeks | ✅ (official data ⏳) |
+| **2** | Prescription reader and verifier (AI) | backend | 2-3 weeks | ✅ (live eval ⏳) |
+| **3** | Schedule engine | backend, app | 1 week | ✅ |
+| **4** | App: onboarding, scan and confirm | app | 2-3 weeks | ⬜ |
+| **5** | Offline alarm engine and Bangla voice | app | 2 weeks | ⬜ |
+| **6** | Caregiver mode | app, backend | 1-2 weeks | ⬜ |
+| **7** | Testing, pilot and Play Store | all | 2-3 weeks | ⬜ |
+| | **MVP launch** | | **~3-4 months** | |
+| **8** | Bangla AI assistant | backend, app | 2 weeks | ⬜ |
+| **9** | Learning, refills and Ramadan mode | backend, app | 2 weeks | ⬜ |
+| **10** | SMS and voice-call escalation | backend | 1-2 weeks | ⬜ |
+| **11** | Data flywheel and self-hosted model (hybrid) | ml, backend | 4-6 weeks | ⬜ |
 
-| Phase | নাম | অংশ | আনুমানিক সময় |
-|---|---|---|---|
-| **0** | ভিত্তি ও Setup | সব | ১ সপ্তাহ |
-| **1** | বাংলাদেশি ওষুধের Database | database, backend | ১–২ সপ্তাহ |
-| **2** | প্রেসক্রিপশন পাঠক ও যাচাইকারী (AI) | backend | ২–৩ সপ্তাহ |
-| **3** | Schedule Engine | backend, app | ১ সপ্তাহ |
-| **4** | মোবাইল অ্যাপ: Onboarding ও Scan-Confirm | app | ২–৩ সপ্তাহ |
-| **5** | Offline Alarm Engine ও বাংলা Voice | app | ২ সপ্তাহ |
-| **6** | Caregiver Mode | app, backend | ১–২ সপ্তাহ |
-| **7** | পরীক্ষা, Pilot ও Play Store | সব | ২–৩ সপ্তাহ |
-| | 🚀 **MVP লঞ্চ** | | **মোট ~৩–৪ মাস** |
-| **8** | বাংলা AI সহকারী | backend, app | ২ সপ্তাহ |
-| **9** | শেখা, Refill ও রমজান মোড | backend, app | ২ সপ্তাহ |
-| **10** | SMS ও Voice Call Escalation | backend | ১–২ সপ্তাহ |
-| **11** | Data Flywheel ও Local LLM (Hybrid) | ml, backend | ৪–৬ সপ্তাহ |
-
-(সময়গুলো একজন developer আর আমার সহায়তা ধরে অনুমান করা। আসল সময় কম-বেশি হতে পারে।)
+Estimates assume one developer working with an AI assistant.
 
 ```
-0 ──► 1 ──► 2 ──► 3 ──► 4 ──► 5 ──► 6 ──► 7 🚀
+0 ──► 1 ──► 2 ──► 3 ──► 4 ──► 5 ──► 6 ──► 7 (MVP)
                               │
                               └──► 8 ──► 9 ──► 10 ──► 11
 ```
 
----
+## Technical decisions
 
-## 🧱 প্রযুক্তিগত সিদ্ধান্ত (Phase 0-এ চূড়ান্ত হবে)
-
-| বিষয় | প্রস্তাবিত (default) | কারণ |
+| Topic | Decision | Reason |
 |---|---|---|
-| মোবাইল অ্যাপ | **Flutter** (আগে Android, পরে iOS) | এক কোডে দুই প্ল্যাটফর্ম। বাংলাদেশে বেশিরভাগ ফোন Android |
-| Backend | **Python + FastAPI** | AI আর ML-এর কাজ Python-এ সবচেয়ে সহজ। `ml/`-এর সাথে একই ভাষা থাকবে |
-| Database ও Auth | **Supabase** (PostgreSQL, Phone OTP, Storage) | বিনামূল্যে শুরু করা যায়, RLS দিয়ে নিরাপত্তা |
-| প্রেসক্রিপশন পড়া | **Claude API** (vision + structured output) | হাতের লেখা পড়ায় শক্তিশালী। পরে hybrid |
-| Schedule হিসাব | **Rule-based কোড, AI নয়** | সময় হিসাবে ভুল হওয়া চলবে না, তাই নির্দিষ্ট নিয়মে চলবে |
-| অ্যালার্ম | Android AlarmManager (local) | Offline, নির্ভরযোগ্য |
-| Push notification | Firebase Cloud Messaging (FCM) | Caregiver alert-এর জন্য |
-| Backend hosting | Railway / Render / Fly.io | শুরুতে সস্তা |
-
-> ⚠️ **গুরুত্বপূর্ণ সংশোধন:** আগের আলোচনায় Agent ৩ (Schedule) AI ছিল।
-> নিরাপত্তার জন্য এটা **rule-based** করা হলো। AI শুধু নির্দেশনা পড়বে (`১+০+১`, "খাবারের আগে"),
-> আর সময় হিসাব করবে নির্দিষ্ট নিয়মের কোড, যেটা test দিয়ে ১০০% যাচাই করা যায়।
+| Mobile app | Flutter, Android first | One codebase; most phones in Bangladesh run Android |
+| Backend | Python + FastAPI | Best ecosystem for AI and ML; same language as `ml/` |
+| Database and auth | Supabase (PostgreSQL, phone OTP, storage) | Free to start; row-level security |
+| Prescription reading | Claude vision + structured output | Strong at handwriting; later hybrid with a local model |
+| Schedule computation | **Rule-based, not AI** | Dose timing must be exact and fully testable |
+| Alarms | Android AlarmManager (local) | Offline and reliable |
+| Push notifications | Firebase Cloud Messaging | Caregiver alerts |
+| API errors | Stable codes + English messages; the app localizes | Clients never parse prose |
 
 ---
 
-## Phase 0: ভিত্তি ও Setup
+## Phase 0: Foundation and setup ✅
 
-**লক্ষ্য:** সব অংশের খালি কিন্তু চালু হওয়া কাঠামো, যাতে পরের phase-গুলো সরাসরি শুরু করা যায়।
-**নির্ভরতা:** নেই
+**Goal:** a working skeleton of every component.
 
-### কাজ
-- [x] GitHub repository-তে push
-- [ ] `main` branch সুরক্ষা (GitHub Settings → Branches, আপনাকে করতে হবে)
-- [x] Backend: FastAPI প্রকল্প (`backend/`), `/health` endpoint, settings (`.env` পড়া)
-- [x] Backend: test setup (pytest), lint (ruff)
-- [x] App: `flutter create` দিয়ে প্রকল্প (`app/`), বাংলা font (Hind Siliguri / Noto Sans Bengali), থিম
-- [x] App: বাংলা/ইংরেজি localization কাঠামো (বাংলা default)
-- [x] Supabase: local dev setup (`supabase/` ফোল্ডার)
-- [ ] Supabase: cloud প্রকল্প তৈরি (আপনার account লাগবে, Phase 1-এর আগে)
-- [x] GitHub Actions CI: backend test + lint, Flutter analyze + test
-- [x] `CONTRIBUTING.md`: branch, commit, কোড লেখার নিয়ম
+- [x] Repository on GitHub
+- [ ] Branch protection on `main` (GitHub settings; owner action)
+- [x] Backend: FastAPI project, `/health`, settings from `.env`, pytest, ruff
+- [x] App: Flutter project, Bangla font (Hind Siliguri), theme, Bangla/English localization
+- [x] Supabase local configuration
+- [ ] Supabase cloud project (owner action, before production)
+- [x] GitHub Actions CI: backend lint and tests, Flutter format, analyze and tests, debug APK build
+- [x] `CONTRIBUTING.md`
 
-### যা তৈরি হবে
-চালু হওয়া backend server, খালি Flutter অ্যাপ (বাংলা স্বাগত স্ক্রিন), Supabase প্রকল্প, সবুজ CI
-
-### শেষের শর্ত
-- `GET /health` → `{"status": "ok"}`
-- Flutter অ্যাপ emulator-এ বাংলা লেখাসহ চালু হয়
-- CI-তে সব check পাস করে
+**Exit criteria:** ✅ `GET /health` returns ok · ✅ app starts with Bangla text · ✅ CI green
 
 ---
 
-## Phase 1: বাংলাদেশি ওষুধের Database
+## Phase 1: Bangladeshi drug catalogue ✅ (official data ⏳)
 
-**লক্ষ্য:** প্রেসক্রিপশনের ওষুধের নাম যাচাই আর autocomplete-এর জন্য নির্ভরযোগ্য database।
-**নির্ভরতা:** Phase 0
+**Goal:** a reliable catalogue for verifying names read from prescriptions and for autocomplete.
 
-### কাজ
-- [x] Database schema: `drugs` (brand, generic, strength, form, manufacturer, DAR নম্বর)
-- [ ] তথ্যের উৎস ঠিক করা (DGDA তালিকা / উন্মুক্ত তথ্য), ব্যবহারের অনুমতি ও শর্ত যাচাই. **আপনার কাজ:** এই container থেকে DGDA সাইট খোলা যায় না। এখন ৪৬টা ওষুধের অযাচাইকৃত নমুনা দিয়ে কাজ চলছে
-- [x] Import script: CSV → PostgreSQL (পরিষ্কার, duplicate বাদ, নাম স্বাভাবিক করা)
-- [x] খোঁজার পদ্ধতি: `pg_trgm` index (database) + rapidfuzz (backend) দিয়ে fuzzy search ("Ma?x" → "Maxpro 20")
-- [x] বানানের ভুল ও প্রচলিত সংক্ষেপ সামলানো (যেমন "Napa Ext" = "Napa Extend")
-- [x] API: `GET /drugs/search?q=` (autocomplete), `POST /drugs/match` (সবচেয়ে কাছের মিল + score)
-- [x] Test: ৫৬টা ভুল বানান → সঠিক ওষুধ (১০০% সঠিক)
+- [x] Schema: `drugs` (brand, generic, strength, form, manufacturer, source, verified)
+- [ ] Official source: the DGDA register, with usage terms checked. **Owner action:** the DGDA site
+      is not reachable from the build environment. A 46-entry *unverified* development seed is used
+      until then.
+- [x] Importer: CSV → validated, de-duplicated, normalised → idempotent `supabase/seed.sql`
+      (CI fails if the SQL is stale)
+- [x] Search: `pg_trgm` indexes in the database; rapidfuzz two-stage matching in the backend
+- [x] Normalisation: dosage-form words, units, Bangla digits, OCR digit/letter confusion,
+      abbreviations, brands with digits in the name (`Cef-3`)
+- [x] API: `GET /drugs/search`, `POST /drugs/match`, `GET /drugs/{id}`
+- [x] Tests: 56 realistic misspellings
 
-### যা তৈরি হবে
-ওষুধের database, search আর match API
-
-### শেষের শর্ত
-- ⏳ কমপক্ষে প্রচলিত ১,০০০+ brand আছে (এখন ৩৮টা, DGDA তালিকার অপেক্ষায়)
-- ✅ ভুল বানানের test set-এ ≥ ৯০% সঠিক মিল (৫৬/৫৬ = ১০০%, ভুল কিন্তু "high" = ০)
-- ✅ Search response < ২০০ms (৩০,০০০ ওষুধে ১৬–৩৪ms)
-
----
-
-## Phase 2: প্রেসক্রিপশন পাঠক ও যাচাইকারী (AI)
-
-**লক্ষ্য:** ছবি থেকে ওষুধের তালিকা, প্রতিটা ঘরের confidence-সহ। এটাই প্রকল্পের মূল অংশ।
-**নির্ভরতা:** Phase 1
-
-### কাজ
-- [x] Output schema ঠিক করা: name, strength, dose pattern, timing, duration, instructions, confidence (প্রতিটা ঘরের জন্য আলাদা)
-- [x] **Agent ১ (পাঠক):** Claude vision + structured output দিয়ে ছবি → JSON
-- [x] বাংলাদেশি নির্দেশনার নিয়ম prompt-এ: `১+০+১`, `½+0+½`, `AC/PC`, `খাবারের আগে/পরে`, `চলবে`, বাংলা সংখ্যা
-- [x] **Agent ২ (যাচাইকারী):** প্রতিটা নাম Phase 1-এর database-এর সাথে মেলানো, confidence ঠিক করা
-- [x] চূড়ান্ত confidence-এর নিয়ম: AI-এর নিশ্চয়তা + database-এ মিল + ঘরের ধরন মিলিয়ে উচ্চ / মাঝারি / কম
-- [x] ছবির মান যাচাই: ঝাপসা, অন্ধকার বা প্রেসক্রিপশন নয় এমন ছবি → "আবার তুলুন"
-- [x] ছবি থেকে রোগীর নাম/ফোন নম্বর সংরক্ষণ না করা (schema-তে ঘরই নেই, EXIF/GPS মোছা, ছবি সংরক্ষণ হয় না)
-- [x] API: `POST /prescriptions/extract` (ছবি → ফলাফল)
-- [x] **মূল্যায়ন set (eval):** ১০টা কাল্পনিক প্রেসক্রিপশন × ২ রূপ (৩১টা ওষুধ) + সঠিক উত্তর
-- [ ] আরও case + অনুমতিপ্রাপ্ত আসল হাতে লেখা প্রেসক্রিপশন (রোগীর তথ্য মুছে)
-- [x] মূল্যায়ন script: ঘর অনুযায়ী নির্ভুলতা মাপা
-
-### যা তৈরি হবে
-Extraction API, eval set, নির্ভুলতার রিপোর্ট
-
-### শেষের শর্ত
-- ⏳ ছাপা প্রেসক্রিপশনে ওষুধের নাম ≥ ৯৫%, ডোজ ≥ ৯৫% সঠিক (API key দিয়ে eval চালানো বাকি)
-- ⏳ হাতে লেখা প্রেসক্রিপশনে সব "উচ্চ" confidence ঘর ≥ ৯৮% সঠিক (আসল প্রেসক্রিপশন লাগবে)
-- ⏳ ভুল পড়া ঘরের বেশিরভাগ "মাঝারি" বা "কম" হিসেবে চিহ্নিত হয় (ভুল কিন্তু "উচ্চ", এমন ঘর খুব কম)
-
-> **মনে রাখবেন:** এখানে মূল লক্ষ্য সবকিছু সঠিক পড়া নয়, বরং **ভুল হলে সেটা ধরা পড়া**।
+**Exit criteria:**
+- ⏳ 1,000+ common brands (38 today, waiting for official data)
+- ✅ ≥ 90% correct on the misspelling set: **56/56 (100%), and no wrong answer marked high**
+- ✅ Search < 200 ms: **16-34 ms on a 30,000-drug synthetic catalogue**
 
 ---
 
-## Phase 3: Schedule Engine
+## Phase 2: Prescription reader and verifier ✅ (live eval ⏳)
 
-**লক্ষ্য:** confirm করা ওষুধের তালিকা থেকে নির্ভুল অ্যালার্মের সময়সূচি।
-**নির্ভরতা:** Phase 2
+**Goal:** prescription photo → list of medicines with a confidence for every field.
 
-### কাজ
-- [ ] Dose parser: `1+0+1`, `১+১+১`, `0+0+½`, `1+1+1+1`, "দিনে ২ বার", "প্রতি ৮ ঘণ্টা"
-- [ ] খাবারের সময় + আগে/পরে → নির্দিষ্ট সময় (default: আগে = −৩০ মিনিট, পরে = +১৫ মিনিট)
-- [ ] মেয়াদ: শুরুর তারিখ + দিন → শেষ তারিখ; "চলবে" → শেষ তারিখ নেই
-- [ ] বিশেষ ক্ষেত্র: "সপ্তাহে ১ দিন", "প্রয়োজনে (SOS)" (অ্যালার্ম নয়, তালিকায় থাকবে)
-- [ ] কাছাকাছি সময়ের ওষুধ একসাথে করা ("রাত ৯টা: Seclo + Napa")
-- [ ] একই কোড Dart-এ (app) চলবে যাতে offline-এ schedule আবার হিসাব করা যায়, অথবা backend থেকে তৈরি schedule ফোনে সংরক্ষণ
-- [ ] বিস্তারিত unit test (২০০+ ক্ষেত্র)
+- [x] Output schema with per-field confidence (name, strength, dose, timing, duration)
+- [x] **Agent 1 (reader):** Claude vision with structured output, adaptive thinking at high effort,
+      server-side refusal fallback
+- [x] Prompt covering Bangladeshi notation (Bangla digits, `1+0+1`, `½`, OD/BD/TDS/QID/HS, AC/PC,
+      before/after food, "continue", SOS)
+- [x] **Agent 2 (verifier, rule-based):** catalogue matching, dose-pattern and duration validation,
+      confidence caps on poor images. Final confidence never exceeds the AI's own.
+- [x] Image checks: format, size, minimum resolution; "not a prescription" detection
+- [x] Privacy: no schema fields for patient identity; EXIF/GPS stripped; images never stored
+- [x] API: `POST /prescriptions/extract` with error codes
+- [x] Eval set: 10 fictional prescriptions × clean/photo variants (31 medicines), generator, billed
+      runner gated behind `--yes`, scoring self-test
+- [ ] More cases, including consented real handwritten prescriptions with personal data removed
 
-### যা তৈরি হবে
-Schedule engine library + `POST /schedules/generate`
-
-### শেষের শর্ত
-- সব test পাস (১০০%, কারণ এটা rule-based)
-- সময় অঞ্চল: Asia/Dhaka নিশ্চিত
-
----
-
-## Phase 4: মোবাইল অ্যাপ (Onboarding ও Scan-Confirm)
-
-**লক্ষ্য:** ব্যবহারকারী অ্যাপ install করে প্রেসক্রিপশন confirm পর্যন্ত যেতে পারবেন।
-**নির্ভরতা:** Phase 2, 3
-
-### কাজ
-- [ ] Database schema: `profiles`, `prescriptions`, `medicines`, `schedules` + RLS
-- [ ] ফোন নম্বর লগইন (Supabase Phone OTP, Android-এ OTP auto-read)
-- [ ] Onboarding: স্বাগত → লগইন → permission → প্রথম প্রেসক্রিপশন
-- [ ] Camera / gallery থেকে প্রেসক্রিপশন, ছবি crop আর মান ঠিক করা
-- [ ] **Confirm স্ক্রিন:** ✅ উচ্চ, 🟡 মাঝারি (হলুদ), ⬜ কম (খালি) → সম্পাদনা → "ঠিক আছে"
-- [ ] ওষুধের নাম autocomplete (Phase 1 API)
-- [ ] হাতে ওষুধ যোগ করার স্ক্রিন (প্রেসক্রিপশন ছাড়া)
-- [ ] হোম স্ক্রিন: আজকের ওষুধ, পরের ডোজ
-- [ ] ওষুধের তালিকা, সম্পাদনা, বন্ধ করা
-- [ ] বড় font, বড় বাটন, সহজ বাংলা (বয়স্কদের কথা মাথায় রেখে)
-
-### যা তৈরি হবে
-Scan থেকে confirm পর্যন্ত কাজ করা অ্যাপ (অ্যালার্ম ছাড়া)
-
-### শেষের শর্ত
-- নতুন ব্যবহারকারী ৩ মিনিটের মধ্যে প্রথম প্রেসক্রিপশন confirm করতে পারেন
-- Confirm না করে schedule তৈরি হয় না
-- একজন ব্যবহারকারী অন্যজনের তথ্য দেখতে পারেন না (RLS test)
+**Exit criteria:**
+- ⏳ Printed prescriptions: name ≥ 95%, dose ≥ 95% correct (run the eval with an API key)
+- ⏳ Handwritten prescriptions: ≥ 98% of high-confidence fields correct (needs real samples)
+- ⏳ Most misread fields marked medium or low
 
 ---
 
-## Phase 5: Offline Alarm Engine ও বাংলা Voice
+## Phase 3: Schedule engine ✅
 
-**লক্ষ্য:** ইন্টারনেট ছাড়াই, ফোন lock থাকলেও, সময়মতো অ্যালার্ম বাজবে।
-**নির্ভরতা:** Phase 4
+**Goal:** confirmed medicines → exact reminder times, identical on server and phone.
 
-### কাজ
-- [ ] Schedule ফোনে local-ভাবে সংরক্ষণ (SQLite / Drift)
-- [ ] Exact alarm: `setExactAndAllowWhileIdle`, `SCHEDULE_EXACT_ALARM` / `USE_EXACT_ALARM`
-- [ ] Full-screen অ্যালার্ম স্ক্রিন (lock screen-এর ওপরে): ওষুধের নাম, ছবি, কয়টা
-- [ ] বাটন: ✅ খেয়েছি / ⏰ ১০ মিনিট পরে / ❌ বাদ
-- [ ] Snooze (সর্বোচ্চ ৩ বার)
-- [ ] বাংলা voice (TTS): "এখন আপনার Seclo 20, একটা, খাবারের আগে খাওয়ার সময়"
-- [ ] `BOOT_COMPLETED`, সময় বা timezone বদলালে অ্যালার্ম আবার set করা
-- [ ] ব্র্যান্ড চিনে battery / autostart গাইড (Xiaomi, Vivo, Oppo, Realme, Samsung, অন্যান্য)
-- [ ] Dose log (`dose_logs`): local-এ সংরক্ষণ, ইন্টারনেট এলে server-এ sync
-- [ ] কয়েকটা আসল ফোনে পরীক্ষা (বিশেষ করে Xiaomi / Realme)
+- [x] Language-neutral specification: [SCHEDULE_SPEC.md](SCHEDULE_SPEC.md)
+- [x] Dose patterns (2-4 slots, Bangla digits, fractions), interval dosing (every N hours), weekly
+      medicines, as-needed medicines (never scheduled)
+- [x] Meal-time offsets (before −30, after +15, empty stomach −60 min; configurable), bedtime,
+      doses after midnight
+- [x] Course length by dose count: a course confirmed in the afternoon keeps every dose
+- [x] Reminder grouping that never delays a dose
+- [x] Python engine and `POST /schedules/generate` (Asia/Dhaka, error codes)
+- [x] Dart engine for offline use
+- [x] 38 hand-derived conformance vectors run by both implementations
+- [x] Property-based tests (Hypothesis); verified once at 5,000 examples per property
+- [x] Differential test: 2,000 random cases, Python and Dart must agree exactly (CI job)
 
-### যা তৈরি হবে
-নির্ভরযোগ্য অ্যালার্ম ব্যবস্থা + dose tracking
-
-### শেষের শর্ত
-- Airplane mode-এ, ফোন lock অবস্থায়, ৮ ঘণ্টা পরেও অ্যালার্ম ঠিক সময়ে বাজে
-- Restart-এর পরেও অ্যালার্ম থাকে
-- কমপক্ষে ৩টা ভিন্ন ব্র্যান্ডের ফোনে পরীক্ষিত
+**Exit criteria:** ✅ all tests pass (141 backend, 58 app, 2,000-case parity) · ✅ Asia/Dhaka
 
 ---
 
-## Phase 6: Caregiver Mode
+## Phase 4: App onboarding, scan and confirm ⬜
 
-**লক্ষ্য:** পরিবারের সদস্য রোগীর schedule দেখবেন আর মিস হলে খবর পাবেন।
-**নির্ভরতা:** Phase 5
+**Goal:** a user can install the app and confirm a prescription.
+**Depends on:** Phases 2, 3
 
-### কাজ
-- [ ] `caregivers` schema: রোগী ↔ caregiver সম্পর্ক, অনুমতির ধরন (শুধু দেখা / সম্পাদনা)
-- [ ] আমন্ত্রণ: কোড বা লিংক দিয়ে যুক্ত হওয়া, রোগীর সম্মতি নেওয়া
-- [ ] Caregiver ড্যাশবোর্ড: আজ কোন ডোজ খাওয়া হলো, কোনটা মিস
-- [ ] Caregiver রোগীর হয়ে প্রেসক্রিপশন যোগ করতে পারবেন (বয়স্কদের জন্য)
-- [ ] মিস হলে push notification (FCM): ৩০ মিনিটের মধ্যে "খেয়েছি" না এলে
-- [ ] Server-side মিস শনাক্তকরণ (নির্দিষ্ট সময় পরপর চলা job)
-- [ ] সম্পর্ক বাতিল করার সুবিধা
+- [ ] Schema: `profiles`, `prescriptions`, `medicines`, `schedules` with row-level security
+- [ ] Phone login (Supabase OTP, automatic SMS code reading on Android)
+- [ ] Onboarding: welcome → login → permissions → first prescription
+- [ ] Camera or gallery capture, crop and quality hints
+- [ ] **Confirm screen:** high (filled), medium (highlighted), low (empty) → edit → Confirm
+- [ ] Localized texts for every backend error and notice code
+- [ ] Medicine-name autocomplete
+- [ ] Manual entry without a prescription
+- [ ] Home screen: today's medicines and next dose
+- [ ] Medicine list: edit and stop
+- [ ] Large text, large buttons, simple Bangla
 
-### যা তৈরি হবে
-Caregiver linking, ড্যাশবোর্ড, মিস-ডোজ alert
-
-### শেষের শর্ত
-- রোগীর ডোজ মিস হলে ৩৫ মিনিটের মধ্যে caregiver notification পান
-- সম্মতি ছাড়া কেউ কারো তথ্য দেখতে পারেন না
-
----
-
-## Phase 7: পরীক্ষা, Pilot ও Play Store
-
-**লক্ষ্য:** আসল ব্যবহারকারীদের দিয়ে পরীক্ষা করে নিরাপদভাবে বাজারে আনা।
-**নির্ভরতা:** Phase 6
-
-### কাজ
-- [ ] পুরো flow-এর end-to-end test
-- [ ] নিরাপত্তা পর্যালোচনা: RLS, API auth, rate limit, key ব্যবস্থাপনা
-- [ ] Privacy Policy ও Terms (বাংলা + ইংরেজি), চিকিৎসা disclaimer
-- [ ] অ্যাপে তথ্য মুছে ফেলার সুবিধা (account delete)
-- [ ] Crash reporting (Sentry / Firebase Crashlytics), basic analytics (ব্যক্তিগত তথ্য ছাড়া)
-- [ ] **Pilot:** ২০–৫০ জন ব্যবহারকারী (বয়স্ক + caregiver), ২–৩ সপ্তাহ
-- [ ] Pilot-এর মতামত থেকে সংশোধন
-- [ ] Play Store: Health app declaration, exact alarm-এর কারণ ব্যাখ্যা, screenshot, বাংলা বর্ণনা
-- [ ] Internal → Closed testing → Production release
-
-### যা তৈরি হবে
-🚀 **MVP Play Store-এ**
-
-### শেষের শর্ত
-- Pilot-এ অ্যালার্ম নির্ভরযোগ্যতা ≥ ৯৯%
-- Crash-free session ≥ ৯৯%
-- Play Store review পাস
+**Exit criteria:**
+- A new user confirms a first prescription within 3 minutes
+- No schedule exists without confirmation
+- Users cannot see each other's data (RLS tests)
 
 ---
 
-## Phase 8: বাংলা AI সহকারী
+## Phase 5: Offline alarm engine and Bangla voice ⬜
 
-**লক্ষ্য:** কথা বলে বা লিখে ওষুধের তথ্য জানা আর রিমাইন্ডার বদলানো।
-**নির্ভরতা:** Phase 7
+**Goal:** alarms fire on time without internet, even with the phone locked.
+**Depends on:** Phase 4
 
-### কাজ
-- [ ] চ্যাট স্ক্রিন (বাংলা লেখা)
-- [ ] Voice input (বাংলা STT) + voice উত্তর (TTS)
-- [ ] AI-এর tool: "আজকের schedule দেখাও", "ওষুধ বন্ধ করো" (confirm সহ), "সময় বদলাও" (confirm সহ)
-- [ ] **নিরাপত্তার নিয়ম:** ডোজ বদলানো বা "মিস হলে দুটো খাবো?" ধরনের প্রশ্নে → ডাক্তার/ফার্মাসিস্টের কাছে পাঠানো
-- [ ] জরুরি লক্ষণ শনাক্ত করে (বুকে ব্যথা, শ্বাসকষ্ট ইত্যাদি) → ৯৯৯ / নিকটস্থ হাসপাতালে যাওয়ার পরামর্শ
-- [ ] কথোপকথনের eval: ১০০টা প্রশ্ন + নিরাপদ উত্তরের মানদণ্ড
+- [ ] Local schedule storage (SQLite / Drift), generated by the Dart schedule engine
+- [ ] Exact alarms (`setExactAndAllowWhileIdle`, `SCHEDULE_EXACT_ALARM` / `USE_EXACT_ALARM`)
+- [ ] Full-screen alarm over the lock screen: name, picture, amount
+- [ ] Buttons: Taken / Snooze 10 min / Skip; up to 3 snoozes
+- [ ] Bangla text-to-speech
+- [ ] Re-register alarms on boot and on time or time-zone change
+- [ ] Brand-specific battery and autostart guidance
+- [ ] Dose log stored locally, synced when online
+- [ ] Tested on real devices (Xiaomi, Realme and at least one more brand)
 
-### শেষের শর্ত
-- নিরাপত্তা eval-এ ১০০% (কখনো নিজে ডোজ পরামর্শ দেয় না)
-- প্রচলিত প্রশ্নে ≥ ৯০% সঠিক উত্তর
-
----
-
-## Phase 9: শেখা, Refill ও রমজান মোড
-
-**লক্ষ্য:** অ্যাপ ব্যবহারকারীর অভ্যাস থেকে শিখবে আর আগে থেকে সাহায্য করবে।
-**নির্ভরতা:** Phase 7
-
-### কাজ
-- [ ] সময় শেখা: ৩+ দিন একই রকম দেরি হলে সময় বদলানোর প্রস্তাব
-- [ ] Refill: ওষুধের পরিমাণ ট্র্যাক → শেষ হওয়ার ৩ দিন আগে সতর্কতা
-- [ ] রমজান মোড: সেহরি/ইফতারের সময় (এলাকা অনুযায়ী) → schedule বদলানোর প্রস্তাব
-- [ ] সাপ্তাহিক রিপোর্ট (adherence %), ডাক্তারকে দেখানোর জন্য PDF
-- [ ] একই generic দুই প্রেসক্রিপশনে থাকলে সতর্কতা (duplicate therapy)
-
-### শেষের শর্ত
-- সব প্রস্তাব ব্যবহারকারীর "হ্যাঁ" ছাড়া কার্যকর হয় না
-- রমজান মোড পরীক্ষিত (ঢাকা, চট্টগ্রাম, সিলেটের সময়)
+**Exit criteria:** alarm fires on time in airplane mode with the phone locked after 8 hours ·
+survives restart · tested on at least 3 brands
 
 ---
 
-## Phase 10: SMS ও Voice Call Escalation
+## Phase 6: Caregiver mode ⬜
 
-**লক্ষ্য:** ইন্টারনেট বা smartphone ছাড়া ব্যবহারকারীদের কাছেও পৌঁছানো।
-**নির্ভরতা:** Phase 7
+**Goal:** family members see the schedule and are alerted about missed doses.
+**Depends on:** Phase 5
 
-### কাজ
-- [ ] বাংলাদেশি SMS gateway নির্বাচন ও integration
-- [ ] Automated voice call (রেকর্ড করা বাংলা বার্তা)
-- [ ] Escalation নিয়ম: অ্যালার্ম → ৩০ মিনিট → SMS/call → caregiver
-- [ ] Feature phone মোড: caregiver schedule set করবেন, রোগী শুধু call/SMS পাবেন
-- [ ] খরচ নিয়ন্ত্রণ: দৈনিক সীমা, premium feature হিসেবে রাখা
-- [ ] Opt-in / opt-out
+- [ ] `caregivers` schema with permission levels (view / edit)
+- [ ] Invitation by code or link, with the patient's consent
+- [ ] Caregiver dashboard: taken and missed doses today
+- [ ] Caregiver can add prescriptions on the patient's behalf
+- [ ] Missed-dose push notification (FCM) after 30 minutes without "Taken"
+- [ ] Server-side missed-dose detection job
+- [ ] Revoking access
 
-### শেষের শর্ত
-- SMS ও call ঠিক সময়ে পৌঁছায় (≥ ৯৫%)
-- প্রতি ব্যবহারকারীর মাসিক খরচ হিসাব ও নিয়ন্ত্রিত
+**Exit criteria:** caregiver notified within 35 minutes of a missed dose · no access without consent
 
 ---
 
-## Phase 11: Data Flywheel ও Local LLM (Hybrid)
+## Phase 7: Testing, pilot and Play Store ⬜
 
-**লক্ষ্য:** নিজের fine-tuned model দিয়ে খরচ কমানো আর নির্ভুলতা বাড়ানো।
-**নির্ভরতা:** Phase 7 + যথেষ্ট data (১,০০০–৩,০০০ confirm করা প্রেসক্রিপশন)
+**Goal:** validate with real users and release safely.
+**Depends on:** Phase 6
 
-### কাজ
-- [ ] সম্মতি ব্যবস্থা: "আমার প্রেসক্রিপশন অ্যাপ উন্নত করতে ব্যবহার করা যাবে" (opt-in)
-- [ ] ব্যক্তিগত তথ্য মোছা (নাম, ফোন, ঠিকানা): ছবিতে blur + লেখায় মুছে ফেলা
-- [ ] Label pipeline: ব্যবহারকারীর confirm করা ফলাফল → training data
-- [ ] Train / validation / test ভাগ (একই ডাক্তারের প্রেসক্রিপশন একই ভাগে)
-- [ ] Open-source vision model (যেমন Qwen2.5-VL 7B) + LoRA/QLoRA fine-tune
-- [ ] Phase 2-এর eval-এ cloud AI-এর সাথে তুলনা
-- [ ] Self-hosted inference (vLLM) + hybrid router: local আগে, confidence কম হলে cloud
-- [ ] Model version ও পর্যবেক্ষণ: নির্ভুলতা কমলে সতর্কতা
+- [ ] End-to-end tests of the full flow
+- [ ] Security review: RLS, API auth, rate limits, key management
+- [ ] Privacy policy and terms (Bangla and English); medical disclaimer
+- [ ] In-app account and data deletion
+- [ ] Crash reporting and privacy-preserving analytics
+- [ ] **Pilot:** 20-50 users (older patients and caregivers) for 2-3 weeks
+- [ ] Fixes from pilot feedback
+- [ ] Play Store: health app declaration, exact-alarm justification, Bangla listing
+- [ ] Internal → closed testing → production
 
-### শেষের শর্ত
-- Local model-এর "উচ্চ" confidence ঘরের নির্ভুলতা cloud-এর সমান বা বেশি
-- কমপক্ষে ৬০% প্রেসক্রিপশন শুধু local model দিয়ে সমাধান হয়
-- প্রতি প্রেসক্রিপশনে গড় খরচ কমে
+**Exit criteria:** alarm reliability ≥ 99% in the pilot · crash-free sessions ≥ 99% · Play Store
+review passed
 
 ---
 
-## 🗄️ Database-এর রূপরেখা (Phase অনুযায়ী তৈরি হবে)
+## Phase 8: Bangla AI assistant ⬜
 
-| Table | উদ্দেশ্য | Phase |
+- [ ] Chat in Bangla, voice input (speech-to-text) and voice replies
+- [ ] Tools: show today's schedule, stop a medicine (with confirmation), change a time (with confirmation)
+- [ ] Safety: dose questions ("I missed one, should I take two?") are referred to a doctor or pharmacist
+- [ ] Emergency symptoms (chest pain, breathing difficulty) → call 999 / nearest hospital
+- [ ] Conversation eval: 100 questions with safe-answer criteria
+
+**Exit criteria:** 100% on the safety eval · ≥ 90% correct on common questions
+
+---
+
+## Phase 9: Learning, refills and Ramadan mode ⬜
+
+- [ ] Learn actual dose times; propose a change after 3+ consistent days
+- [ ] Track pill counts; refill reminder 3 days before running out
+- [ ] Ramadan mode: sehri and iftar times by district
+- [ ] Weekly adherence report and PDF for the doctor
+- [ ] Duplicate-therapy warning (same generic on two prescriptions)
+
+**Exit criteria:** no suggestion takes effect without the user's "Yes" · Ramadan mode tested for
+Dhaka, Chattogram and Sylhet
+
+---
+
+## Phase 10: SMS and voice-call escalation ⬜
+
+- [ ] Bangladeshi SMS gateway integration
+- [ ] Automated voice calls with a recorded Bangla message
+- [ ] Escalation rules: alarm → 30 min → SMS/call → caregiver
+- [ ] Feature-phone mode: caregiver manages the schedule, patient receives calls/SMS
+- [ ] Cost controls: daily limits, premium tier
+- [ ] Opt-in and opt-out
+
+**Exit criteria:** ≥ 95% of SMS and calls delivered on time · monthly cost per user tracked and capped
+
+---
+
+## Phase 11: Data flywheel and self-hosted model ⬜
+
+**Depends on:** Phase 7 and 1,000-3,000 confirmed prescriptions
+
+- [ ] Consent flow for using prescriptions to improve the app (opt-in)
+- [ ] De-identification: blur names, phones and addresses in images and text
+- [ ] Label pipeline from user confirmations
+- [ ] Train / validation / test split (same doctor never across splits)
+- [ ] Fine-tune an open vision-language model (e.g. Qwen2.5-VL 7B) with LoRA/QLoRA
+- [ ] Compare with the cloud model on the Phase 2 eval
+- [ ] Self-hosted inference (vLLM) and a hybrid router: local first, cloud on low confidence
+- [ ] Model versioning and accuracy monitoring
+
+**Exit criteria:** local model's high-confidence accuracy ≥ cloud model's · ≥ 60% of prescriptions
+handled locally · lower average cost per prescription
+
+---
+
+## Database outline
+
+| Table | Purpose | Phase |
 |---|---|---|
-| `drugs` | বাংলাদেশি ওষুধের তালিকা | 1 |
-| `profiles` | ব্যবহারকারী (নাম, ফোন, ভাষা, খাবারের সময়) | 4 |
-| `prescriptions` | আপলোড করা প্রেসক্রিপশন (ছবি encrypted storage-এ) | 4 |
-| `medicines` | confirm করা ওষুধ (নাম, ডোজ, সময়, মেয়াদ) | 4 |
-| `schedules` | প্রতিটা অ্যালার্মের সময় | 4 |
-| `dose_logs` | খেয়েছি / বাদ / মিস | 5 |
-| `caregivers` | রোগী ↔ caregiver সম্পর্ক | 6 |
-| `notifications` | পাঠানো alert/SMS/call-এর রেকর্ড | 6, 10 |
-| `consents` | data ব্যবহারের সম্মতি | 11 |
+| `drugs` ✅ | Bangladeshi drug catalogue | 1 |
+| `profiles` | User: name, phone, language, meal times | 4 |
+| `prescriptions` | Uploaded prescriptions (images encrypted in storage) | 4 |
+| `medicines` | Confirmed medicines | 4 |
+| `schedules` | Dose times | 4 |
+| `dose_logs` | Taken / skipped / missed | 5 |
+| `caregivers` | Patient ↔ caregiver links | 6 |
+| `notifications` | Alerts, SMS and calls sent | 6, 10 |
+| `consents` | Consent for data use | 11 |
 
----
+## Workflow per phase
 
-## 🔁 প্রতিটা Phase-এর কাজের ধারা
-
-1. `phase-X-নাম` branch তৈরি
-2. কাজের তালিকা অনুযায়ী কোড + test
-3. ছোট ছোট commit
-4. শেষের শর্ত যাচাই
-5. আপনাকে রিপোর্ট: কী হলো, কী বাকি, কোন সমস্যা
-6. আপনার অনুমতি পেলে `main`-এ merge (Pull Request)
-
----
-
-## ❓ শুরুর আগে আপনার সিদ্ধান্ত লাগবে
-
-| প্রশ্ন | Default (আপনি না বললে) |
-|---|---|
-| Backend ভাষা | Python + FastAPI |
-| অ্যাপের নাম | "ওষুধ রিমাইন্ডার" (পরে বদলানো যাবে) |
-| প্রথমে শুধু Android? | হ্যাঁ |
-| Supabase account | আপনাকে বানাতে হবে (বিনামূল্যে) |
-| Claude API key | আপনাকে console.anthropic.com থেকে নিতে হবে (Phase 2-এর আগে) |
+1. Create a `phase-N-name` branch
+2. Implement tasks with tests
+3. Small, focused commits
+4. Verify the exit criteria
+5. Report: what was done, what is pending, issues found
+6. Merge into `main` via pull request after approval

@@ -1,7 +1,7 @@
-"""ডোজের নির্দেশনা ("১+০+১", "½+0+½", "1-0-1") যাচাই ও স্বাভাবিক করা।
+"""Validating and normalising dose patterns ("১+০+১", "½+0+½", "1-0-1").
 
-AI একটা `dose_pattern` দেয়, কিন্তু সেটা অন্ধভাবে বিশ্বাস করা হয় না। এখানে নিয়ম দিয়ে যাচাই হয়:
-সংখ্যাগুলো বাস্তবসম্মত কিনা, ভাগ ঠিক আছে কিনা।
+The AI returns a `dose_pattern`, but it is not trusted blindly: these rules check that the
+amounts are realistic and the fractions valid. Mirrored in app/lib/schedule/dose_pattern.dart.
 """
 
 import re
@@ -11,7 +11,7 @@ _BANGLA_DIGITS = str.maketrans("০১২৩৪৫৬৭৮৯", "0123456789")
 _FRACTIONS = {"½": "0.5", "¼": "0.25", "¾": "0.75"}
 _SEPARATORS = re.compile(r"\s*[+\-–—]\s*")
 
-# এক বেলায় সর্বোচ্চ এতগুলো ইউনিট বাস্তবসম্মত (এর বেশি হলে সম্ভবত ভুল পড়া)
+# Maximum realistic units per slot; more is probably a misreading
 MAX_UNITS_PER_SLOT = 4
 
 
@@ -37,7 +37,7 @@ def _fmt(value: Fraction) -> str:
 
 
 def normalize_dose_pattern(pattern: str | None) -> str | None:
-    """বৈধ হলে স্বাভাবিক রূপ ("1+0+1"), নইলে None।
+    """Canonical form ("1+0+1") if valid, otherwise None.
 
     >>> normalize_dose_pattern("১ + ০ + ½")
     '1+0+0.5'

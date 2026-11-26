@@ -2,7 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:oshudh_reminder/main.dart';
 
 void main() {
-  testWidgets('স্বাগত স্ক্রিনে বাংলা লেখা দেখায়', (tester) async {
+  testWidgets('welcome screen shows Bangla text by default', (tester) async {
     await tester.pumpWidget(const OshudhApp());
     await tester.pumpAndSettle();
 
@@ -10,7 +10,7 @@ void main() {
     expect(find.text('শুরু করুন'), findsOneWidget);
   });
 
-  testWidgets('শুরু করুন চাপলে বার্তা দেখায়', (tester) async {
+  testWidgets('tapping Get started shows a message', (tester) async {
     await tester.pumpWidget(const OshudhApp());
     await tester.pumpAndSettle();
 

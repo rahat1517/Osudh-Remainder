@@ -1,41 +1,42 @@
-# 🧪 eval/: প্রেসক্রিপশন পাঠকের নির্ভুলতা মাপা
+# Prescription reader evaluation
 
-Unit test-এ আসল AI ডাকা হয় না (fake ব্যবহার করা হয়)। আসল নির্ভুলতা মাপতে এই eval লাগে।
-**prompt, model বা যাচাইয়ের নিয়ম বদলালে eval আবার চালান।**
+Unit tests use a fake AI. This eval measures real accuracy against the Claude API.
+**Run it again whenever the prompt, the model or the verification rules change.**
 
-## যা আছে
+## Contents
 
-| ফাইল | কাজ |
+| File | Purpose |
 |---|---|
-| `cases.json` | ১০টা কাল্পনিক প্রেসক্রিপশন: ছবিতে কী লেখা থাকবে + সঠিক উত্তর |
-| `generate.py` | প্রতিটার দুটো ছবি বানায়: পরিষ্কার (`clean`) আর ফোনে তোলার মতো (`photo`) |
-| `run_eval.py` | আসল API দিয়ে পড়ে, ঘর অনুযায়ী নির্ভুলতা মাপে, রিপোর্ট লেখে |
+| `cases.json` | 10 fictional prescriptions: the text rendered in the image and the correct answer |
+| `generate.py` | Renders two images per case: clean print (`clean`) and a phone-photo look (`photo`) |
+| `run_eval.py` | Reads each image through the real API, scores every field, writes a report |
 
-Case-গুলোতে ইচ্ছা করে কঠিন জিনিস রাখা হয়েছে: বাংলা সংখ্যা, `BD`/`TDS`/`QID`/`HS`, `½`,
-"চলবে", SOS, সিরাপ, বানান ভুল (`Maxpo`, `Alatral`), শক্তি ছাড়া নাম, আর বাদ দেওয়ার মতো লাইন (CBC, উপদেশ)।
+The cases are deliberately hard: Bangla digits, `BD`/`TDS`/`QID`/`HS`, `½`, "চলবে" (continue), SOS,
+syrups, misspellings (`Maxpo`, `Alatral`), names without a strength, and lines that must be ignored
+(tests such as CBC, general advice).
 
-## চালানো
+## Run
 
 ```bash
 cd backend
-uv run python -m eval.generate          # শুধু ছবি বানানো (বিনামূল্যে), eval/out/-এ দেখুন
-export ANTHROPIC_API_KEY=...            # অথবা backend/.env-এ
-uv run python -m eval.run_eval --yes --limit 2   # দ্রুত পরীক্ষা: ৪টা API call
-uv run python -m eval.run_eval --yes             # পূর্ণ: ২০টা API call
+uv run python -m eval.generate                    # images only (free), see eval/out/
+export ANTHROPIC_API_KEY=...                      # or put it in backend/.env
+uv run python -m eval.run_eval --yes --limit 2    # quick check: 4 API calls
+uv run python -m eval.run_eval --yes              # full run: 20 API calls
 ```
 
-রিপোর্ট: `eval/reports/`
+Reports are written to `eval/reports/`.
 
-## Phase 2-এর শেষের শর্ত
+## Phase 2 targets
 
-| শর্ত | লক্ষ্য |
+| Criterion | Target |
 |---|---|
-| ছাপা প্রেসক্রিপশনে নাম ও ডোজ | ≥ ৯৫% সঠিক |
-| "high" চিহ্নিত ঘর | ≥ ৯৮% সঠিক |
-| ভুল কিন্তু "high" | যত কম সম্ভব |
+| Printed prescriptions, name and dose | ≥ 95% correct |
+| Fields marked `high` | ≥ 98% correct |
+| Wrong but `high` | as close to zero as possible |
 
-## ⚠️ সীমাবদ্ধতা
+## Limitations
 
-এখানে সব প্রেসক্রিপশন **কাল্পনিক ও ছাপা**। আসল **হাতে লেখা** প্রেসক্রিপশনের নির্ভুলতা মাপতে
-অনুমতি নিয়ে সংগ্রহ করা আসল প্রেসক্রিপশন লাগবে (রোগীর তথ্য মুছে)।
-সেগুলো কখনো git-এ রাখা যাবে না।
+All cases are **fictional and printed**. Measuring accuracy on **handwritten** prescriptions needs
+real prescriptions collected with consent and with personal data removed. Those must never be
+committed to git.

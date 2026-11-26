@@ -1,27 +1,27 @@
-# 🌱 seed/: উন্নয়নের জন্য নমুনা ওষুধের তালিকা
+# Drug catalogue seed data
 
-> ⚠️ **`drugs_seed.csv` আসল বা যাচাই করা তালিকা নয়।**
-> এটা শুধু উন্নয়ন আর test-এর জন্য প্রচলিত কিছু বাংলাদেশি brand-এর ছোট নমুনা
-> (`source=dev-seed`, `verified=false`)। প্রস্তুতকারক বা শক্তি ভুল থাকতে পারে।
-> **রোগীদের কাছে অ্যাপ যাওয়ার আগে এটা DGDA-র অফিসিয়াল তালিকা দিয়ে বদলাতে হবে।**
+> **`drugs_seed.csv` is not an official or verified list.**
+> It is a small sample of common Bangladeshi brands for development and tests
+> (`source=dev-seed`, `verified=false`). Manufacturers or strengths may be wrong.
+> **Replace it with the official DGDA register before the app reaches patients.**
 
-## Column
+## Columns
 
-| Column | উদাহরণ | বাধ্যতামূলক |
+| Column | Example | Required |
 |---|---|---|
-| `brand` | Seclo | ✅ |
-| `strength` | 20 mg, 500 mg + 65 mg, 120 mg/5 ml | না (যেমন ORS) |
-| `generic` | Omeprazole | ✅ |
-| `form` | Tablet, Capsule, Suspension | ✅ |
-| `manufacturer` | Square Pharmaceuticals | না |
-| `source` | dev-seed, dgda-2026 | ✅ |
-| `verified` | true / false | ✅ |
+| `brand` | Seclo | yes |
+| `strength` | 20 mg, 500 mg + 65 mg, 120 mg/5 ml | no (e.g. ORS) |
+| `generic` | Omeprazole | yes |
+| `form` | Tablet, Capsule, Suspension | yes |
+| `manufacturer` | Square Pharmaceuticals | no |
+| `source` | dev-seed, dgda-2026 | yes |
+| `verified` | true / false | yes |
 
-## অফিসিয়াল তালিকা যোগ করার নিয়ম
+## Adding the official list
 
-1. DGDA ওয়েবসাইট থেকে নিবন্ধিত ওষুধের তালিকা (Excel/CSV) নামিয়ে ওপরের column-এ সাজান
-2. ফাইলটা এখানে রাখুন, যেমন `dgda_2026.csv` (`source=dgda-2026`, `verified=true`)
-3. যাচাই ও SQL তৈরি:
+1. Download the registered-drugs list from the DGDA website and map it to the columns above.
+2. Save it here, e.g. `dgda_2026.csv` (`source=dgda-2026`, `verified=true`).
+3. Validate and generate SQL:
    ```bash
    cd backend
    uv run python -m app.drugs.importer ../database/seed/dgda_2026.csv --sql ../supabase/seed.sql

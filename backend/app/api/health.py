@@ -12,5 +12,5 @@ SettingsDep = Annotated[Settings, Depends(get_settings)]
 
 @router.get("/health")
 def health(settings: SettingsDep) -> dict[str, str]:
-    """Server চালু আছে কিনা দেখার জন্য।"""
+    """Liveness check."""
     return {"status": "ok", "version": __version__, "environment": settings.environment}

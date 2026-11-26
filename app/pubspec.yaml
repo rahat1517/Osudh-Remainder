@@ -1,5 +1,5 @@
 name: oshudh_reminder
-description: "ওষুধ রিমাইন্ডার: প্রেসক্রিপশন পড়ে সময়মতো ওষুধের কথা মনে করিয়ে দেয়।"
+description: "Oshudh Reminder: reads prescriptions and reminds patients to take their medicines on time."
 publish_to: 'none'
 version: 0.1.0+1
 

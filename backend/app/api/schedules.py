@@ -1,5 +1,6 @@
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, status
 
+from app.api.errors import api_error
 from app.schedule.engine import ScheduleError, generate
 from app.schedule.models import ScheduleRequest, ScheduleResponse
 
@@ -15,7 +16,6 @@ def generate_schedule(request: ScheduleRequest) -> ScheduleResponse:
     try:
         return generate(request)
     except ScheduleError as e:
-        raise HTTPException(
-            status.HTTP_422_UNPROCESSABLE_CONTENT,
-            detail={"code": e.code, "message": e.message, "medicine_id": e.medicine_id},
+        raise api_error(
+            status.HTTP_422_UNPROCESSABLE_CONTENT, e.code, e.message, medicine_id=e.medicine_id
         ) from e

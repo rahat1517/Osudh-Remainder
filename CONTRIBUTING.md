@@ -1,37 +1,39 @@
-# 🤝 কাজের নিয়ম (Contributing)
+# Contributing
 
-## Branch
+## Branches
 
-- `main` সবসময় চালু অবস্থায় থাকবে। সরাসরি `main`-এ commit করা যাবে না।
-- প্রতিটা phase বা feature-এর জন্য আলাদা branch:
-  - `phase-0-setup`, `phase-1-drug-database` …
-  - ছোট কাজ: `fix/alarm-reboot`, `feat/caregiver-invite`
-- কাজ শেষে Pull Request → CI সবুজ → review → merge
+- `main` must always build and pass CI. Never commit to it directly.
+- One branch per phase or feature: `phase-3-schedule-engine`, `feat/caregiver-invite`, `fix/alarm-reboot`.
+- Open a pull request, wait for green CI and a review, then merge.
 
-## Commit message
+## Commits
 
-ছোট, স্পষ্ট, বাংলা বা ইংরেজিতে। প্রথম লাইনে কী বদলানো হলো:
+Short, imperative subject line describing the change, in English:
 
 ```
-Backend: ওষুধ খোঁজার API যোগ
-App: confirm স্ক্রিনে হলুদ চিহ্ন
+Backend: add drug search endpoint
+App: highlight medium-confidence fields on the confirm screen
 ```
 
-## কোড লেখার নিয়ম
+## Code standards
 
-| অংশ | নিয়ম | চালানোর কমান্ড |
+| Area | Tools | Command |
 |---|---|---|
-| Backend (Python) | ruff (lint + format), pytest | `uv run ruff check . && uv run ruff format . && uv run pytest` |
-| App (Flutter) | `flutter_lints`, `dart format` | `dart format lib test && flutter analyze && flutter test` |
+| Backend (Python) | ruff (lint and format), pytest, Hypothesis | `uv run ruff check . && uv run ruff format . && uv run pytest` |
+| App (Flutter) | `flutter_lints`, `dart format`, `flutter test` | `dart format lib test && flutter analyze && flutter test` |
 
-- নতুন feature মানেই নতুন test।
-- অ্যাপের সব লেখা `app/lib/l10n/app_bn.arb` আর `app_en.arb`-এ থাকবে। কোডে সরাসরি বাংলা লেখা বসানো যাবে না।
-- সময় হিসাব সবসময় `Asia/Dhaka` ধরে।
+- English for code, comments, documentation, tests and commit messages.
+- Every feature comes with tests. Behaviour shared by the backend and the app (such as scheduling)
+  is specified in `docs/` and checked by shared vectors in `spec/`.
+- User-facing text lives only in the app's localization files (`app/lib/l10n/app_bn.arb`,
+  `app_en.arb`). The backend returns stable error and notice **codes** with English messages for
+  developers; the app maps codes to localized text.
+- Wall-clock times are in the user's time zone (default `Asia/Dhaka`).
 
-## ⚠️ নিরাপত্তা (অবশ্যই মানতে হবে)
+## Safety rules (mandatory)
 
-1. **রোগীর আসল তথ্য বা প্রেসক্রিপশনের ছবি কখনো commit করা যাবে না।** Test-এর জন্য শুধু নকল তথ্য।
-2. API key, password শুধু `.env`-এ। `.env` কখনো commit হবে না।
-3. AI কখনো নিজে থেকে ওষুধ বা ডোজ বদলাবে না।
-4. Confirm ছাড়া কোনো schedule চালু হবে না।
-5. Database-এর প্রতিটা নতুন table-এ Row Level Security (RLS) চালু থাকবে।
+1. Never commit real patient data or prescription images. Tests use fictional data only.
+2. Secrets go in `.env` only, which is never committed.
+3. The AI must never change a medicine or dose on its own.
+4. No schedule is activated without the user's confirmation.
+5. Every new database table has row-level security enabled.

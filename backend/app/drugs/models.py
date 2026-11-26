@@ -15,18 +15,19 @@ class Drug(BaseModel):
 
 
 class Confidence(StrEnum):
-    """প্রেসক্রিপশন থেকে পড়া নামের সাথে মিল কতটা নিশ্চিত।"""
+    """How certain a value read from a prescription is."""
 
-    HIGH = "high"  # নিজে থেকে পূরণ হবে ✅
-    MEDIUM = "medium"  # পূরণ হবে, কিন্তু হলুদ চিহ্ন দিয়ে "এটা কি ঠিক?" জিজ্ঞেস করবে
-    LOW = "low"  # খালি থাকবে, ব্যবহারকারী বেছে নেবেন
+    HIGH = "high"  # filled in automatically
+    MEDIUM = "medium"  # filled in, highlighted, and the user is asked to check it
+    LOW = "low"  # left for the user to enter or choose
 
 
 class DrugCandidate(BaseModel):
     drug: Drug
-    score: float = Field(ge=0, le=100, description="০–১০০, বেশি মানে বেশি মিল")
+    score: float = Field(ge=0, le=100, description="0-100, higher is a closer match")
     strength_matched: bool | None = Field(
-        default=None, description="প্রশ্নে শক্তি থাকলে মিলেছে কিনা; শক্তি না থাকলে null"
+        default=None,
+        description="Whether the queried strength matched; null if no strength was given",
     )
 
 

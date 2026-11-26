@@ -2,7 +2,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from app.main import app
-from app.prescriptions.reader import ReaderError
+from app.prescriptions.errors import ReaderError
 from app.prescriptions.service import PrescriptionService
 from app.prescriptions.verifier import PrescriptionVerifier
 
@@ -56,7 +56,7 @@ def test_not_a_prescription(client):
     use_reader(FakeReader(extraction(is_rx=False)))
     r = post_image(client)
     assert r.status_code == 422
-    assert "প্রেসক্রিপশন" in r.json()["detail"]
+    assert r.json()["detail"]["code"] == "not_a_prescription"
 
 
 def test_bad_image(client):
@@ -66,7 +66,7 @@ def test_bad_image(client):
 
 @pytest.mark.parametrize(("retryable", "code"), [(True, 503), (False, 502)])
 def test_reader_errors(client, retryable, code):
-    use_reader(FakeReader(error=ReaderError("x", "বার্তা", retryable)))
+    use_reader(FakeReader(error=ReaderError("ai_failed", "boom", retryable=retryable)))
     r = post_image(client)
     assert r.status_code == code
-    assert r.json()["detail"] == "বার্তা"
+    assert r.json()["detail"] == {"code": "ai_failed", "message": "boom"}

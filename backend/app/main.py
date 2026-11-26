@@ -22,10 +22,10 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     settings = get_settings()
     catalog, report = load_csv(settings.drugs_csv_path)
     for err in report.errors:
-        logger.warning("ওষুধের তালিকায় ত্রুটি: %s", err)
+        logger.warning("Drug catalogue error: %s", err)
     matcher = DrugMatcher(catalog)
     app.state.drug_matcher = matcher
-    logger.info("%d টা ওষুধ লোড হয়েছে", len(catalog))
+    logger.info("Loaded %d drugs", len(catalog))
 
     app.state.prescription_service = None
     if settings.anthropic_api_key:
@@ -33,7 +33,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         reader = ClaudePrescriptionReader(client, settings.reader_model, settings.reader_effort)
         app.state.prescription_service = PrescriptionService(reader, PrescriptionVerifier(matcher))
     else:
-        logger.warning("ANTHROPIC_API_KEY নেই: প্রেসক্রিপশন পড়া বন্ধ থাকবে")
+        logger.warning("ANTHROPIC_API_KEY is not set: prescription reading is disabled")
     yield
 
 

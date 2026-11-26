@@ -1,7 +1,7 @@
-"""কাল্পনিক প্রেসক্রিপশনের ছবি তৈরি (eval-এর জন্য)।
+"""Renders fictional prescription images for the eval.
 
-প্রতিটা case-এর দুটো রূপ: "clean" (পরিষ্কার ছাপা) আর "photo" (ফোনে তোলা ছবির মতো: বাঁকা, ঝাপসা, noise)।
-ছবিগুলো eval/out/-এ যায়, git-এ যায় না।
+Each case has two variants: "clean" (crisp print) and "photo" (like a phone photo: tilted, blurred,
+noisy). Images go to eval/out/, which is not committed. The Bangla header text is fictional.
 
     uv run python -m eval.generate
 """
@@ -32,7 +32,7 @@ def load_cases() -> list[dict]:
 def render_clean(case: dict) -> Image.Image:
     img = Image.new("RGB", PAGE, "white")
     d = ImageDraw.Draw(img)
-    # কাল্পনিক ডাক্তার ও রোগী
+    # Fictional doctor and patient
     d.text((80, 70), "ডা. নমুনা আহমেদ", font=_font("700Bold", 46), fill="#123")
     d.text(
         (80, 130),

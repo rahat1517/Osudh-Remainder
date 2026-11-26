@@ -1,19 +1,19 @@
-# ⚙️ backend/: API server ও AI agent
+# Backend
 
-Python + FastAPI। প্যাকেজ ব্যবস্থাপনা [uv](https://docs.astral.sh/uv/) দিয়ে।
+Python 3.12 + FastAPI, managed with [uv](https://docs.astral.sh/uv/).
 
-## চালানোর নিয়ম
+## Run
 
 ```bash
 cd backend
-cp ../.env.example .env      # প্রথমবার, তারপর আসল মান বসান
-uv sync                      # dependency install
+cp ../.env.example .env      # first time; fill in real values
+uv sync
 uv run uvicorn app.main:app --reload
 ```
 
-তারপর খুলুন: http://localhost:8000/health আর API ডকুমেন্টেশন http://localhost:8000/docs
+Open http://localhost:8000/health and the interactive API docs at http://localhost:8000/docs.
 
-## Test ও Lint
+## Test and lint
 
 ```bash
 uv run pytest
@@ -23,52 +23,76 @@ uv run ruff format --check .
 
 ## API
 
-| Endpoint | কাজ |
+| Endpoint | Purpose |
 |---|---|
-| `GET /health` | Server চালু আছে কিনা |
-| `GET /drugs/search?q=maxp` | Autocomplete: brand বা generic নামে খোঁজা, ভুল বানানেও কাজ করে |
-| `POST /drugs/match` `{"text": "Tab. Sec1o 20mg"}` | প্রেসক্রিপশনের একটা লাইন → সবচেয়ে কাছের ওষুধ + confidence |
-| `GET /drugs/{id}` | একটা ওষুধের তথ্য |
-| `POST /prescriptions/extract` (ছবি, multipart `image`) | প্রেসক্রিপশন → ওষুধের তালিকা, প্রতিটা ঘরের confidence-সহ। `ANTHROPIC_API_KEY` লাগবে, না থাকলে 503 |
+| `GET /health` | Liveness check |
+| `GET /drugs/search?q=maxp` | Autocomplete by brand or generic name; tolerates misspellings |
+| `POST /drugs/match` `{"text": "Tab. Sec1o 20mg"}` | One prescription line → closest drug + confidence |
+| `GET /drugs/{id}` | One drug |
+| `POST /prescriptions/extract` (multipart `image`) | Prescription photo → medicines with per-field confidence. Needs `ANTHROPIC_API_KEY`, otherwise 503 |
+| `POST /schedules/generate` | Confirmed medicines → dose times and grouped reminders ([spec](../docs/SCHEDULE_SPEC.md)) |
 
-### প্রেসক্রিপশন পড়ার ধাপ
+### Confidence levels
 
-```
-ছবি → প্রস্তুত (ছোট করা, EXIF/GPS মোছা) → Agent ১: Claude (পড়া) → Agent ২: নিয়ম (যাচাই) → ফলাফল
-```
-
-- **Agent ১** (`app/prescriptions/reader.py`): Claude vision + structured output। নির্দেশনা `prompt.py`-তে
-- **Agent ২** (`app/prescriptions/verifier.py`): AI নয়, নিয়ম। ওষুধের তালিকার সাথে মেলায়, ডোজ যাচাই করে।
-  **চূড়ান্ত confidence কখনো AI-এর দেওয়া confidence-এর চেয়ে বেশি হয় না।**
-- ছবি কোথাও সংরক্ষণ হয় না। রোগীর নাম/ফোনের জন্য schema-তে কোনো ঘরই নেই।
-- নির্ভুলতা মাপা: [eval/README.md](eval/README.md)
-
-`/drugs/match`-এর confidence:
-
-| মান | মানে | অ্যাপে যা হবে |
+| Value | Meaning | App behaviour |
 |---|---|---|
-| `high` | নাম প্রায় হুবহু, কাছাকাছি অন্য নাম নেই, শক্তি মিলেছে | নিজে পূরণ ✅ |
-| `medium` | সম্ভাব্য মিল, কিন্তু নিশ্চিত নয় (টাইপো, শক্তি না মেলা) | হলুদ চিহ্ন, "এটা কি ঠিক?" |
-| `low` | মিল পাওয়া যায়নি | খালি, ব্যবহারকারী বেছে নেবেন |
+| `high` | Near-exact, unambiguous, consistent with the catalogue | Filled in |
+| `medium` | Probable but not certain (typo, strength not confirmed) | Highlighted, user asked to check |
+| `low` | Not found or unreadable | Left for the user |
 
-## কাঠামো
+### Errors
+
+Every error has the shape `{"detail": {"code": "...", "message": "..."}}`. The `code` is stable and
+documented; clients localize it. The `message` is English, for developers.
+
+| Code | Status | Endpoint |
+|---|---|---|
+| `image_missing`, `image_too_large`, `image_unreadable`, `image_format_unsupported`, `image_too_small` | 422 | extract |
+| `not_a_prescription` | 422 | extract |
+| `ai_not_configured`, `ai_rate_limited`, `ai_unavailable` | 503 (retry) | extract |
+| `ai_refused`, `ai_failed`, `prescription_too_long` | 502 | extract |
+| `drug_not_found` | 404 | drugs |
+| `invalid_dose_pattern`, `invalid_interval`, `invalid_duration`, `invalid_weekdays`, `invalid_meal_times`, `invalid_timezone`, `missing_dose`, `conflicting_dose` | 422 | schedules (with `medicine_id`) |
+
+Fields and warnings in a prescription result may carry a **notice** `{code, message, params}`:
+`name_unreadable`, `name_not_in_catalog`, `name_corrected {written, matched}`,
+`strength_not_in_catalog {written}`, `strength_suggested {suggested}`, `dose_unreadable {written}`,
+`dose_missing`, `dose_as_needed`, `timing_not_specified`, `duration_unclear`,
+`duration_out_of_range {days}`, `duration_missing`; warnings: `image_poor_quality`,
+`no_medicines_found`, `review_highlighted_fields`.
+
+## How a prescription is read
+
+```
+image → prepare (resize, strip EXIF/GPS) → Agent 1: Claude (read) → Agent 2: rules (verify) → result
+```
+
+- **Agent 1** (`app/prescriptions/reader.py`): Claude vision with structured output. Instructions in
+  `prompt.py`.
+- **Agent 2** (`app/prescriptions/verifier.py`): rules, not AI. Matches names against the catalogue,
+  validates doses and durations. **The final confidence never exceeds the AI's own.**
+- Images are never stored. The schema has no fields for patient identity.
+- Accuracy: [eval/README.md](eval/README.md)
+
+## Layout
 
 ```
 backend/
 ├── app/
-│   ├── main.py        ← FastAPI অ্যাপ
-│   ├── config.py      ← সেটিংস (.env থেকে)
-│   ├── api/           ← endpoint-গুলো (health, drugs)
-│   ├── drugs/         ← ওষুধের তালিকা: normalize, matcher, importer
-│   └── prescriptions/ ← প্রেসক্রিপশন পাঠক (Agent ১) ও যাচাইকারী (Agent ২)
-├── eval/              ← আসল AI দিয়ে নির্ভুলতা মাপা
-└── tests/
+│   ├── main.py          FastAPI app and lifespan
+│   ├── config.py        Settings (.env)
+│   ├── api/             Endpoints and error responses
+│   ├── drugs/           Catalogue: normalisation, matcher, importer
+│   ├── prescriptions/   Reader (Agent 1), verifier (Agent 2), image preparation
+│   └── schedule/        Rule-based schedule engine
+├── eval/                Prescription-reader accuracy against the real API
+├── scripts/             Tooling (schedule parity export)
+└── tests/               Unit, property-based and conformance tests
 ```
 
-## পরিকল্পিত অংশ (পরের phase-এ)
+## Planned
 
-- Schedule Engine, rule-based (Phase 3)
-- Agent ৪: বাংলা সহকারী (Phase 8)
-- Agent ৫: শেখা ও পর্যবেক্ষণ (Phase 9)
+- Agent 4: Bangla assistant (Phase 8)
+- Agent 5: learning and monitoring (Phase 9)
 
-> API key কখনো কোডে লিখবেন না। `.env` ফাইলে রাখুন।
+Never put API keys in code; use `.env`.

@@ -1,7 +1,7 @@
 [project]
 name = "oshudh-backend"
 version = "0.1.0"
-description = "ওষুধ রিমাইন্ডার: API server ও AI agent"
+description = "Oshudh Reminder: API server and AI agents"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
