@@ -1,0 +1,136 @@
+"""Row-level security and integrity rules of the Supabase schema."""
+
+import pytest
+
+from .conftest import as_user, fails_with, new_user, psycopg
+
+
+def _prescription(db, status="draft"):
+    pid = db.execute("insert into prescriptions (source) values ('scan') returning id").fetchone()[
+        0
+    ]
+    if status == "confirmed":
+        db.execute("select confirm_prescription(%s)", (pid,))
+    return pid
+
+
+def _medicine(db, prescription_id, **overrides):
+    values = {
+        "name": "Seclo",
+        "dose_pattern": "1+0+1",
+        "timing": "before_meal",
+        "duration_days": 30,
+    }
+    values.update(overrides)
+    cols = ", ".join(["prescription_id", *values])
+    marks = ", ".join(["%s"] * (len(values) + 1))
+    return db.execute(
+        f"insert into medicines ({cols}) values ({marks}) returning id",
+        (prescription_id, *values.values()),
+    ).fetchone()[0]
+
+
+def test_profile_is_created_on_sign_up(db):
+    user = new_user(db)
+    with as_user(db, user):
+        row = db.execute("select locale, timezone, breakfast::text from profiles").fetchone()
+    assert row == ("bn", "Asia/Dhaka", "08:00:00")
+
+
+def test_users_only_see_their_own_rows(db):
+    alice, bob = new_user(db), new_user(db)
+    with as_user(db, alice):
+        pid = _prescription(db, "confirmed")
+        _medicine(db, pid)
+    with as_user(db, bob):
+        assert db.execute("select count(*) from prescriptions").fetchone()[0] == 0
+        assert db.execute("select count(*) from medicines").fetchone()[0] == 0
+        assert db.execute("select count(*) from active_medicines").fetchone()[0] == 0
+        assert db.execute("select count(*) from profiles").fetchone()[0] == 1  # only Bob's
+        updated = db.execute("update medicines set name = 'x' returning id").fetchall()
+        assert updated == []
+
+
+def test_cannot_attach_medicine_to_someone_elses_prescription(db):
+    alice, bob = new_user(db), new_user(db)
+    with as_user(db, alice):
+        alice_pid = _prescription(db)
+    with as_user(db, bob), fails_with(db, psycopg.errors.InsufficientPrivilege):
+        _medicine(db, alice_pid)
+
+
+def test_cannot_insert_rows_for_another_user(db):
+    alice, bob = new_user(db), new_user(db)
+    with as_user(db, bob), fails_with(db, psycopg.errors.InsufficientPrivilege):
+        db.execute("insert into prescriptions (user_id, source) values (%s, 'scan')", (alice,))
+
+
+def test_only_confirmed_and_running_medicines_are_active(db):
+    user = new_user(db)
+    with as_user(db, user):
+        draft = _prescription(db)
+        _medicine(db, draft, name="Draft")
+        confirmed = _prescription(db, "confirmed")
+        _medicine(db, confirmed, name="Active")
+        stopped = _medicine(db, confirmed, name="Stopped")
+        db.execute("update medicines set stopped_at = now() where id = %s", (stopped,))
+        names = [r[0] for r in db.execute("select name from active_medicines")]
+    assert names == ["Active"]
+
+
+def test_confirm_prescription_only_affects_own_drafts(db):
+    alice, bob = new_user(db), new_user(db)
+    with as_user(db, alice):
+        pid = _prescription(db)
+    with as_user(db, bob):
+        db.execute("select confirm_prescription(%s)", (pid,))
+    with as_user(db, alice):
+        assert db.execute("select status from prescriptions").fetchone()[0] == "draft"
+        db.execute("select confirm_prescription(%s)", (pid,))
+        status, confirmed_at = db.execute(
+            "select status, confirmed_at from prescriptions"
+        ).fetchone()
+    assert status == "confirmed" and confirmed_at is not None
+
+
+def test_anonymous_clients_see_drugs_but_no_personal_data(db):
+    user = new_user(db)
+    with as_user(db, user):
+        _prescription(db)
+    with as_user(db, None):
+        assert db.execute("select count(*) from drugs").fetchone()[0] > 0
+        with fails_with(db, psycopg.errors.InsufficientPrivilege):
+            db.execute("select count(*) from prescriptions")
+
+
+@pytest.mark.parametrize(
+    "overrides",
+    [
+        {"timing": "sometimes"},
+        {"duration_days": 0},
+        {"dose_pattern": None},  # no dose at all
+        {"interval_hours": 8},  # both pattern and interval
+        {"weekdays": [0]},
+    ],
+)
+def test_medicine_constraints(db, overrides):
+    user = new_user(db)
+    with as_user(db, user):
+        pid = _prescription(db)
+        with fails_with(db, psycopg.errors.CheckViolation):
+            _medicine(db, pid, **overrides)
+
+
+def test_meal_times_must_be_ordered(db):
+    user = new_user(db)
+    with as_user(db, user), fails_with(db, psycopg.errors.CheckViolation):
+        db.execute("update profiles set lunch = '07:00'")
+
+
+def test_deleting_the_user_removes_all_their_data(db):
+    user = new_user(db)
+    with as_user(db, user):
+        _medicine(db, _prescription(db, "confirmed"))
+    db.execute("delete from auth.users where id = %s", (user,))
+    for table in ("profiles", "prescriptions", "medicines"):
+        assert db.execute(f"select count(*) from {table}").fetchone()[0] == 0

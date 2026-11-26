@@ -133,6 +133,552 @@ abstract class AppLocalizations {
   /// In bn, this message translates to:
   /// **'এই অ্যাপ ডাক্তারের পরামর্শের বিকল্প নয়।'**
   String get disclaimer;
+
+  /// No description provided for @phoneTitle.
+  ///
+  /// In bn, this message translates to:
+  /// **'আপনার মোবাইল নম্বর'**
+  String get phoneTitle;
+
+  /// No description provided for @phoneHint.
+  ///
+  /// In bn, this message translates to:
+  /// **'01XXXXXXXXX'**
+  String get phoneHint;
+
+  /// No description provided for @phoneInvalid.
+  ///
+  /// In bn, this message translates to:
+  /// **'সঠিক বাংলাদেশি মোবাইল নম্বর দিন'**
+  String get phoneInvalid;
+
+  /// No description provided for @sendCode.
+  ///
+  /// In bn, this message translates to:
+  /// **'কোড পাঠান'**
+  String get sendCode;
+
+  /// No description provided for @otpTitle.
+  ///
+  /// In bn, this message translates to:
+  /// **'কোডটি লিখুন'**
+  String get otpTitle;
+
+  /// No description provided for @otpSubtitle.
+  ///
+  /// In bn, this message translates to:
+  /// **'{phone} নম্বরে ৬ সংখ্যার একটি কোড পাঠানো হয়েছে'**
+  String otpSubtitle(String phone);
+
+  /// No description provided for @verify.
+  ///
+  /// In bn, this message translates to:
+  /// **'যাচাই করুন'**
+  String get verify;
+
+  /// No description provided for @demoModeHint.
+  ///
+  /// In bn, this message translates to:
+  /// **'ডেমো মোড: কোড {code}'**
+  String demoModeHint(String code);
+
+  /// No description provided for @authInvalidCode.
+  ///
+  /// In bn, this message translates to:
+  /// **'কোডটি ভুল অথবা মেয়াদ শেষ'**
+  String get authInvalidCode;
+
+  /// No description provided for @authSmsFailed.
+  ///
+  /// In bn, this message translates to:
+  /// **'SMS পাঠানো যায়নি। আবার চেষ্টা করুন।'**
+  String get authSmsFailed;
+
+  /// No description provided for @homeTitle.
+  ///
+  /// In bn, this message translates to:
+  /// **'আজকের ওষুধ'**
+  String get homeTitle;
+
+  /// No description provided for @homeEmpty.
+  ///
+  /// In bn, this message translates to:
+  /// **'এখনো কোনো ওষুধ নেই। শুরু করতে প্রেসক্রিপশন স্ক্যান করুন।'**
+  String get homeEmpty;
+
+  /// No description provided for @nextDose.
+  ///
+  /// In bn, this message translates to:
+  /// **'পরের'**
+  String get nextDose;
+
+  /// No description provided for @done.
+  ///
+  /// In bn, this message translates to:
+  /// **'শেষ'**
+  String get done;
+
+  /// No description provided for @scanPrescription.
+  ///
+  /// In bn, this message translates to:
+  /// **'প্রেসক্রিপশন স্ক্যান'**
+  String get scanPrescription;
+
+  /// No description provided for @addManually.
+  ///
+  /// In bn, this message translates to:
+  /// **'নিজে যোগ করুন'**
+  String get addManually;
+
+  /// No description provided for @myMedicines.
+  ///
+  /// In bn, this message translates to:
+  /// **'আমার ওষুধ'**
+  String get myMedicines;
+
+  /// No description provided for @signOut.
+  ///
+  /// In bn, this message translates to:
+  /// **'সাইন আউট'**
+  String get signOut;
+
+  /// No description provided for @scanTitle.
+  ///
+  /// In bn, this message translates to:
+  /// **'প্রেসক্রিপশন স্ক্যান'**
+  String get scanTitle;
+
+  /// No description provided for @takePhoto.
+  ///
+  /// In bn, this message translates to:
+  /// **'ছবি তুলুন'**
+  String get takePhoto;
+
+  /// No description provided for @chooseFromGallery.
+  ///
+  /// In bn, this message translates to:
+  /// **'গ্যালারি থেকে বেছে নিন'**
+  String get chooseFromGallery;
+
+  /// No description provided for @scanTips.
+  ///
+  /// In bn, this message translates to:
+  /// **'প্রেসক্রিপশনটা আলোতে সমান করে রাখুন, পুরো পাতা যেন ছবিতে আসে।'**
+  String get scanTips;
+
+  /// No description provided for @reading.
+  ///
+  /// In bn, this message translates to:
+  /// **'প্রেসক্রিপশন পড়া হচ্ছে…'**
+  String get reading;
+
+  /// No description provided for @confirmTitle.
+  ///
+  /// In bn, this message translates to:
+  /// **'মিলিয়ে দেখে নিশ্চিত করুন'**
+  String get confirmTitle;
+
+  /// No description provided for @confirmHelp.
+  ///
+  /// In bn, this message translates to:
+  /// **'হলুদ চিহ্নিত প্রতিটা ঘর প্রেসক্রিপশনের সাথে মিলিয়ে দেখুন।'**
+  String get confirmHelp;
+
+  /// No description provided for @confirmButton.
+  ///
+  /// In bn, this message translates to:
+  /// **'নিশ্চিত করুন'**
+  String get confirmButton;
+
+  /// No description provided for @addAnother.
+  ///
+  /// In bn, this message translates to:
+  /// **'আরেকটা ওষুধ যোগ করুন'**
+  String get addAnother;
+
+  /// No description provided for @removeMedicine.
+  ///
+  /// In bn, this message translates to:
+  /// **'বাদ দিন'**
+  String get removeMedicine;
+
+  /// No description provided for @fieldName.
+  ///
+  /// In bn, this message translates to:
+  /// **'ওষুধের নাম'**
+  String get fieldName;
+
+  /// No description provided for @fieldStrength.
+  ///
+  /// In bn, this message translates to:
+  /// **'শক্তি (mg)'**
+  String get fieldStrength;
+
+  /// No description provided for @fieldDose.
+  ///
+  /// In bn, this message translates to:
+  /// **'ডোজ (সকাল+দুপুর+রাত)'**
+  String get fieldDose;
+
+  /// No description provided for @fieldDoseHint.
+  ///
+  /// In bn, this message translates to:
+  /// **'১+০+১'**
+  String get fieldDoseHint;
+
+  /// No description provided for @fieldTiming.
+  ///
+  /// In bn, this message translates to:
+  /// **'কখন খাবেন'**
+  String get fieldTiming;
+
+  /// No description provided for @fieldDuration.
+  ///
+  /// In bn, this message translates to:
+  /// **'কত দিন'**
+  String get fieldDuration;
+
+  /// No description provided for @continueIndefinitely.
+  ///
+  /// In bn, this message translates to:
+  /// **'চলবে (শেষ তারিখ নেই)'**
+  String get continueIndefinitely;
+
+  /// No description provided for @asNeeded.
+  ///
+  /// In bn, this message translates to:
+  /// **'শুধু প্রয়োজন হলে (SOS)'**
+  String get asNeeded;
+
+  /// No description provided for @looksRight.
+  ///
+  /// In bn, this message translates to:
+  /// **'ঠিক আছে'**
+  String get looksRight;
+
+  /// No description provided for @writtenAs.
+  ///
+  /// In bn, this message translates to:
+  /// **'প্রেসক্রিপশনে লেখা: {text}'**
+  String writtenAs(String text);
+
+  /// No description provided for @problemNameRequired.
+  ///
+  /// In bn, this message translates to:
+  /// **'ওষুধের নাম লিখুন'**
+  String get problemNameRequired;
+
+  /// No description provided for @problemDoseInvalid.
+  ///
+  /// In bn, this message translates to:
+  /// **'ডোজ লিখুন, যেমন ১+০+১'**
+  String get problemDoseInvalid;
+
+  /// No description provided for @problemDurationRequired.
+  ///
+  /// In bn, this message translates to:
+  /// **'কত দিন লিখুন, অথবা \"চলবে\" বেছে নিন'**
+  String get problemDurationRequired;
+
+  /// No description provided for @problemNeedsReview.
+  ///
+  /// In bn, this message translates to:
+  /// **'হলুদ চিহ্নিত ঘরগুলো মিলিয়ে দেখুন'**
+  String get problemNeedsReview;
+
+  /// No description provided for @timingBeforeMeal.
+  ///
+  /// In bn, this message translates to:
+  /// **'খাবারের আগে'**
+  String get timingBeforeMeal;
+
+  /// No description provided for @timingAfterMeal.
+  ///
+  /// In bn, this message translates to:
+  /// **'খাবারের পরে'**
+  String get timingAfterMeal;
+
+  /// No description provided for @timingWithMeal.
+  ///
+  /// In bn, this message translates to:
+  /// **'খাবারের সাথে'**
+  String get timingWithMeal;
+
+  /// No description provided for @timingEmptyStomach.
+  ///
+  /// In bn, this message translates to:
+  /// **'খালি পেটে'**
+  String get timingEmptyStomach;
+
+  /// No description provided for @timingBedtime.
+  ///
+  /// In bn, this message translates to:
+  /// **'ঘুমানোর আগে'**
+  String get timingBedtime;
+
+  /// No description provided for @timingNotSpecified.
+  ///
+  /// In bn, this message translates to:
+  /// **'লেখা নেই'**
+  String get timingNotSpecified;
+
+  /// No description provided for @saved.
+  ///
+  /// In bn, this message translates to:
+  /// **'সংরক্ষণ হয়েছে। রিমাইন্ডার চালু হয়েছে।'**
+  String get saved;
+
+  /// No description provided for @stopMedicine.
+  ///
+  /// In bn, this message translates to:
+  /// **'এই ওষুধ বন্ধ করুন'**
+  String get stopMedicine;
+
+  /// No description provided for @stopConfirm.
+  ///
+  /// In bn, this message translates to:
+  /// **'{name}-এর রিমাইন্ডার বন্ধ করবেন? শুধু ডাক্তার বললে বন্ধ করুন।'**
+  String stopConfirm(String name);
+
+  /// No description provided for @cancel.
+  ///
+  /// In bn, this message translates to:
+  /// **'বাতিল'**
+  String get cancel;
+
+  /// No description provided for @retry.
+  ///
+  /// In bn, this message translates to:
+  /// **'আবার চেষ্টা করুন'**
+  String get retry;
+
+  /// No description provided for @errorNetwork.
+  ///
+  /// In bn, this message translates to:
+  /// **'সার্ভারের সাথে সংযোগ নেই। ইন্টারনেট দেখুন।'**
+  String get errorNetwork;
+
+  /// No description provided for @errorGeneric.
+  ///
+  /// In bn, this message translates to:
+  /// **'কিছু একটা সমস্যা হয়েছে। আবার চেষ্টা করুন।'**
+  String get errorGeneric;
+
+  /// No description provided for @errImageMissing.
+  ///
+  /// In bn, this message translates to:
+  /// **'কোনো ছবি পাওয়া যায়নি।'**
+  String get errImageMissing;
+
+  /// No description provided for @errImageTooLarge.
+  ///
+  /// In bn, this message translates to:
+  /// **'ছবিটা অনেক বড় (সর্বোচ্চ ১৫ MB)।'**
+  String get errImageTooLarge;
+
+  /// No description provided for @errImageUnreadable.
+  ///
+  /// In bn, this message translates to:
+  /// **'এটা ছবি নয়। JPEG বা PNG ছবি দিন।'**
+  String get errImageUnreadable;
+
+  /// No description provided for @errImageFormatUnsupported.
+  ///
+  /// In bn, this message translates to:
+  /// **'শুধু JPEG, PNG বা WebP ছবি দেওয়া যাবে।'**
+  String get errImageFormatUnsupported;
+
+  /// No description provided for @errImageTooSmall.
+  ///
+  /// In bn, this message translates to:
+  /// **'ছবিটা খুব ছোট। প্রেসক্রিপশনের কাছ থেকে তুলুন।'**
+  String get errImageTooSmall;
+
+  /// No description provided for @errNotAPrescription.
+  ///
+  /// In bn, this message translates to:
+  /// **'এটা প্রেসক্রিপশন মনে হচ্ছে না।'**
+  String get errNotAPrescription;
+
+  /// No description provided for @errAiNotConfigured.
+  ///
+  /// In bn, this message translates to:
+  /// **'এখন প্রেসক্রিপশন পড়া যাচ্ছে না। ওষুধগুলো নিজে যোগ করুন।'**
+  String get errAiNotConfigured;
+
+  /// No description provided for @errAiRateLimited.
+  ///
+  /// In bn, this message translates to:
+  /// **'এখন অনেক অনুরোধ আসছে। এক মিনিট পরে চেষ্টা করুন।'**
+  String get errAiRateLimited;
+
+  /// No description provided for @errAiUnavailable.
+  ///
+  /// In bn, this message translates to:
+  /// **'প্রেসক্রিপশন পড়ার সেবায় সংযোগ হচ্ছে না। আবার চেষ্টা করুন।'**
+  String get errAiUnavailable;
+
+  /// No description provided for @errAiRefused.
+  ///
+  /// In bn, this message translates to:
+  /// **'এই ছবিটা পড়া যায়নি। ওষুধগুলো নিজে যোগ করুন।'**
+  String get errAiRefused;
+
+  /// No description provided for @errAiFailed.
+  ///
+  /// In bn, this message translates to:
+  /// **'প্রেসক্রিপশন পড়া যায়নি। আবার চেষ্টা করুন।'**
+  String get errAiFailed;
+
+  /// No description provided for @errPrescriptionTooLong.
+  ///
+  /// In bn, this message translates to:
+  /// **'প্রেসক্রিপশনটা অনেক বড়। দুই ভাগে দুটো ছবি তুলুন।'**
+  String get errPrescriptionTooLong;
+
+  /// No description provided for @errDrugNotFound.
+  ///
+  /// In bn, this message translates to:
+  /// **'ওষুধটি পাওয়া যায়নি।'**
+  String get errDrugNotFound;
+
+  /// No description provided for @errInvalidDosePattern.
+  ///
+  /// In bn, this message translates to:
+  /// **'ডোজ সঠিক নয়। ১+০+১ এর মতো লিখুন।'**
+  String get errInvalidDosePattern;
+
+  /// No description provided for @errInvalidInterval.
+  ///
+  /// In bn, this message translates to:
+  /// **'কত ঘণ্টা পরপর, সেটা ২৪ ঘণ্টাকে সমান ভাগ করতে হবে।'**
+  String get errInvalidInterval;
+
+  /// No description provided for @errInvalidDuration.
+  ///
+  /// In bn, this message translates to:
+  /// **'দিনের সংখ্যা ১ থেকে ৩৬৫-এর মধ্যে হতে হবে।'**
+  String get errInvalidDuration;
+
+  /// No description provided for @errInvalidWeekdays.
+  ///
+  /// In bn, this message translates to:
+  /// **'সপ্তাহের অন্তত একটা দিন বেছে নিন।'**
+  String get errInvalidWeekdays;
+
+  /// No description provided for @errInvalidMealTimes.
+  ///
+  /// In bn, this message translates to:
+  /// **'খাবারের সময়গুলো দিনের ক্রম অনুযায়ী হতে হবে।'**
+  String get errInvalidMealTimes;
+
+  /// No description provided for @errInvalidTimezone.
+  ///
+  /// In bn, this message translates to:
+  /// **'অজানা সময় অঞ্চল।'**
+  String get errInvalidTimezone;
+
+  /// No description provided for @errMissingDose.
+  ///
+  /// In bn, this message translates to:
+  /// **'ডোজ লিখুন।'**
+  String get errMissingDose;
+
+  /// No description provided for @errConflictingDose.
+  ///
+  /// In bn, this message translates to:
+  /// **'ডোজ অথবা কত ঘণ্টা পরপর, যেকোনো একটা দিন।'**
+  String get errConflictingDose;
+
+  /// No description provided for @noticeNameUnreadable.
+  ///
+  /// In bn, this message translates to:
+  /// **'নাম পড়া যায়নি।'**
+  String get noticeNameUnreadable;
+
+  /// No description provided for @noticeNameNotInCatalog.
+  ///
+  /// In bn, this message translates to:
+  /// **'এই নাম আমাদের ওষুধের তালিকায় নেই। ভালো করে মিলিয়ে দেখুন।'**
+  String get noticeNameNotInCatalog;
+
+  /// No description provided for @noticeNameCorrected.
+  ///
+  /// In bn, this message translates to:
+  /// **'প্রেসক্রিপশনে লেখা \"{written}\"।'**
+  String noticeNameCorrected(String written);
+
+  /// No description provided for @noticeStrengthNotInCatalog.
+  ///
+  /// In bn, this message translates to:
+  /// **'{written} শক্তির ওষুধ আমাদের তালিকায় নেই।'**
+  String noticeStrengthNotInCatalog(String written);
+
+  /// No description provided for @noticeStrengthSuggested.
+  ///
+  /// In bn, this message translates to:
+  /// **'প্রেসক্রিপশনে লেখা নেই; তালিকা থেকে {suggested} প্রস্তাব করা হয়েছে।'**
+  String noticeStrengthSuggested(String suggested);
+
+  /// No description provided for @noticeDoseUnreadable.
+  ///
+  /// In bn, this message translates to:
+  /// **'\"{written}\" বোঝা যায়নি।'**
+  String noticeDoseUnreadable(String written);
+
+  /// No description provided for @noticeDoseMissing.
+  ///
+  /// In bn, this message translates to:
+  /// **'ডোজ লেখা নেই।'**
+  String get noticeDoseMissing;
+
+  /// No description provided for @noticeDoseAsNeeded.
+  ///
+  /// In bn, this message translates to:
+  /// **'শুধু প্রয়োজন হলে খাবেন।'**
+  String get noticeDoseAsNeeded;
+
+  /// No description provided for @noticeTimingNotSpecified.
+  ///
+  /// In bn, this message translates to:
+  /// **'খাবারের আগে না পরে, লেখা নেই।'**
+  String get noticeTimingNotSpecified;
+
+  /// No description provided for @noticeDurationUnclear.
+  ///
+  /// In bn, this message translates to:
+  /// **'কত দিন খাবেন, পরিষ্কার নয়।'**
+  String get noticeDurationUnclear;
+
+  /// No description provided for @noticeDurationOutOfRange.
+  ///
+  /// In bn, this message translates to:
+  /// **'অস্বাভাবিক মেয়াদ ({days} দিন)।'**
+  String noticeDurationOutOfRange(String days);
+
+  /// No description provided for @noticeDurationMissing.
+  ///
+  /// In bn, this message translates to:
+  /// **'কত দিন খেতে হবে লেখা নেই।'**
+  String get noticeDurationMissing;
+
+  /// No description provided for @noticeImagePoorQuality.
+  ///
+  /// In bn, this message translates to:
+  /// **'ছবিটা অস্পষ্ট। সব মিলিয়ে দেখুন অথবা আবার ছবি তুলুন।'**
+  String get noticeImagePoorQuality;
+
+  /// No description provided for @noticeNoMedicinesFound.
+  ///
+  /// In bn, this message translates to:
+  /// **'কোনো ওষুধ পাওয়া যায়নি। নিজে যোগ করুন অথবা আবার ছবি তুলুন।'**
+  String get noticeNoMedicinesFound;
+
+  /// No description provided for @noticeReviewHighlightedFields.
+  ///
+  /// In bn, this message translates to:
+  /// **'হলুদ চিহ্নিত ঘরগুলো প্রেসক্রিপশনের সাথে মিলিয়ে দেখুন।'**
+  String get noticeReviewHighlightedFields;
 }
 
 class _AppLocalizationsDelegate

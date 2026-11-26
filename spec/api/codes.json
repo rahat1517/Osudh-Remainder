@@ -1,0 +1,17 @@
+{
+  "description": "Every machine-readable code the backend can return. The backend test checks it emits exactly these; the app test checks each has localized text in Bangla and English.",
+  "errors": [
+    "image_missing", "image_too_large", "image_unreadable", "image_format_unsupported", "image_too_small",
+    "not_a_prescription",
+    "ai_not_configured", "ai_rate_limited", "ai_unavailable", "ai_refused", "ai_failed", "prescription_too_long",
+    "drug_not_found",
+    "invalid_dose_pattern", "invalid_interval", "invalid_duration", "invalid_weekdays",
+    "invalid_meal_times", "invalid_timezone", "missing_dose", "conflicting_dose"
+  ],
+  "notices": [
+    "name_unreadable", "name_not_in_catalog", "name_corrected", "strength_not_in_catalog",
+    "strength_suggested", "dose_unreadable", "dose_missing", "dose_as_needed", "timing_not_specified",
+    "duration_unclear", "duration_out_of_range", "duration_missing",
+    "image_poor_quality", "no_medicines_found", "review_highlighted_fields"
+  ]
+}

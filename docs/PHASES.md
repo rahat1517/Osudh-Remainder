@@ -14,7 +14,7 @@ Legend: ✅ done · ⏳ blocked on an external input · ⬜ not started
 | **1** | Bangladeshi drug catalogue | database, backend | 1-2 weeks | ✅ (official data ⏳) |
 | **2** | Prescription reader and verifier (AI) | backend | 2-3 weeks | ✅ (live eval ⏳) |
 | **3** | Schedule engine | backend, app | 1 week | ✅ |
-| **4** | App: onboarding, scan and confirm | app | 2-3 weeks | ⬜ |
+| **4** | App: onboarding, scan and confirm | app | 2-3 weeks | ✅ (device test ⏳) |
 | **5** | Offline alarm engine and Bangla voice | app | 2 weeks | ⬜ |
 | **6** | Caregiver mode | app, backend | 1-2 weeks | ⬜ |
 | **7** | Testing, pilot and Play Store | all | 2-3 weeks | ⬜ |
@@ -133,27 +133,31 @@ Estimates assume one developer working with an AI assistant.
 
 ---
 
-## Phase 4: App onboarding, scan and confirm ⬜
+## Phase 4: App onboarding, scan and confirm ✅ (device test ⏳)
 
 **Goal:** a user can install the app and confirm a prescription.
-**Depends on:** Phases 2, 3
 
-- [ ] Schema: `profiles`, `prescriptions`, `medicines`, `schedules` with row-level security
-- [ ] Phone login (Supabase OTP, automatic SMS code reading on Android)
-- [ ] Onboarding: welcome → login → permissions → first prescription
-- [ ] Camera or gallery capture, crop and quality hints
-- [ ] **Confirm screen:** high (filled), medium (highlighted), low (empty) → edit → Confirm
-- [ ] Localized texts for every backend error and notice code
-- [ ] Medicine-name autocomplete
-- [ ] Manual entry without a prescription
-- [ ] Home screen: today's medicines and next dose
-- [ ] Medicine list: edit and stop
-- [ ] Large text, large buttons, simple Bangla
+- [x] Schema: `profiles` (auto-created on sign-up, meal times), `prescriptions` (draft → confirmed),
+      `medicines`, view `active_medicines`, function `confirm_prescription`; row-level security.
+      Dose times are derived by the schedule engine, not stored (single source of truth).
+- [x] 14 database tests on real PostgreSQL with a Supabase auth shim (CI job): isolation between users,
+      ownership checks, only confirmed medicines active, constraints, cascade delete
+- [x] Phone login (Supabase OTP, SMS autofill hint); Bangladeshi number validation incl. Bangla digits
+- [x] Demo mode without Supabase (in-memory data, code 123456) for development
+- [x] Camera/gallery capture → `POST /prescriptions/extract` → confirm screen
+- [x] **Confirm screen:** medium fields amber, low fields red; each must be confirmed ("Looks right") or
+      edited; Confirm stays disabled until every visible field is reviewed and valid
+- [x] Every backend error and notice code localized in Bangla and English (`spec/api/codes.json`,
+      checked by backend and app tests)
+- [x] API contract fixture shared by backend and app tests
+- [x] Medicine-name autocomplete from the catalogue
+- [x] Manual entry, home screen with today's grouped reminders and the next dose, medicine list with stop
+- [x] Large text and touch targets, simple Bangla
 
 **Exit criteria:**
-- A new user confirms a first prescription within 3 minutes
-- No schedule exists without confirmation
-- Users cannot see each other's data (RLS tests)
+- ⏳ First prescription confirmed within 3 minutes (end-to-end flow automated; needs a usability test)
+- ✅ No schedule without confirmation (enforced in the app, the repository and the database view)
+- ✅ Users cannot see each other's data (RLS tests)
 
 ---
 
