@@ -1,0 +1,42 @@
+name: Pilot APK
+
+# Builds an installable APK wired to the production Supabase project and backend.
+# Run it from Actions → Pilot APK → Run workflow, then download the artifact.
+# The values below are public by design (the app ships them); secrets never go here.
+# Signed with the debug key unless release signing is configured: fine for sharing with pilot
+# testers, never for Play Store upload.
+on:
+  workflow_dispatch:
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: app
+    env:
+      SUPABASE_URL: https://jbwttngkuewtoarhsipn.supabase.co
+      SUPABASE_PUBLISHABLE_KEY: sb_publishable_JqOzITjExs4zUuR2sk0W-w_LVSl1w6b
+      BACKEND_URL: https://oshudh-api.onrender.com
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: 3.50.1
+          cache: true
+      - name: Build release APK
+        run: >-
+          flutter build apk --release
+          --dart-define=SUPABASE_URL=$SUPABASE_URL
+          --dart-define=SUPABASE_PUBLISHABLE_KEY=$SUPABASE_PUBLISHABLE_KEY
+          --dart-define=BACKEND_URL=$BACKEND_URL
+      - uses: actions/upload-artifact@v4
+        with:
+          name: oshudh-pilot-apk
+          path: app/build/app/outputs/flutter-apk/app-release.apk
+          retention-days: 30
