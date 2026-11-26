@@ -1,0 +1,139 @@
+{
+  "_comment": "কাল্পনিক প্রেসক্রিপশন। ডাক্তার ও রোগী কাল্পনিক। lines = ছবিতে যা লেখা থাকবে, expected = সঠিক উত্তর।",
+  "cases": [
+    {
+      "id": "rx01-basic-bangla",
+      "lines": [
+        "Tab. Seclo 20mg      ১+০+১   (খাবারের আগে)   — ১ মাস",
+        "Tab. Napa 500mg      ১+১+১   (খাবারের পরে)   — ৫ দিন",
+        "Tab. Fexo 120mg      ০+০+১                    — ১০ দিন"
+      ],
+      "expected": [
+        {"brand": "Seclo", "strength": "20 mg", "dose": "1+0+1", "timing": "before_meal", "days": 30},
+        {"brand": "Napa", "strength": "500 mg", "dose": "1+1+1", "timing": "after_meal", "days": 5},
+        {"brand": "Fexo", "strength": "120 mg", "dose": "0+0+1", "timing": "not_specified", "days": 10}
+      ]
+    },
+    {
+      "id": "rx02-latin-abbreviations",
+      "lines": [
+        "Cap. Sergel 20 mg    1 BD   AC   x 14 days",
+        "Tab. Ciprocin 500    1 BD   PC   x 7 days",
+        "Tab. Sedil 5mg       1 HS         x 10 days"
+      ],
+      "expected": [
+        {"brand": "Sergel", "strength": "20 mg", "dose": "1+0+1", "timing": "before_meal", "days": 14},
+        {"brand": "Ciprocin", "strength": "500 mg", "dose": "1+0+1", "timing": "after_meal", "days": 7},
+        {"brand": "Sedil", "strength": "5 mg", "dose": "0+0+1", "timing": "bedtime", "days": 10}
+      ]
+    },
+    {
+      "id": "rx03-continue-chronic",
+      "lines": [
+        "Tab. Amdocal 5mg     ১+০+০                   — চলবে",
+        "Tab. Comet 500mg     ১+০+১  (খাবারের পরে)   — চলবে",
+        "Tab. Rosuva 10mg     ০+০+১                   — চলবে",
+        "CBC, Lipid profile, S. Creatinine"
+      ],
+      "expected": [
+        {"brand": "Amdocal", "strength": "5 mg", "dose": "1+0+0", "timing": "not_specified", "continue": true},
+        {"brand": "Comet", "strength": "500 mg", "dose": "1+0+1", "timing": "after_meal", "continue": true},
+        {"brand": "Rosuva", "strength": "10 mg", "dose": "0+0+1", "timing": "not_specified", "continue": true}
+      ]
+    },
+    {
+      "id": "rx04-half-and-sos",
+      "lines": [
+        "Tab. Disopan 0.5mg   ½+০+½                   — ১৫ দিন",
+        "Tab. Napa Extend     জ্বর বা ব্যথা হলে ১টা (SOS)",
+        "Tab. Losectil 20mg   ১+০+১  খালি পেটে        — ১ মাস"
+      ],
+      "expected": [
+        {"brand": "Disopan", "strength": "0.5 mg", "dose": "0.5+0+0.5", "timing": "not_specified", "days": 15},
+        {"brand": "Napa Extend", "as_needed": true},
+        {"brand": "Losectil", "strength": "20 mg", "dose": "1+0+1", "timing": "empty_stomach", "days": 30}
+      ]
+    },
+    {
+      "id": "rx05-typos",
+      "lines": [
+        "Tab. Maxpo 20mg      1+0+1   before meal     2 wks",
+        "Tab. Alatral 10mg    0+0+1                   7 days",
+        "Tab. Monaas 10       0+0+1                   1 month"
+      ],
+      "expected": [
+        {"brand": "Maxpro", "strength": "20 mg", "dose": "1+0+1", "timing": "before_meal", "days": 14},
+        {"brand": "Alatrol", "strength": "10 mg", "dose": "0+0+1", "timing": "not_specified", "days": 7},
+        {"brand": "Monas", "strength": "10 mg", "dose": "0+0+1", "timing": "not_specified", "days": 30}
+      ]
+    },
+    {
+      "id": "rx06-antibiotic-tds",
+      "lines": [
+        "Cap. Moxacil 500mg   1 TDS  খাবারের পরে  — ৭ দিন",
+        "Tab. Rolac 10mg      ১+০+১  খাবারের পরে  — ৫ দিন",
+        "Tab. Pantonix 20mg   ১+০+১  খাবারের আগে  — ১৪ দিন",
+        "উপদেশ: প্রচুর পানি পান করবেন। ৭ দিন পর দেখা করবেন।"
+      ],
+      "expected": [
+        {"brand": "Moxacil", "strength": "500 mg", "dose": "1+1+1", "timing": "after_meal", "days": 7},
+        {"brand": "Rolac", "strength": "10 mg", "dose": "1+0+1", "timing": "after_meal", "days": 5},
+        {"brand": "Pantonix", "strength": "20 mg", "dose": "1+0+1", "timing": "before_meal", "days": 14}
+      ]
+    },
+    {
+      "id": "rx07-no-strength",
+      "lines": [
+        "Tab. Calbo D         ০+১+০  খাবারের পরে  — ৩ মাস",
+        "Tab. Ecosprin        ০+১+০  খাবারের পরে  — চলবে",
+        "Tab. Osartil 50mg    ১+০+০                — চলবে"
+      ],
+      "expected": [
+        {"brand": "Calbo D", "dose": "0+1+0", "timing": "after_meal", "days": 90},
+        {"brand": "Ecosprin", "dose": "0+1+0", "timing": "after_meal", "continue": true},
+        {"brand": "Osartil", "strength": "50 mg", "dose": "1+0+0", "timing": "not_specified", "continue": true}
+      ]
+    },
+    {
+      "id": "rx08-syrup-child",
+      "lines": [
+        "Syp. Napa 120mg/5ml  ১ চামচ করে দিনে ৩ বার  — ৩ দিন",
+        "Syp. Ace Plus        —",
+        "Orsaline-N           প্রতিবার পাতলা পায়খানার পর ১ প্যাকেট"
+      ],
+      "expected": [
+        {"brand": "Napa", "strength": "120 mg/5 ml", "dose": "1+1+1", "days": 3},
+        {"brand": "Orsaline-N", "as_needed": true}
+      ],
+      "_note": "Ace Plus লাইনে ডোজ নেই: AI-এর উচিত এটা low দেওয়া; expected-এ নেই, তাই শুধু অতিরিক্ত হিসেবে গোনা হবে"
+    },
+    {
+      "id": "rx09-four-times",
+      "lines": [
+        "Tab. Zimax 500mg     ১+০+০  খালি পেটে  — ৩ দিন",
+        "Tab. Filmet 400mg    1 QID  PC          x 7 days",
+        "Tab. Esonix 20mg     1+0+1  AC          x 1 month"
+      ],
+      "expected": [
+        {"brand": "Zimax", "strength": "500 mg", "dose": "1+0+0", "timing": "empty_stomach", "days": 3},
+        {"brand": "Filmet", "strength": "400 mg", "dose": "1+1+1+1", "timing": "after_meal", "days": 7},
+        {"brand": "Esonix", "strength": "20 mg", "dose": "1+0+1", "timing": "before_meal", "days": 30}
+      ]
+    },
+    {
+      "id": "rx10-mixed",
+      "lines": [
+        "Cap. Cef-3 200mg     ১+০+১  খাবারের পরে  — ৭ দিন",
+        "Tab. Atova 10mg      0+0+1               — continue",
+        "Tab. Angilock 50     ১+০+০               — ২ মাস",
+        "Tab. Camlodin 5mg    ১+০+০               — ২ মাস"
+      ],
+      "expected": [
+        {"brand": "Cef-3", "strength": "200 mg", "dose": "1+0+1", "timing": "after_meal", "days": 7},
+        {"brand": "Atova", "strength": "10 mg", "dose": "0+0+1", "timing": "not_specified", "continue": true},
+        {"brand": "Angilock", "strength": "50 mg", "dose": "1+0+0", "timing": "not_specified", "days": 60},
+        {"brand": "Camlodin", "strength": "5 mg", "dose": "1+0+0", "timing": "not_specified", "days": 60}
+      ]
+    }
+  ]
+}
