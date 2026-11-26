@@ -484,4 +484,34 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get dashboardEmpty => 'আজ কোনো ডোজ নেই।';
+
+  @override
+  String get errAuthRequired => 'অনুগ্রহ করে আবার সাইন ইন করুন।';
+
+  @override
+  String get errAuthInvalid => 'আপনার সেশনের মেয়াদ শেষ। আবার সাইন ইন করুন।';
+
+  @override
+  String get errRateLimited =>
+      'অল্প সময়ে অনেকবার স্ক্যান করেছেন। একটু পরে আবার চেষ্টা করুন।';
+
+  @override
+  String get settingsTitle => 'সেটিংস';
+
+  @override
+  String get privacyPolicy => 'গোপনীয়তা নীতি';
+
+  @override
+  String get privacySummary =>
+      'আপনার প্রেসক্রিপশন ও ওষুধের তথ্য শুধু আপনি এবং আপনার আমন্ত্রিত পরিবারের সদস্যরা দেখতে পারেন। প্রেসক্রিপশনের ছবি কখনো সংরক্ষণ করা হয় না।';
+
+  @override
+  String get deleteAccount => 'আমার অ্যাকাউন্ট মুছে দিন';
+
+  @override
+  String get deleteAccountConfirm =>
+      'এতে আপনার অ্যাকাউন্ট, ওষুধ, ইতিহাস ও পরিবারের সংযোগ চিরতরে মুছে যাবে। এটা আর ফেরানো যাবে না।';
+
+  @override
+  String get deleteAccountButton => 'চিরতরে মুছে দিন';
 }

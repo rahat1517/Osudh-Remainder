@@ -3,12 +3,13 @@ from fastapi import APIRouter, status
 from app.api.errors import api_error
 from app.schedule.engine import ScheduleError, generate
 from app.schedule.models import ScheduleRequest, ScheduleResponse
+from app.security.dependencies import CurrentUser
 
 router = APIRouter(prefix="/schedules", tags=["schedules"])
 
 
 @router.post("/generate")
-def generate_schedule(request: ScheduleRequest) -> ScheduleResponse:
+def generate_schedule(request: ScheduleRequest, user: CurrentUser) -> ScheduleResponse:
     """Turn confirmed medicines into dose times and grouped reminders.
 
     Deterministic and rule-based (docs/SCHEDULE_SPEC.md). The app runs the same engine offline.

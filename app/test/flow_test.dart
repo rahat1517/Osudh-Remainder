@@ -156,6 +156,24 @@ void main() {
       isNotNull,
     );
   });
+
+  testWidgets('account deletion asks for confirmation and signs out', (
+    tester,
+  ) async {
+    await pumpApp(tester, demoState());
+    await signIn(tester);
+    await tester.tap(find.byIcon(Icons.settings_outlined));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('deleteAccount')));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('চিরতরে মুছে যাবে'), findsOneWidget);
+    await tester.tap(find.byKey(const Key('confirmDelete')));
+    await tester.pumpAndSettle();
+    expect(
+      find.text('শুরু করুন'),
+      findsOneWidget,
+    ); // back on the welcome screen
+  });
 }
 
 AppState context(WidgetTester tester) => Provider.of<AppState>(

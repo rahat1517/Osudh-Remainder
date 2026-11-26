@@ -32,6 +32,8 @@ uv run ruff format --check .
 | `POST /prescriptions/extract` (multipart `image`) | Prescription photo → medicines with per-field confidence. Needs `ANTHROPIC_API_KEY`, otherwise 503 |
 | `POST /schedules/generate` | Confirmed medicines → dose times and grouped reminders ([spec](../docs/SCHEDULE_SPEC.md)) |
 
+Server job: `uv run python -m app.caregivers.job` sends missed-dose alerts to caregivers (Phase 6).
+
 ### Confidence levels
 
 | Value | Meaning | App behaviour |
@@ -52,6 +54,8 @@ documented; clients localize it. The `message` is English, for developers.
 | `ai_not_configured`, `ai_rate_limited`, `ai_unavailable` | 503 (retry) | extract |
 | `ai_refused`, `ai_failed`, `prescription_too_long` | 502 | extract |
 | `drug_not_found` | 404 | drugs |
+| `auth_required`, `auth_invalid` | 401 | extract, schedules (Supabase access token as `Authorization: Bearer`) |
+| `rate_limited` | 429 (`Retry-After`) | extract (per user: 5/min, 30/h, 100/day) |
 | `invalid_dose_pattern`, `invalid_interval`, `invalid_duration`, `invalid_weekdays`, `invalid_meal_times`, `invalid_timezone`, `missing_dose`, `conflicting_dose` | 422 | schedules (with `medicine_id`) |
 
 Fields and warnings in a prescription result may carry a **notice** `{code, message, params}`:
@@ -60,6 +64,17 @@ Fields and warnings in a prescription result may carry a **notice** `{code, mess
 `dose_missing`, `dose_as_needed`, `timing_not_specified`, `duration_unclear`,
 `duration_out_of_range {days}`, `duration_missing`; warnings: `image_poor_quality`,
 `no_medicines_found`, `review_highlighted_fields`.
+
+## Security
+
+- `POST /prescriptions/extract` and `POST /schedules/generate` require a Supabase access token. Tokens
+  are verified with the project's signing keys (JWKS) or the legacy HS256 secret; audience and issuer
+  are checked. With `ENVIRONMENT=production` the server refuses to start without auth configured.
+- The AI endpoint is rate-limited per user.
+- Error reports (optional Sentry) are scrubbed of bodies, query strings, cookies and auth headers.
+- Every response carries an `X-Request-ID`.
+- Threat model and controls: [docs/SECURITY.md](../docs/SECURITY.md). Deployment:
+  [docs/DEPLOYMENT.md](../docs/DEPLOYMENT.md), image: `backend/Dockerfile`.
 
 ## How a prescription is read
 

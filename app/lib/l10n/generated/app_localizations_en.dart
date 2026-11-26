@@ -488,4 +488,35 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get dashboardEmpty => 'No doses today.';
+
+  @override
+  String get errAuthRequired => 'Please sign in again.';
+
+  @override
+  String get errAuthInvalid =>
+      'Your session has expired. Please sign in again.';
+
+  @override
+  String get errRateLimited =>
+      'Too many scans in a short time. Try again a little later.';
+
+  @override
+  String get settingsTitle => 'Settings';
+
+  @override
+  String get privacyPolicy => 'Privacy policy';
+
+  @override
+  String get privacySummary =>
+      'Your prescriptions and medicines are visible only to you and the family members you invite. Prescription photos are never stored.';
+
+  @override
+  String get deleteAccount => 'Delete my account';
+
+  @override
+  String get deleteAccountConfirm =>
+      'This permanently deletes your account, medicines, history and family links. This cannot be undone.';
+
+  @override
+  String get deleteAccountButton => 'Delete permanently';
 }
