@@ -4,9 +4,12 @@
 data/
 datasets/
 prescriptions/
+# ব্যতিক্রম: কোডের ফোল্ডার (এখানে কোনো ছবি বা রোগীর তথ্য থাকে না)
+!backend/app/prescriptions/
 uploads/
 patient_data/
 ml/data/
+backend/eval/out/
 *.dcm
 
 # প্রেসক্রিপশনের ছবি (ভুল করে যেন commit না হয়)

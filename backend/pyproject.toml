@@ -9,6 +9,9 @@ dependencies = [
     "uvicorn[standard]>=0.32",
     "pydantic-settings>=2.6",
     "rapidfuzz>=3.10",
+    "anthropic>=2.14.0",
+    "python-multipart>=0.0.12",
+    "pillow>=13.0.0",
 ]
 
 [dependency-groups]
