@@ -11,6 +11,8 @@ COPY backend/pyproject.toml backend/uv.lock backend/.python-version ./
 RUN uv sync --locked --no-dev --no-install-project
 
 COPY backend/app ./app
+# Fine-tuned OCR models, if any (see backend/models/README.md)
+COPY backend/models ./models
 COPY database/seed /srv/database/seed
 
 # Run as an unprivileged user

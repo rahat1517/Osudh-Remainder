@@ -40,3 +40,64 @@ uv run python -m eval.run_eval --yes --reader hybrid
 ```
 
 Promote the local model only if its high-confidence accuracy is at least the cloud reader's.
+
+## PaddleOCR fine-tuning (free reader)
+
+Without a Claude key the backend reads prescriptions with PaddleOCR + rules
+(`backend/app/prescriptions/ocr_reader.py`). The pretrained models read printed Latin text well
+(names 93–97% in the baseline eval) but not Bangla script or messy handwriting. Fine-tuning the
+**recognition** model on prescription lines fixes that; detection usually needs no training.
+
+```
+synthetic lines (Bangla doses/timings, brand names)  ─┐
+approved real examples → OCR → line crops, labelled  ─┼→ train on a free Colab GPU → rec.onnx
+reviewer-typed text for skipped crops                 ─┘      → eval gate → backend/models/
+```
+
+### 1. Data
+
+```bash
+cd ml
+uv sync --extra ocr
+# a) Synthetic lines: put Bangla and handwriting-style fonts in fonts/ (e.g. Noto Sans Bengali,
+#    Hind Siliguri, Galada, Mina from fonts.google.com). Needs Pillow with libraqm for Bangla.
+uv run python -m oshudh_ml.synth_rec --fonts fonts/ --out data/synth --count 20000
+# b) Real crops from approved, consented, de-identified examples (DATABASE_URL, SUPABASE_URL,
+#    SUPABASE_SERVICE_ROLE_KEY)
+uv run python -m oshudh_ml.export_rec --out data/rec-v1
+```
+
+`export_rec` keeps only lines it can label safely: confident OCR reads that agree with what the user
+confirmed, and lines whose medicine name it can correct from the confirmed value. The rest are saved
+under `skipped/` and listed in `skipped.tsv`: a reviewer can type the correct text in the third
+column and append those rows (`crop<TAB>text`) to `train.txt`. That is how real Bangla handwriting
+gets into the data.
+
+Rough guide: the synthetic set alone teaches Bangla digits and common instructions; a few hundred
+real prescriptions (a few thousand lines) are what make handwriting work.
+
+### 2. Train (free GPU)
+
+In Google Colab (Runtime → GPU), upload `data/` and run:
+
+```bash
+git clone https://github.com/rahat1517/Osudh-Remainder && cd Osudh-Remainder/ml
+bash paddleocr/train_rec_colab.sh data/rec-v1 data/synth        # EPOCHS=30 by default
+```
+
+It fine-tunes PaddleOCR's English PP-OCRv4 recognition model with a character list that includes
+Bangla, then exports `out/rec.onnx` and `out/dict.txt`.
+
+### 3. Eval gate, then switch
+
+```bash
+cp out/rec.onnx out/dict.txt ../backend/models/
+cd ../backend
+OCR_REC_MODEL_PATH=models/rec.onnx OCR_REC_KEYS_PATH=models/dict.txt \
+  uv run python -m eval.run_eval --reader ocr
+```
+
+Switch only if **no field is wrong while marked `high`** and every field is at least as accurate as
+`backend/eval/reports/ocr-baseline-2026-11-26.md`. Then commit the two files and set
+`OCR_REC_MODEL_PATH` / `OCR_REC_KEYS_PATH` on the server (`backend/models/README.md`). To roll back,
+unset the variables.

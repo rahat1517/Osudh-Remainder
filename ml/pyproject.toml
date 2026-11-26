@@ -9,6 +9,14 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+# PaddleOCR data tools: crop export and synthetic lines (CPU is enough)
+ocr = [
+    "rapidocr-onnxruntime>=1.4.4",
+    "opencv-python-headless>=4.10",
+    "pillow>=11",
+    "rapidfuzz>=3.10",
+    "fonttools>=4.55",
+]
 # GPU training stack (install on the training machine only)
 train = [
     "torch>=2.5",
@@ -20,10 +28,12 @@ train = [
 ]
 
 [dependency-groups]
-dev = ["pytest>=8.3", "ruff>=0.8"]
+dev = ["pytest>=8.3", "ruff>=0.8", "pillow>=11", "rapidfuzz>=3.10", "fonttools>=4.55"]
 
 [tool.uv]
 package = false
+# rapidocr-onnxruntime asks for the GUI build of OpenCV; the headless build provides the same cv2
+override-dependencies = ["opencv-python; sys_platform == 'never'"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -40,3 +50,5 @@ select = ["E", "F", "I", "B", "UP", "SIM"]
 "oshudh_ml/dataset.py" = ["E501"]
 "oshudh_ml/train_lora.py" = ["E501"]
 "tests/*.py" = ["E501"]
+"oshudh_ml/synth_rec.py" = ["E501"]
+"oshudh_ml/export_rec.py" = ["E501"]
