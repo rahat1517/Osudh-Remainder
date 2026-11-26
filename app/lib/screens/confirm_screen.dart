@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
@@ -26,19 +28,25 @@ class ConfirmScreen extends StatefulWidget {
     this.imageQuality,
     this.warnings = const [],
     this.forUserId,
+    this.image,
   });
 
-  ConfirmScreen.fromScan(PrescriptionScan scan, {super.key, this.forUserId})
-    : drafts = [for (final m in scan.medicines) MedicineDraft.fromScan(m)],
-      source = 'scan',
-      imageQuality = scan.imageQuality,
-      warnings = scan.warnings;
+  ConfirmScreen.fromScan(
+    PrescriptionScan scan, {
+    super.key,
+    this.forUserId,
+    this.image,
+  }) : drafts = [for (final m in scan.medicines) MedicineDraft.fromScan(m)],
+       source = 'scan',
+       imageQuality = scan.imageQuality,
+       warnings = scan.warnings;
 
   ConfirmScreen.manual({super.key, this.forUserId})
     : drafts = [MedicineDraft.manual()],
       source = 'manual',
       imageQuality = null,
-      warnings = const [];
+      warnings = const [],
+      image = null;
 
   final List<MedicineDraft> drafts;
   final String source;
@@ -47,6 +55,9 @@ class ConfirmScreen extends StatefulWidget {
 
   /// Saves for a patient the user looks after (edit permission) instead of for the user.
   final String? forUserId;
+
+  /// The scanned photo, shared for training only if the user opted in.
+  final Uint8List? image;
 
   @override
   State<ConfirmScreen> createState() => _ConfirmScreenState();
@@ -68,9 +79,15 @@ class _ConfirmScreenState extends State<ConfirmScreen> {
         _drafts,
         source: widget.source,
         imageQuality: widget.imageQuality,
+        forUserId: widget.forUserId,
+        scanImage: widget.image,
       );
       if (!mounted) return;
-      Navigator.of(context).popUntil((r) => r.isFirst);
+      if (widget.forUserId == null) {
+        Navigator.of(context).popUntil((r) => r.isFirst);
+      } else {
+        Navigator.of(context).pop(); // back to the patient's dashboard
+      }
       messenger.showSnackBar(SnackBar(content: Text(l.saved)));
     } on Exception {
       messenger.showSnackBar(SnackBar(content: Text(l.errorGeneric)));

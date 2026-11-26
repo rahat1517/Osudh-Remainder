@@ -57,6 +57,16 @@ class Settings(BaseSettings):
     max_calls_per_patient_day: int = 3
     escalation_monthly_budget_bdt: float = 5000.0
 
+    # Self-hosted reader and hybrid routing (Phase 11): cloud | local | hybrid
+    reader_mode: str = "cloud"
+    local_reader_url: str | None = None
+    local_reader_model: str = "oshudh-reader"
+
+    # Training-data collection (Phase 11). Needs DATABASE_URL, the service-role key for the private
+    # storage bucket, and a secret pepper for grouping keys.
+    supabase_service_role_key: str | None = None
+    training_pepper: str | None = None
+
     # Optional error monitoring. Personal data is scrubbed before sending.
     sentry_dsn: str | None = None
 

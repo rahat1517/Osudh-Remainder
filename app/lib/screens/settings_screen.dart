@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../l10n/generated/app_localizations.dart';
 import '../state/app_state.dart';
 import '../widgets/reminder_channels_tile.dart';
+import '../widgets/training_consent_tile.dart';
 import 'ramadan_screen.dart';
 import 'report_screen.dart';
 
@@ -63,6 +64,8 @@ class SettingsScreen extends StatelessWidget {
               repository: state.channels!,
               patientId: state.auth.currentUserId!,
             ),
+          if (state.trainingConsent != null)
+            TrainingConsentTile(repository: state.trainingConsent!),
           ListTile(
             leading: const Icon(Icons.insights),
             title: Text(l.reportTitle),

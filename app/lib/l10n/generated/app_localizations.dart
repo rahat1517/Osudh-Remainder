@@ -1279,6 +1279,36 @@ abstract class AppLocalizations {
   /// In bn, this message translates to:
   /// **'প্রতিটি ডোজের সময় তাঁর ফোনে SMS বা কল যাবে; ওষুধগুলো আপনি এখান থেকে দেখাশোনা করবেন।'**
   String get featurePhoneHelp;
+
+  /// No description provided for @trainingConsentTitle.
+  ///
+  /// In bn, this message translates to:
+  /// **'প্রেসক্রিপশন পড়া উন্নত করতে সাহায্য করুন'**
+  String get trainingConsentTitle;
+
+  /// No description provided for @trainingConsentBody.
+  ///
+  /// In bn, this message translates to:
+  /// **'চালু থাকলে, আপনার স্ক্যান করে নিশ্চিত করা প্রেসক্রিপশনের ছবি আমাদের পাঠক উন্নত করতে ব্যবহার হবে। নাম, বয়স, ফোন নম্বর ও ঠিকানা কালো করে ঢেকে দেওয়া হয়, আর ব্যবহারের আগে একজন মানুষ প্রতিটি ছবি দেখে নেন। যেকোনো সময় বন্ধ করতে পারবেন; তখন অব্যবহৃত ছবি মুছে ফেলা হবে।'**
+  String get trainingConsentBody;
+
+  /// No description provided for @errTrainingDisabled.
+  ///
+  /// In bn, this message translates to:
+  /// **'এখন শেয়ার করা যাচ্ছে না।'**
+  String get errTrainingDisabled;
+
+  /// No description provided for @errTrainingNotConsented.
+  ///
+  /// In bn, this message translates to:
+  /// **'আগে সেটিংস থেকে শেয়ার করা চালু করুন।'**
+  String get errTrainingNotConsented;
+
+  /// No description provided for @errInvalidLabel.
+  ///
+  /// In bn, this message translates to:
+  /// **'প্রেসক্রিপশনের তথ্য শেয়ার করা যায়নি।'**
+  String get errInvalidLabel;
 }
 
 class _AppLocalizationsDelegate

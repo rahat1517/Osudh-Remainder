@@ -10,6 +10,7 @@ import '../data/medicine_draft.dart';
 import '../alarms/dose_log.dart';
 import '../data/medicine_repository.dart';
 import '../data/reminder_channels.dart';
+import '../data/training_consent.dart';
 import '../insights/insights.dart';
 import '../data/models.dart';
 import '../schedule/schedule_engine.dart';
@@ -32,10 +33,14 @@ class AppState extends ChangeNotifier {
     this.alarms,
     this.caregivers,
     this.channels,
+    this.trainingConsent,
     this.logSync,
     DateTime Function()? clock,
     this.utcOffset = const Duration(hours: 6),
   }) : _clock = clock ?? DateTime.now;
+
+  /// Opt-in for sharing confirmed scans (Phase 11).
+  final TrainingConsentRepository? trainingConsent;
 
   /// SMS/call reminder settings (Phase 10).
   final ReminderChannelsRepository? channels;
@@ -112,17 +117,42 @@ class AppState extends ChangeNotifier {
     await cache.markSynced(await sync.upload(pending, utcOffset: utcOffset));
   }
 
+  /// Saves and confirms a prescription. [forUserId] saves it for a patient the user looks after
+  /// (edit permission); [scanImage] is shared for training only if the user opted in.
   Future<void> confirm(
     List<MedicineDraft> drafts, {
     required String source,
     String? imageQuality,
+    String? forUserId,
+    Uint8List? scanImage,
   }) async {
     await medicines.saveConfirmed(
       drafts,
       source: source,
       imageQuality: imageQuality,
+      forUserId: forUserId,
     );
-    await refresh();
+    if (forUserId == null) await refresh();
+    if (scanImage != null && forUserId == null) {
+      await _shareForTraining(scanImage, drafts);
+    }
+  }
+
+  /// Best effort and only with consent; never blocks or fails the confirmation.
+  Future<void> _shareForTraining(
+    Uint8List image,
+    List<MedicineDraft> drafts,
+  ) async {
+    final consent = trainingConsent;
+    if (consent == null) return;
+    try {
+      if (!await consent.isGranted()) return;
+      await api.submitTrainingExample(image, {
+        'medicines': [for (final d in drafts) d.toTrainingLabel()],
+      });
+    } on Exception {
+      // Sharing is optional; ignore failures
+    }
   }
 
   Future<void> stop(String medicineId) async {

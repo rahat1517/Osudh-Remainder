@@ -22,7 +22,7 @@ Legend: ✅ done · ⏳ blocked on an external input · ⬜ not started
 | **8** | Bangla AI assistant | backend, app | 2 weeks | ✅ (live eval ⏳) |
 | **9** | Learning, refills and Ramadan mode | backend, app | 2 weeks | ✅ |
 | **10** | SMS and voice-call escalation | backend | 1-2 weeks | ✅ (gateway contract ⏳) |
-| **11** | Data flywheel and self-hosted model (hybrid) | ml, backend | 4-6 weeks | ⬜ |
+| **11** | Data flywheel and self-hosted model (hybrid) | ml, backend | 4-6 weeks | ✅ (data and GPU ⏳) |
 
 Estimates assume one developer working with an AI assistant.
 
@@ -316,21 +316,32 @@ and de-duplication are tested) · ✅ monthly cost per user tracked and capped
 
 ---
 
-## Phase 11: Data flywheel and self-hosted model ⬜
+## Phase 11: Data flywheel and self-hosted model ✅ (data and GPU ⏳)
 
-**Depends on:** Phase 7 and 1,000-3,000 confirmed prescriptions
+- [x] Consent: opt-in, versioned, revocable switch in Settings (`set_training_consent`); revoking deletes
+      every example not yet exported (database tests)
+- [x] Collection: after confirming a scan, the photo and confirmed values are shared only with consent;
+      labels contain only medicine fields (no free text); manual entries and caregiver entries are never shared
+- [x] De-identification: EXIF/GPS stripped; lines that look like patient identity (name, age, phone,
+      address, registration numbers; Bangla and English) blacked out via a pluggable OCR line detector
+      (Tesseract adapter); **every example needs human approval** before export
+- [x] Private storage bucket (service role only); salted group keys
+- [x] Dataset export: approved + consented examples → JSONL train/validation/test, split by group so a
+      person's prescriptions never cross splits; chat-format records matching the reader's output schema
+- [x] LoRA fine-tuning script for Qwen2.5-VL-7B (4-bit, TRL/PEFT) with a dataset-validating dry run
+- [x] Self-hosted reader over an OpenAI-compatible endpoint (vLLM) with schema-constrained output, and a
+      hybrid router: local first, Claude when the local model fails, sees a poor image, gives any low name
+      or dose confidence, or leaves more than 25% of fields uncertain; route counts for monitoring
+- [x] Eval comparison: `run_eval.py --reader cloud|local|hybrid`
+- [x] CI job for the `ml/` package
+- [ ] Collect 1,000-3,000 approved examples, train on a GPU, serve with vLLM, compare. **Owner action.**
 
-- [ ] Consent flow for using prescriptions to improve the app (opt-in)
-- [ ] De-identification: blur names, phones and addresses in images and text
-- [ ] Label pipeline from user confirmations
-- [ ] Train / validation / test split (same doctor never across splits)
-- [ ] Fine-tune an open vision-language model (e.g. Qwen2.5-VL 7B) with LoRA/QLoRA
-- [ ] Compare with the cloud model on the Phase 2 eval
-- [ ] Self-hosted inference (vLLM) and a hybrid router: local first, cloud on low confidence
-- [ ] Model versioning and accuracy monitoring
+**Exit criteria:** ⏳ local high-confidence accuracy ≥ cloud's · ⏳ ≥ 60% of prescriptions handled locally ·
+⏳ lower average cost (all need real data and a trained model; the pipeline and routing are tested)
 
-**Exit criteria:** local model's high-confidence accuracy ≥ cloud model's · ≥ 60% of prescriptions
-handled locally · lower average cost per prescription
+Fixed while building this phase: since Phase 6, a caregiver's prescription "for" a patient was saved to the
+caregiver's own account, because the patient id was not passed through the app state and the Supabase
+repository. Now fixed, with regression tests.
 
 ---
 

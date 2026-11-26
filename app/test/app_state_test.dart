@@ -105,7 +105,13 @@ class _FlakyRepository implements MedicineRepository {
     List<MedicineDraft> drafts, {
     required String source,
     String? imageQuality,
-  }) => inner.saveConfirmed(drafts, source: source, imageQuality: imageQuality);
+    String? forUserId,
+  }) => inner.saveConfirmed(
+    drafts,
+    source: source,
+    imageQuality: imageQuality,
+    forUserId: forUserId,
+  );
 
   @override
   Future<void> stopMedicine(String id) => inner.stopMedicine(id);

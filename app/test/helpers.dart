@@ -49,6 +49,14 @@ class FakeBackendApi implements BackendApi {
     return assistantReplies.removeAt(0);
   }
 
+  final List<Map<String, dynamic>> trainingLabels = [];
+
+  @override
+  Future<void> submitTrainingExample(
+    Uint8List image,
+    Map<String, dynamic> label,
+  ) async => trainingLabels.add(label);
+
   @override
   Future<List<Drug>> searchDrugs(String query, {int limit = 8}) async => drugs
       .where((d) => d.brand.toLowerCase().startsWith(query.toLowerCase()))

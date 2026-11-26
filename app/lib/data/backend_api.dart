@@ -29,6 +29,12 @@ abstract interface class BackendApi {
     List<ChatTurn> history,
     Map<String, dynamic> context,
   );
+
+  /// Shares a confirmed scan for improving the reader (only when the user has opted in).
+  Future<void> submitTrainingExample(
+    Uint8List image,
+    Map<String, dynamic> label,
+  );
 }
 
 class HttpBackendApi implements BackendApi {
@@ -101,6 +107,24 @@ class HttpBackendApi implements BackendApi {
       ),
     );
     return AssistantReply.fromJson(_decode(response) as Map<String, dynamic>);
+  }
+
+  @override
+  Future<void> submitTrainingExample(
+    Uint8List image,
+    Map<String, dynamic> label,
+  ) async {
+    final request =
+        http.MultipartRequest('POST', Uri.parse('$baseUrl/training/examples'))
+          ..headers.addAll(_headers)
+          ..fields['label'] = jsonEncode(label)
+          ..files.add(
+            http.MultipartFile.fromBytes('image', image, filename: 'rx.jpg'),
+          );
+    final response = await _send(
+      () async => http.Response.fromStream(await _client.send(request)),
+    );
+    _decode(response);
   }
 
   Future<http.Response> _send(Future<http.Response> Function() call) async {

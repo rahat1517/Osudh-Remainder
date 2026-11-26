@@ -680,4 +680,20 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get featurePhoneHelp =>
       'Reminders go to their phone by SMS or call at each dose time; you manage the medicines here.';
+
+  @override
+  String get trainingConsentTitle => 'Help improve prescription reading';
+
+  @override
+  String get trainingConsentBody =>
+      'When on, photos of prescriptions you scan and confirm are shared to train our reader. Names, ages, phone numbers and addresses are blacked out, and a person checks every photo before use. You can turn this off at any time; unused photos are then deleted.';
+
+  @override
+  String get errTrainingDisabled => 'Sharing is not available right now.';
+
+  @override
+  String get errTrainingNotConsented => 'Turn on sharing in Settings first.';
+
+  @override
+  String get errInvalidLabel => 'The prescription details could not be shared.';
 }

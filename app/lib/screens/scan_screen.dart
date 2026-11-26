@@ -47,7 +47,9 @@ class _ScanScreenState extends State<ScanScreen> {
       final scan = await api.extractPrescription(bytes);
       if (!mounted) return;
       await Navigator.of(context).pushReplacement(
-        MaterialPageRoute<void>(builder: (_) => ConfirmScreen.fromScan(scan)),
+        MaterialPageRoute<void>(
+          builder: (_) => ConfirmScreen.fromScan(scan, image: bytes),
+        ),
       );
     } on ApiException catch (e) {
       setState(() => _error = localizeError(l, e.code) ?? l.errorGeneric);

@@ -675,4 +675,21 @@ class AppLocalizationsBn extends AppLocalizations {
   @override
   String get featurePhoneHelp =>
       'প্রতিটি ডোজের সময় তাঁর ফোনে SMS বা কল যাবে; ওষুধগুলো আপনি এখান থেকে দেখাশোনা করবেন।';
+
+  @override
+  String get trainingConsentTitle =>
+      'প্রেসক্রিপশন পড়া উন্নত করতে সাহায্য করুন';
+
+  @override
+  String get trainingConsentBody =>
+      'চালু থাকলে, আপনার স্ক্যান করে নিশ্চিত করা প্রেসক্রিপশনের ছবি আমাদের পাঠক উন্নত করতে ব্যবহার হবে। নাম, বয়স, ফোন নম্বর ও ঠিকানা কালো করে ঢেকে দেওয়া হয়, আর ব্যবহারের আগে একজন মানুষ প্রতিটি ছবি দেখে নেন। যেকোনো সময় বন্ধ করতে পারবেন; তখন অব্যবহৃত ছবি মুছে ফেলা হবে।';
+
+  @override
+  String get errTrainingDisabled => 'এখন শেয়ার করা যাচ্ছে না।';
+
+  @override
+  String get errTrainingNotConsented => 'আগে সেটিংস থেকে শেয়ার করা চালু করুন।';
+
+  @override
+  String get errInvalidLabel => 'প্রেসক্রিপশনের তথ্য শেয়ার করা যায়নি।';
 }
