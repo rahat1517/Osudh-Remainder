@@ -9,6 +9,14 @@ abstract interface class AuthRepository {
   /// Fires when the user signs in or out, or the saved session is restored or expires.
   Stream<void> get changes;
 
+  /// True for an account started without a phone number: its data cannot be recovered on another
+  /// phone, or after signing out.
+  bool get isAnonymous;
+
+  /// Starts at once, without a phone number or SMS code (free; the number can be added later).
+  /// Throws [AuthException] with code `network_error`.
+  Future<void> signInAnonymously();
+
   Future<void> sendCode(String phoneE164);
 
   /// Throws [AuthException] with code `invalid_code` on a wrong or expired code.
@@ -42,6 +50,18 @@ class SupabaseAuthRepository implements AuthRepository {
 
   @override
   Stream<void> get changes => _client.auth.onAuthStateChange.map((_) {});
+
+  @override
+  bool get isAnonymous => _client.auth.currentUser?.isAnonymous ?? false;
+
+  @override
+  Future<void> signInAnonymously() async {
+    try {
+      await _client.auth.signInAnonymously();
+    } on Exception {
+      throw const AuthException('network_error');
+    }
+  }
 
   @override
   Future<void> sendCode(String phoneE164) async {
@@ -88,6 +108,17 @@ class DemoAuthRepository implements AuthRepository {
 
   @override
   Stream<void> get changes => const Stream.empty();
+
+  bool _anonymous = false;
+
+  @override
+  bool get isAnonymous => _user != null && _anonymous;
+
+  @override
+  Future<void> signInAnonymously() async {
+    _user = 'demo-anonymous';
+    _anonymous = true;
+  }
 
   @override
   Future<void> sendCode(String phoneE164) async {}

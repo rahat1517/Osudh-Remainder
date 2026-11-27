@@ -758,4 +758,15 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get alarmsBlockedBody =>
       'Notifications or exact alarms are not allowed. Tap here to turn them on.';
+
+  @override
+  String get signInWithPhone => 'Sign in with a phone number';
+
+  @override
+  String get startFailed =>
+      'Cannot start right now. Check the internet connection and try again.';
+
+  @override
+  String get signOutAnonymousWarning =>
+      'No phone number is linked to this account. If you sign out, your medicine list and history cannot be recovered.';
 }

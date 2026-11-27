@@ -6,7 +6,16 @@ import anthropic
 from fastapi import FastAPI
 
 from app import __version__
-from app.api import assistant, drugs, health, legal, prescriptions, schedules, training
+from app.api import (
+    assistant,
+    download,
+    drugs,
+    health,
+    legal,
+    prescriptions,
+    schedules,
+    training,
+)
 from app.assistant.service import AssistantService
 from app.config import Settings, get_settings
 from app.drugs.catalog import load_csv
@@ -147,6 +156,7 @@ def create_app() -> FastAPI:
     app.add_middleware(RequestIdMiddleware)
     app.include_router(health.router)
     app.include_router(legal.router)
+    app.include_router(download.router)
     app.include_router(drugs.router)
     app.include_router(prescriptions.router)
     app.include_router(schedules.router)

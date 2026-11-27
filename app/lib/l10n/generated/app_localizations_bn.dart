@@ -754,4 +754,15 @@ class AppLocalizationsBn extends AppLocalizations {
   @override
   String get alarmsBlockedBody =>
       'নোটিফিকেশন বা ঠিক সময়ের অ্যালার্মের অনুমতি বন্ধ আছে। এখানে চেপে চালু করুন।';
+
+  @override
+  String get signInWithPhone => 'ফোন নম্বর দিয়ে সাইন ইন';
+
+  @override
+  String get startFailed =>
+      'এখন শুরু করা যাচ্ছে না। ইন্টারনেট দেখে আবার চেষ্টা করুন।';
+
+  @override
+  String get signOutAnonymousWarning =>
+      'আপনার অ্যাকাউন্টে কোনো ফোন নম্বর যোগ করা নেই। সাইন আউট করলে আপনার ওষুধের তালিকা ও ইতিহাস আর ফেরত পাওয়া যাবে না।';
 }
