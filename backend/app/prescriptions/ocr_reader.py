@@ -6,10 +6,15 @@ a fine-tuned recognition model (see ml/README.md, "PaddleOCR fine-tuning"), whic
 `OCR_REC_MODEL_PATH` without code changes.
 """
 
+import contextlib
+import ctypes
+import io
 import logging
 import threading
 from dataclasses import dataclass
 from typing import Protocol
+
+from PIL import Image
 
 from app.prescriptions.errors import ReaderError
 from app.prescriptions.images import PreparedImage
@@ -82,14 +87,33 @@ def _union(row: list[OcrLine]) -> tuple[tuple[float, float], ...]:
 # - one thread: ONNX Runtime's idle threads spin, and many threads on a tiny CPU quota spend it
 #   waiting instead of working (a scan took over a minute with the defaults);
 # - no angle classifier: photos are already upright (EXIF orientation is applied beforehand);
-# - text detection on the image scaled to at most 960 px, instead of enlarged to at least 736 px.
+# - text detection on the image scaled to at most DET_MAX_SIDE px (see _limit_detection_size).
 SMALL_CPU_SETTINGS = {
     "intra_op_num_threads": 1,
     "inter_op_num_threads": 1,
     "use_cls": False,
-    "det_limit_side_len": 960,
-    "det_limit_type": "max",
 }
+
+# Longest side of the image text detection runs on. Recognition still reads each line from the
+# full-resolution photo, so small print stays readable.
+DET_MAX_SIDE = 960
+
+
+def _limit_detection_size(engine, max_side: int = DET_MAX_SIDE) -> None:
+    """RapidOCR ignores its own detection-size setting in "max" mode and picks 960, 1500 or
+    2000 px from the photo's size, so a phone photo was detected at full size: a ~300 MB spike on
+    a 512 MB server, which got the process killed. Fix the size here."""
+    from rapidocr_onnxruntime.ch_ppocr_det.utils import DetPreProcess
+
+    det = engine.text_det
+    det.get_preprocess = lambda _max_wh: DetPreProcess(max_side, "max", det.mean, det.std)
+
+
+def _release_memory() -> None:
+    """Hand freed memory back to the system after a scan (glibc keeps it otherwise, and the
+    process would grow towards the instance limit)."""
+    with contextlib.suppress(OSError):  # not glibc (e.g. macOS): nothing to do
+        ctypes.CDLL("libc.so.6").malloc_trim(0)
 
 
 class RapidOcrEngine:
@@ -110,19 +134,28 @@ class RapidOcrEngine:
             if self._rec_keys_path:
                 kwargs["rec_keys_path"] = self._rec_keys_path
             logger.info("Using fine-tuned OCR recognition model %s", self._rec_model_path)
-        return RapidOCR(**kwargs)
+        engine = RapidOCR(**kwargs)
+        _limit_detection_size(engine)
+        return engine
 
     def warm_up(self) -> None:
-        """Load the models now (in the background at startup) rather than on the first scan."""
+        """Load the models and run them once, now (in the background at startup), rather than on
+        the first scan. ONNX Runtime allocates and prepares its weights on a model's first run,
+        a one-time spike of about 200 MB; paid at startup it does not add to a scan's photo."""
         with self._lock:
             if self._engine is None:
                 self._engine = self._load()
+            blank = io.BytesIO()
+            Image.new("RGB", (320, 320), "white").save(blank, format="JPEG")
+            self._engine(blank.getvalue())
+        _release_memory()
 
     def lines(self, image: bytes) -> list[OcrLine]:
         with self._lock:  # ONNX sessions are shared; keep memory flat on a small instance
             if self._engine is None:
                 self._engine = self._load()
             result, _ = self._engine(image)
+        _release_memory()
         return [
             OcrLine(text=text, score=float(score), box=tuple((float(x), float(y)) for x, y in box))
             for box, text, score in (result or [])

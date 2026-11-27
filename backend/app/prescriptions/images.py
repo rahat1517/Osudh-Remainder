@@ -36,6 +36,12 @@ def prepare_image(raw: bytes) -> PreparedImage:
     try:
         img = Image.open(io.BytesIO(raw))
         fmt = img.format
+        if fmt == "JPEG" and max(img.size) > MAX_LONG_EDGE:
+            # Decode a 12-megapixel phone photo straight at 1/2, 1/4… of its size (never below the
+            # target): the full-size pixels never sit in memory. On a 512 MB server that is the
+            # difference between a scan and the process being killed.
+            scale = MAX_LONG_EDGE / max(img.size)
+            img.draft("RGB", (int(img.width * scale), int(img.height * scale)))
         img.load()
     except (UnidentifiedImageError, OSError) as e:
         raise ImageError("image_unreadable", "The file is not a readable image") from e

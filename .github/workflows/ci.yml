@@ -88,8 +88,17 @@ jobs:
           r = OcrPrescriptionReader(RapidOcrEngine()).read(prepare_image(buf.getvalue()))
           m = r.medicines[0]
           assert (m.name, m.dose_pattern, m.duration_days) == ('Seclo', '1+0+1', 30), r
+          # A 12-megapixel phone photo, the size that got the 512 MB server killed before
+          import random
+          big = Image.new('RGB', (4000, 3000), 'white')
+          d = ImageDraw.Draw(big)
+          for y in range(100, 2900, 120):
+              d.text((100, y), 'Tab. Seclo 20 mg 1+0+1 ' * 3, fill='black', font=f)
+          buf = io.BytesIO(); big.save(buf, format='JPEG', quality=90); del big
+          t = time.time()
+          OcrPrescriptionReader(RapidOcrEngine()).read(prepare_image(buf.getvalue()))
           mb = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss // 1024
-          print(f'OCR ok in {time.time() - t:.1f}s, peak memory {mb} MB')
+          print(f'OCR ok, 12 MP photo in {time.time() - t:.1f}s, peak memory {mb} MB')
           assert mb < 450, 'too much memory for a 512 MB instance'
           "
 

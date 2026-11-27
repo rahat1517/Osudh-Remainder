@@ -21,7 +21,9 @@ COPY docs/legal /srv/docs/legal
 RUN useradd --system --uid 10001 api && chown -R api /srv
 USER api
 
-ENV ENVIRONMENT=production DRUGS_CSV_PATH=/srv/database/seed/drugs_seed.csv
+# MALLOC_ARENA_MAX: fewer per-thread malloc arenas, so memory freed after a scan can be reused
+# instead of growing the process (the free instance has 512 MB)
+ENV ENVIRONMENT=production DRUGS_CSV_PATH=/srv/database/seed/drugs_seed.csv MALLOC_ARENA_MAX=2
 EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=3s CMD python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health')"
 CMD ["/srv/backend/.venv/bin/uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers", "--forwarded-allow-ips=*"]

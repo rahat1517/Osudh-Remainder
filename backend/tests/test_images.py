@@ -50,3 +50,13 @@ def test_rejects_bad_input(raw):
     with pytest.raises(ImageError) as exc:
         prepare_image(raw)
     assert exc.value.code.startswith("image_")
+
+
+def test_large_phone_photos_are_decoded_small():
+    # A 12-megapixel JPEG is decoded straight at a fraction of its size (memory on a small server)
+    from PIL import Image as _Image
+
+    buf = io.BytesIO()
+    _Image.new("RGB", (4000, 3000), "white").save(buf, format="JPEG")
+    out = prepare_image(buf.getvalue())
+    assert (out.width, out.height) == (1568, 1176)
