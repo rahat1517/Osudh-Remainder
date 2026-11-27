@@ -409,6 +409,9 @@
       }
     }
   },
+  "timingEditTitle": "খাওয়ার সময়: খাবারের আগে না পরে",
+  "timingChanged": "{name}: খাওয়ার সময় বদলানো হয়েছে, এলার্মও নতুন সময়ে সেট হয়েছে",
+  "@timingChanged": {"placeholders": {"name": {"type": "String"}}},
   "stopShort": "বন্ধ",
   "reportNoDoses": "গত ৭ দিনে এখনো কোনো ডোজের সময় হয়নি।",
   "updateTitle": "নতুন সংস্করণ এসেছে",

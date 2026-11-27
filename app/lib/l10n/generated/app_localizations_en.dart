@@ -731,6 +731,14 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get timingEditTitle => 'When to take it: before or after food';
+
+  @override
+  String timingChanged(String name) {
+    return '$name: time changed; the alarms moved to the new time';
+  }
+
+  @override
   String get stopShort => 'Stop';
 
   @override

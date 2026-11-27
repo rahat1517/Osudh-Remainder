@@ -1364,6 +1364,18 @@ abstract class AppLocalizations {
   /// **'{days} দিন'**
   String daysCount(int days);
 
+  /// No description provided for @timingEditTitle.
+  ///
+  /// In bn, this message translates to:
+  /// **'খাওয়ার সময়: খাবারের আগে না পরে'**
+  String get timingEditTitle;
+
+  /// No description provided for @timingChanged.
+  ///
+  /// In bn, this message translates to:
+  /// **'{name}: খাওয়ার সময় বদলানো হয়েছে, এলার্মও নতুন সময়ে সেট হয়েছে'**
+  String timingChanged(String name);
+
   /// No description provided for @stopShort.
   ///
   /// In bn, this message translates to:

@@ -26,6 +26,9 @@ abstract interface class MedicineRepository {
 
   /// Records how many tablets (doses) the user has now, for refill reminders.
   Future<void> updateStock(String medicineId, double pillsOnHand);
+
+  /// Changes when a medicine is taken relative to meals (before, after, ...).
+  Future<void> updateTiming(String medicineId, Timing timing);
 }
 
 void _checkReady(List<MedicineDraft> drafts) {
@@ -83,6 +86,12 @@ class SupabaseMedicineRepository implements MedicineRepository {
       .from('medicines')
       .update({'stopped_at': DateTime.now().toUtc().toIso8601String()})
       .eq('id', id);
+
+  @override
+  Future<void> updateTiming(String medicineId, Timing timing) => _db
+      .from('medicines')
+      .update({'timing': timingJson[timing]})
+      .eq('id', medicineId);
 
   @override
   Future<void> updateStock(String medicineId, double pillsOnHand) => _db
@@ -182,26 +191,41 @@ class InMemoryMedicineRepository implements MedicineRepository {
   Future<void> saveSettings(ScheduleSettings s) async => settings = s;
 
   @override
-  Future<void> updateStock(String medicineId, double pillsOnHand) async {
-    final i = _medicines.indexWhere((m) => m.id == medicineId);
-    if (i < 0) return;
-    final m = _medicines[i];
-    _medicines[i] = Medicine(
-      id: m.id,
-      name: m.name,
-      strength: m.strength,
-      form: m.form,
-      drugId: m.drugId,
-      dosePattern: m.dosePattern,
-      intervalHours: m.intervalHours,
-      timing: m.timing,
-      durationDays: m.durationDays,
-      weekdays: m.weekdays,
-      asNeeded: m.asNeeded,
-      startAt: m.startAt,
-      generic: m.generic,
-      pillsOnHand: pillsOnHand,
-      pillsCountedAt: _now(),
-    );
+  Future<void> updateStock(String medicineId, double pillsOnHand) async =>
+      _replace(
+        medicineId,
+        (m) => _copy(m, pillsOnHand: pillsOnHand, pillsCountedAt: _now()),
+      );
+
+  @override
+  Future<void> updateTiming(String medicineId, Timing timing) async =>
+      _replace(medicineId, (m) => _copy(m, timing: timing));
+
+  void _replace(String id, Medicine Function(Medicine) change) {
+    final i = _medicines.indexWhere((m) => m.id == id);
+    if (i >= 0) _medicines[i] = change(_medicines[i]);
   }
+
+  static Medicine _copy(
+    Medicine m, {
+    Timing? timing,
+    double? pillsOnHand,
+    DateTime? pillsCountedAt,
+  }) => Medicine(
+    id: m.id,
+    name: m.name,
+    strength: m.strength,
+    form: m.form,
+    drugId: m.drugId,
+    dosePattern: m.dosePattern,
+    intervalHours: m.intervalHours,
+    timing: timing ?? m.timing,
+    durationDays: m.durationDays,
+    weekdays: m.weekdays,
+    asNeeded: m.asNeeded,
+    startAt: m.startAt,
+    generic: m.generic,
+    pillsOnHand: pillsOnHand ?? m.pillsOnHand,
+    pillsCountedAt: pillsCountedAt ?? m.pillsCountedAt,
+  );
 }

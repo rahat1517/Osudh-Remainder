@@ -102,10 +102,39 @@ void main() {
     expect(find.byKey(const Key('shift-dinner')), findsNothing);
   });
 
+  testWidgets(
+    'before or after food can be changed later, and the alarm moves',
+    (tester) async {
+      final (state, _) = await stateWith([
+        draft('Seclo', '1+0+0', timing: Timing.beforeMeal),
+      ]);
+      List<DateTime> times() => [
+        for (final a in (state.alarms!.scheduler as FakeAlarmScheduler).pending)
+          if (!a.isHorizonNotice && a.refillFor == null) a.at,
+      ]..sort();
+      final before = times();
+      await push(tester, state, const MedicinesScreen());
+      await tester.tap(find.text('Seclo'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('editTiming')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('timing-afterMeal')));
+      await tester.pumpAndSettle();
+      expect(state.active.single.timing, Timing.afterMeal);
+      expect(find.textContaining('খাবারের পরে'), findsOneWidget);
+      expect(find.textContaining('এলার্মও নতুন সময়ে'), findsOneWidget);
+      // Before breakfast was 30 min before it; after breakfast is 15 min after
+      final after = times();
+      expect(after.first.difference(before.first), const Duration(minutes: 45));
+    },
+  );
+
   testWidgets('entering tablets on hand shows days left', (tester) async {
     final (state, _) = await stateWith([draft('Seclo', '1+0+1')]);
     await push(tester, state, const MedicinesScreen());
     await tester.tap(find.text('Seclo'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('editStock')));
     await tester.pumpAndSettle();
     await tester.enterText(find.byKey(const Key('stockInput')), '6');
     await tester.tap(find.byKey(const Key('saveStock')));

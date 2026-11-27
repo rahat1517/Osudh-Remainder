@@ -35,6 +35,85 @@ class MedicinesScreen extends StatelessWidget {
     if (ok ?? false) await state.stop(id);
   }
 
+  /// Tapping a medicine: change when it is taken, or how many tablets are on hand.
+  Future<void> _actions(BuildContext context, Medicine m) async {
+    final l = AppLocalizations.of(context);
+    final choice = await showModalBottomSheet<String>(
+      context: context,
+      showDragHandle: true,
+      builder: (ctx) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              title: Text(m.label, style: Theme.of(ctx).textTheme.titleMedium),
+            ),
+            ListTile(
+              key: const Key('editTiming'),
+              leading: const Icon(Icons.restaurant),
+              title: Text(l.timingEditTitle),
+              subtitle: Text(timingLabel(l, m.timing)),
+              onTap: () => Navigator.pop(ctx, 'timing'),
+            ),
+            ListTile(
+              key: const Key('editStock'),
+              leading: const Icon(Icons.medication),
+              title: Text(l.stockTitle),
+              onTap: () => Navigator.pop(ctx, 'stock'),
+            ),
+          ],
+        ),
+      ),
+    );
+    if (!context.mounted) return;
+    switch (choice) {
+      case 'timing':
+        await _timing(context, m);
+      case 'stock':
+        await _stock(context, m.id, m.pillsOnHand);
+    }
+  }
+
+  Future<void> _timing(BuildContext context, Medicine m) async {
+    final l = AppLocalizations.of(context);
+    final state = context.read<AppState>();
+    final picked = await showModalBottomSheet<Timing>(
+      context: context,
+      showDragHandle: true,
+      builder: (ctx) => SafeArea(
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                title: Text(
+                  l.timingEditTitle,
+                  style: Theme.of(ctx).textTheme.titleMedium,
+                ),
+              ),
+              for (final t in Timing.values)
+                ListTile(
+                  key: Key('timing-${t.name}'),
+                  title: Text(timingLabel(l, t)),
+                  trailing: t == m.timing
+                      ? Icon(
+                          Icons.check_circle,
+                          color: Theme.of(ctx).colorScheme.primary,
+                        )
+                      : null,
+                  onTap: () => Navigator.pop(ctx, t),
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+    if (picked == null || picked == m.timing || !context.mounted) return;
+    final messenger = ScaffoldMessenger.of(context);
+    await state.setTiming(m.id, picked);
+    messenger.showSnackBar(SnackBar(content: Text(l.timingChanged(m.label))));
+  }
+
   Future<void> _stock(BuildContext context, String id, double? current) async {
     final l = AppLocalizations.of(context);
     final state = context.read<AppState>();
@@ -109,7 +188,7 @@ class MedicinesScreen extends StatelessWidget {
                   if (m.drugId != null) _PriceLine(medicine: m),
                 ],
               ),
-              onTap: () => _stock(context, m.id, m.pillsOnHand),
+              onTap: () => _actions(context, m),
               // A word, not just an icon: what the button does must be clear
               trailing: TextButton(
                 key: Key('stop-${m.id}'),
