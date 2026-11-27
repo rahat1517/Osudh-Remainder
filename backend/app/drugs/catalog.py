@@ -12,6 +12,8 @@ from app.drugs.models import Drug
 from app.drugs.normalize import normalize_brand
 
 REQUIRED_COLUMNS = ("brand", "strength", "generic", "form", "manufacturer", "source", "verified")
+# Optional: lists without prices still load
+OPTIONAL_COLUMNS = ("unit_price_bdt",)
 
 
 class CatalogError(ValueError):
@@ -36,6 +38,19 @@ def _parse_bool(value: str, line: int) -> bool:
     if v in {"false", "0", "no", ""}:
         return False
     raise CatalogError(f"line {line}: verified must be true or false, got {value!r}")
+
+
+def _parse_price(value: str | None, line: int) -> float | None:
+    v = (value or "").strip()
+    if not v:
+        return None
+    try:
+        price = float(v)
+    except ValueError:
+        raise CatalogError(f"line {line}: unit_price_bdt must be a number, got {value!r}") from None
+    if not 0 < price < 100_000:
+        raise CatalogError(f"line {line}: unit_price_bdt out of range: {value!r}")
+    return price
 
 
 def parse_rows(
@@ -63,6 +78,7 @@ def parse_rows(
             continue
         try:
             verified = _parse_bool(row.get("verified", ""), line)
+            price = _parse_price(row.get("unit_price_bdt"), line)
         except CatalogError as e:
             report.errors.append(str(e))
             continue
@@ -83,6 +99,7 @@ def parse_rows(
                 manufacturer=_clean(row.get("manufacturer")) or None,
                 source=source,
                 verified=verified,
+                unit_price_bdt=price,
             )
         )
     report.loaded = len(drugs)

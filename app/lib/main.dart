@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:home_widget/home_widget.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'alarms/alarm_payload.dart';
@@ -118,6 +119,11 @@ Future<void> main() async {
         await state.refresh();
       }
     },
+  );
+  // "Taken" on the home-screen widget, handled in the background (see onWidgetAction)
+  unawaited(
+    HomeWidget.registerInteractivityCallback(onWidgetAction)
+        .then((_) {}, onError: (Object _) {}),
   );
   await state.refresh();
   unawaited(state.checkForUpdate());

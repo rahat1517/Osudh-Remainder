@@ -1,47 +1,47 @@
-brand,strength,generic,form,manufacturer,source,verified
-Napa,500 mg,Paracetamol,Tablet,Beximco Pharmaceuticals,dev-seed,false
-Napa,120 mg/5 ml,Paracetamol,Suspension,Beximco Pharmaceuticals,dev-seed,false
-Napa Extend,665 mg,Paracetamol,Tablet (Extended Release),Beximco Pharmaceuticals,dev-seed,false
-Napa Extra,500 mg + 65 mg,Paracetamol + Caffeine,Tablet,Beximco Pharmaceuticals,dev-seed,false
-Ace,500 mg,Paracetamol,Tablet,Square Pharmaceuticals,dev-seed,false
-Ace Plus,500 mg + 65 mg,Paracetamol + Caffeine,Tablet,Square Pharmaceuticals,dev-seed,false
-Fast,500 mg,Paracetamol,Tablet,ACME Laboratories,dev-seed,false
-Renova,500 mg,Paracetamol,Tablet,Opsonin Pharma,dev-seed,false
-Seclo,20 mg,Omeprazole,Capsule,Square Pharmaceuticals,dev-seed,false
-Seclo,40 mg,Omeprazole,Capsule,Square Pharmaceuticals,dev-seed,false
-Losectil,20 mg,Omeprazole,Capsule,Eskayef Pharmaceuticals,dev-seed,false
-Maxpro,20 mg,Esomeprazole,Tablet,Renata,dev-seed,false
-Maxpro,40 mg,Esomeprazole,Tablet,Renata,dev-seed,false
-Sergel,20 mg,Esomeprazole,Capsule,Healthcare Pharmaceuticals,dev-seed,false
-Sergel,40 mg,Esomeprazole,Capsule,Healthcare Pharmaceuticals,dev-seed,false
-Nexum,20 mg,Esomeprazole,Tablet,Square Pharmaceuticals,dev-seed,false
-Esonix,20 mg,Esomeprazole,Capsule,Incepta Pharmaceuticals,dev-seed,false
-Pantonix,20 mg,Pantoprazole,Tablet,Incepta Pharmaceuticals,dev-seed,false
-Pantonix,40 mg,Pantoprazole,Tablet,Incepta Pharmaceuticals,dev-seed,false
-Finix,20 mg,Rabeprazole,Tablet,Opsonin Pharma,dev-seed,false
-Fexo,120 mg,Fexofenadine,Tablet,Square Pharmaceuticals,dev-seed,false
-Fexo,180 mg,Fexofenadine,Tablet,Square Pharmaceuticals,dev-seed,false
-Alatrol,10 mg,Cetirizine,Tablet,Square Pharmaceuticals,dev-seed,false
-Monas,10 mg,Montelukast,Tablet,ACME Laboratories,dev-seed,false
-Azithrocin,500 mg,Azithromycin,Tablet,Beximco Pharmaceuticals,dev-seed,false
-Zimax,500 mg,Azithromycin,Tablet,Square Pharmaceuticals,dev-seed,false
-Tridosil,500 mg,Azithromycin,Tablet,Incepta Pharmaceuticals,dev-seed,false
-Cef-3,200 mg,Cefixime,Capsule,Square Pharmaceuticals,dev-seed,false
-Cef-3,400 mg,Cefixime,Capsule,Square Pharmaceuticals,dev-seed,false
-Moxacil,500 mg,Amoxicillin,Capsule,Square Pharmaceuticals,dev-seed,false
-Ciprocin,500 mg,Ciprofloxacin,Tablet,Square Pharmaceuticals,dev-seed,false
-Filmet,400 mg,Metronidazole,Tablet,Beximco Pharmaceuticals,dev-seed,false
-Amdocal,5 mg,Amlodipine,Tablet,Beximco Pharmaceuticals,dev-seed,false
-Camlodin,5 mg,Amlodipine,Tablet,Square Pharmaceuticals,dev-seed,false
-Osartil,50 mg,Losartan Potassium,Tablet,Incepta Pharmaceuticals,dev-seed,false
-Angilock,50 mg,Losartan Potassium,Tablet,Square Pharmaceuticals,dev-seed,false
-Comet,500 mg,Metformin Hydrochloride,Tablet,Square Pharmaceuticals,dev-seed,false
-Comet,850 mg,Metformin Hydrochloride,Tablet,Square Pharmaceuticals,dev-seed,false
-Rosuva,10 mg,Rosuvastatin,Tablet,Square Pharmaceuticals,dev-seed,false
-Atova,10 mg,Atorvastatin,Tablet,Beximco Pharmaceuticals,dev-seed,false
-Ecosprin,75 mg,Aspirin,Tablet,,dev-seed,false
-Calbo D,500 mg + 200 IU,Calcium Carbonate + Vitamin D3,Tablet,Square Pharmaceuticals,dev-seed,false
-Rolac,10 mg,Ketorolac Tromethamine,Tablet,Renata,dev-seed,false
-Sedil,5 mg,Diazepam,Tablet,Square Pharmaceuticals,dev-seed,false
-Disopan,0.5 mg,Clonazepam,Tablet,Incepta Pharmaceuticals,dev-seed,false
-Orsaline-N,,Oral Rehydration Salts,Sachet,SMC Enterprise,dev-seed,false
+brand,strength,generic,form,manufacturer,source,verified,unit_price_bdt
+Napa,500 mg,Paracetamol,Tablet,Beximco Pharmaceuticals,dev-seed,false,1.2
+Napa,120 mg/5 ml,Paracetamol,Suspension,Beximco Pharmaceuticals,dev-seed,false,35
+Napa Extend,665 mg,Paracetamol,Tablet (Extended Release),Beximco Pharmaceuticals,dev-seed,false,2
+Napa Extra,500 mg + 65 mg,Paracetamol + Caffeine,Tablet,Beximco Pharmaceuticals,dev-seed,false,2.5
+Ace,500 mg,Paracetamol,Tablet,Square Pharmaceuticals,dev-seed,false,1.2
+Ace Plus,500 mg + 65 mg,Paracetamol + Caffeine,Tablet,Square Pharmaceuticals,dev-seed,false,2.5
+Fast,500 mg,Paracetamol,Tablet,ACME Laboratories,dev-seed,false,1
+Renova,500 mg,Paracetamol,Tablet,Opsonin Pharma,dev-seed,false,1
+Seclo,20 mg,Omeprazole,Capsule,Square Pharmaceuticals,dev-seed,false,6
+Seclo,40 mg,Omeprazole,Capsule,Square Pharmaceuticals,dev-seed,false,9
+Losectil,20 mg,Omeprazole,Capsule,Eskayef Pharmaceuticals,dev-seed,false,5
+Maxpro,20 mg,Esomeprazole,Tablet,Renata,dev-seed,false,7
+Maxpro,40 mg,Esomeprazole,Tablet,Renata,dev-seed,false,10
+Sergel,20 mg,Esomeprazole,Capsule,Healthcare Pharmaceuticals,dev-seed,false,7
+Sergel,40 mg,Esomeprazole,Capsule,Healthcare Pharmaceuticals,dev-seed,false,10
+Nexum,20 mg,Esomeprazole,Tablet,Square Pharmaceuticals,dev-seed,false,7
+Esonix,20 mg,Esomeprazole,Capsule,Incepta Pharmaceuticals,dev-seed,false,6
+Pantonix,20 mg,Pantoprazole,Tablet,Incepta Pharmaceuticals,dev-seed,false,5
+Pantonix,40 mg,Pantoprazole,Tablet,Incepta Pharmaceuticals,dev-seed,false,8
+Finix,20 mg,Rabeprazole,Tablet,Opsonin Pharma,dev-seed,false,7
+Fexo,120 mg,Fexofenadine,Tablet,Square Pharmaceuticals,dev-seed,false,9
+Fexo,180 mg,Fexofenadine,Tablet,Square Pharmaceuticals,dev-seed,false,12
+Alatrol,10 mg,Cetirizine,Tablet,Square Pharmaceuticals,dev-seed,false,3
+Monas,10 mg,Montelukast,Tablet,ACME Laboratories,dev-seed,false,16
+Azithrocin,500 mg,Azithromycin,Tablet,Beximco Pharmaceuticals,dev-seed,false,40
+Zimax,500 mg,Azithromycin,Tablet,Square Pharmaceuticals,dev-seed,false,45
+Tridosil,500 mg,Azithromycin,Tablet,Incepta Pharmaceuticals,dev-seed,false,35
+Cef-3,200 mg,Cefixime,Capsule,Square Pharmaceuticals,dev-seed,false,35
+Cef-3,400 mg,Cefixime,Capsule,Square Pharmaceuticals,dev-seed,false,55
+Moxacil,500 mg,Amoxicillin,Capsule,Square Pharmaceuticals,dev-seed,false,6.5
+Ciprocin,500 mg,Ciprofloxacin,Tablet,Square Pharmaceuticals,dev-seed,false,15
+Filmet,400 mg,Metronidazole,Tablet,Beximco Pharmaceuticals,dev-seed,false,1.5
+Amdocal,5 mg,Amlodipine,Tablet,Beximco Pharmaceuticals,dev-seed,false,3
+Camlodin,5 mg,Amlodipine,Tablet,Square Pharmaceuticals,dev-seed,false,5
+Osartil,50 mg,Losartan Potassium,Tablet,Incepta Pharmaceuticals,dev-seed,false,8
+Angilock,50 mg,Losartan Potassium,Tablet,Square Pharmaceuticals,dev-seed,false,10
+Comet,500 mg,Metformin Hydrochloride,Tablet,Square Pharmaceuticals,dev-seed,false,4
+Comet,850 mg,Metformin Hydrochloride,Tablet,Square Pharmaceuticals,dev-seed,false,6
+Rosuva,10 mg,Rosuvastatin,Tablet,Square Pharmaceuticals,dev-seed,false,20
+Atova,10 mg,Atorvastatin,Tablet,Beximco Pharmaceuticals,dev-seed,false,12
+Ecosprin,75 mg,Aspirin,Tablet,,dev-seed,false,0.6
+Calbo D,500 mg + 200 IU,Calcium Carbonate + Vitamin D3,Tablet,Square Pharmaceuticals,dev-seed,false,9
+Rolac,10 mg,Ketorolac Tromethamine,Tablet,Renata,dev-seed,false,12
+Sedil,5 mg,Diazepam,Tablet,Square Pharmaceuticals,dev-seed,false,1
+Disopan,0.5 mg,Clonazepam,Tablet,Incepta Pharmaceuticals,dev-seed,false,6
+Orsaline-N,,Oral Rehydration Salts,Sachet,SMC Enterprise,dev-seed,false,6

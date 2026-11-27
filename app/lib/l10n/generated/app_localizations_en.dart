@@ -769,4 +769,65 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get signOutAnonymousWarning =>
       'No phone number is linked to this account. If you sign out, your medicine list and history cannot be recovered.';
+
+  @override
+  String priceEach(String price) {
+    return '$price taka each';
+  }
+
+  @override
+  String priceEachApprox(String price) {
+    return 'About $price taka each';
+  }
+
+  @override
+  String cheaperAvailable(String brand, String percent) {
+    return 'Same medicine for less: $brand ($percent% cheaper)';
+  }
+
+  @override
+  String get cheaperTitle => 'Same medicine, lower price';
+
+  @override
+  String cheaperIntro(String generic, String strength) {
+    return 'These have the same ingredient ($generic), the same strength ($strength) and the same form.';
+  }
+
+  @override
+  String cheaperRow(String price, String percent) {
+    return '$price taka each · $percent% cheaper';
+  }
+
+  @override
+  String cheaperMonthly(String amount) {
+    return 'About $amount taka less a month';
+  }
+
+  @override
+  String cheaperCourse(String amount) {
+    return 'About $amount taka less for this course';
+  }
+
+  @override
+  String get cheaperDisclaimer =>
+      'Ask your doctor or pharmacist before switching brands. The app changes nothing on its own.';
+
+  @override
+  String get pricesApproximate =>
+      'Prices are approximate and may differ at the shop.';
+
+  @override
+  String get widgetNext => 'Next medicine';
+
+  @override
+  String get widgetDue => 'Time to take now';
+
+  @override
+  String get widgetTomorrow => 'Tomorrow';
+
+  @override
+  String get widgetNoMedicines => 'No medicines added';
+
+  @override
+  String get widgetOpenApp => 'Open the app to see the next medicine';
 }

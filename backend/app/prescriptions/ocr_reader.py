@@ -162,6 +162,33 @@ class RapidOcrEngine:
         ]
 
 
+# Variance of the Laplacian (edge strength) below which a photo counts as out of focus. Sharp text
+# on paper scores in the hundreds or more; a photo blurred until letters run together scores
+# below 10 (measured on prescriptions blurred and shrunk like a forwarded gallery picture).
+BLUR_THRESHOLD = 10.0
+# Below this a photo is not crisp: readable, but OCR may misread a digit and still be confident
+# ("7 days" as "1 days" in a forwarded gallery picture, sharpness 54), so nothing is marked certain.
+# Crisp prints score 600+, ordinary phone photos 70-150.
+SOFT_THRESHOLD = 100.0
+
+
+def sharpness(image: bytes) -> float | None:
+    """Variance of the Laplacian of the image in grey; None if it cannot be decoded."""
+    import cv2
+    import numpy as np
+
+    grey = cv2.imdecode(np.frombuffer(image, np.uint8), cv2.IMREAD_GRAYSCALE)
+    if grey is None:
+        return None
+    _, std = cv2.meanStdDev(cv2.Laplacian(grey, cv2.CV_32F))
+    return float(std[0][0]) ** 2
+
+
+def is_blurry(image: bytes) -> bool:
+    score = sharpness(image)
+    return score is not None and score < BLUR_THRESHOLD
+
+
 class OcrPrescriptionReader:
     def __init__(self, engine: OcrEngine):
         self._engine = engine
@@ -183,11 +210,17 @@ class OcrPrescriptionReader:
             logger.exception("OCR failed")
             raise ReaderError("ai_failed", "Could not read the image", retryable=True) from e
         lines = reading_order(raw)
-        extraction = parse_lines([TextLine(line.text, line.score) for line in lines])
+        score = sharpness(image.data)
+        blurry = score is not None and score < BLUR_THRESHOLD
+        soft = score is not None and score < SOFT_THRESHOLD
+        extraction = parse_lines(
+            [TextLine(line.text, line.score) for line in lines], blurry=blurry, soft=soft
+        )
         logger.info(
-            "prescription read by OCR: lines=%d medicines=%d quality=%s",
+            "prescription read by OCR: lines=%d medicines=%d quality=%s sharpness=%.0f",
             len(lines),
             len(extraction.medicines),
             extraction.image_quality,
+            score or 0,
         )
         return extraction

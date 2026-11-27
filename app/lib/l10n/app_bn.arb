@@ -420,5 +420,78 @@
   "alarmsBlockedBody": "নোটিফিকেশন বা ঠিক সময়ের অ্যালার্মের অনুমতি বন্ধ আছে। এখানে চেপে চালু করুন।",
   "signInWithPhone": "ফোন নম্বর দিয়ে সাইন ইন",
   "startFailed": "এখন শুরু করা যাচ্ছে না। ইন্টারনেট দেখে আবার চেষ্টা করুন।",
-  "signOutAnonymousWarning": "আপনার অ্যাকাউন্টে কোনো ফোন নম্বর যোগ করা নেই। সাইন আউট করলে আপনার ওষুধের তালিকা ও ইতিহাস আর ফেরত পাওয়া যাবে না।"
+  "signOutAnonymousWarning": "আপনার অ্যাকাউন্টে কোনো ফোন নম্বর যোগ করা নেই। সাইন আউট করলে আপনার ওষুধের তালিকা ও ইতিহাস আর ফেরত পাওয়া যাবে না।",
+  "priceEach": "প্রতিটি {price} টাকা",
+  "@priceEach": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "priceEachApprox": "প্রতিটি আনুমানিক {price} টাকা",
+  "@priceEachApprox": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "cheaperAvailable": "একই ওষুধ কম দামে: {brand} ({percent}% কম)",
+  "@cheaperAvailable": {
+    "placeholders": {
+      "brand": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "cheaperTitle": "একই ওষুধ, কম দামে",
+  "cheaperIntro": "এগুলোতে একই উপাদান ({generic}), একই শক্তি ({strength}) ও একই ধরনের ওষুধ।",
+  "@cheaperIntro": {
+    "placeholders": {
+      "generic": {
+        "type": "String"
+      },
+      "strength": {
+        "type": "String"
+      }
+    }
+  },
+  "cheaperRow": "প্রতিটি {price} টাকা · {percent}% কম",
+  "@cheaperRow": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "cheaperMonthly": "মাসে প্রায় {amount} টাকা কম",
+  "@cheaperMonthly": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "cheaperCourse": "এই কোর্সে প্রায় {amount} টাকা কম",
+  "@cheaperCourse": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "cheaperDisclaimer": "ব্র্যান্ড বদলানোর আগে ডাক্তার বা ফার্মাসিস্টকে জিজ্ঞেস করুন। অ্যাপ নিজে থেকে কিছু বদলাবে না।",
+  "pricesApproximate": "দামগুলো আনুমানিক; দোকানে কম-বেশি হতে পারে।",
+  "widgetNext": "পরের ওষুধ",
+  "widgetDue": "এখন খাওয়ার সময়",
+  "widgetTomorrow": "আগামীকাল",
+  "widgetNoMedicines": "কোনো ওষুধ যোগ করা হয়নি",
+  "widgetOpenApp": "পরের ওষুধ দেখতে অ্যাপ খুলুন"
 }

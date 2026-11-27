@@ -124,7 +124,12 @@ def main(argv=None) -> int:
     p = argparse.ArgumentParser()
     p.add_argument("--yes", action="store_true", help="Allow real (billed) API calls")
     p.add_argument("--limit", type=int, help="Only the first N cases")
-    p.add_argument("--variant", choices=["clean", "photo", "both"], default="both")
+    p.add_argument(
+        "--variant",
+        choices=["clean", "photo", "gallery", "both", "all"],
+        default="both",
+        help="both = clean and photo; all adds gallery (blurred, low-resolution, compressed)",
+    )
     p.add_argument(
         "--reader",
         choices=["cloud", "local", "hybrid", "ocr"],
@@ -139,7 +144,9 @@ def main(argv=None) -> int:
         print("error: ANTHROPIC_API_KEY is not set", file=sys.stderr)
         return 2
     cases = load_cases()[: args.limit]
-    variants = ["clean", "photo"] if args.variant == "both" else [args.variant]
+    variants = {"both": ["clean", "photo"], "all": ["clean", "photo", "gallery"]}.get(
+        args.variant, [args.variant]
+    )
     n_calls = len(cases) * len(variants)
     if billed and not args.yes:
         model = settings.reader_model

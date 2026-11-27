@@ -18,12 +18,28 @@ Map<String, dynamic> exampleScanJson() => jsonDecode(
 ) as Map<String, dynamic>;
 
 class FakeBackendApi implements BackendApi {
-  FakeBackendApi({this.scan, this.error, this.drugs = const []});
+  FakeBackendApi({
+    this.scan,
+    this.error,
+    this.drugs = const [],
+    this.alternatives = const {},
+  });
 
   PrescriptionScan? scan;
   ApiException? error;
   List<Drug> drugs;
+  Map<int, DrugAlternatives> alternatives;
   int extractCalls = 0;
+  int alternativesCalls = 0;
+
+  @override
+  Future<DrugAlternatives> drugAlternatives(int drugId) async {
+    alternativesCalls++;
+    if (error != null) throw error!;
+    final found = alternatives[drugId];
+    if (found == null) throw const ApiException('drug_not_found');
+    return found;
+  }
 
   @override
   Future<PrescriptionScan> extractPrescription(

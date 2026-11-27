@@ -417,5 +417,78 @@
   "alarmsBlockedBody": "Notifications or exact alarms are not allowed. Tap here to turn them on.",
   "signInWithPhone": "Sign in with a phone number",
   "startFailed": "Cannot start right now. Check the internet connection and try again.",
-  "signOutAnonymousWarning": "No phone number is linked to this account. If you sign out, your medicine list and history cannot be recovered."
+  "signOutAnonymousWarning": "No phone number is linked to this account. If you sign out, your medicine list and history cannot be recovered.",
+  "priceEach": "{price} taka each",
+  "@priceEach": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "priceEachApprox": "About {price} taka each",
+  "@priceEachApprox": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "cheaperAvailable": "Same medicine for less: {brand} ({percent}% cheaper)",
+  "@cheaperAvailable": {
+    "placeholders": {
+      "brand": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "cheaperTitle": "Same medicine, lower price",
+  "cheaperIntro": "These have the same ingredient ({generic}), the same strength ({strength}) and the same form.",
+  "@cheaperIntro": {
+    "placeholders": {
+      "generic": {
+        "type": "String"
+      },
+      "strength": {
+        "type": "String"
+      }
+    }
+  },
+  "cheaperRow": "{price} taka each · {percent}% cheaper",
+  "@cheaperRow": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "cheaperMonthly": "About {amount} taka less a month",
+  "@cheaperMonthly": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "cheaperCourse": "About {amount} taka less for this course",
+  "@cheaperCourse": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "cheaperDisclaimer": "Ask your doctor or pharmacist before switching brands. The app changes nothing on its own.",
+  "pricesApproximate": "Prices are approximate and may differ at the shop.",
+  "widgetNext": "Next medicine",
+  "widgetDue": "Time to take now",
+  "widgetTomorrow": "Tomorrow",
+  "widgetNoMedicines": "No medicines added",
+  "widgetOpenApp": "Open the app to see the next medicine"
 }

@@ -1,3 +1,4 @@
+import '../widget/dose_widget.dart';
 import 'alarm_payload.dart';
 import 'alarm_planner.dart';
 import 'alarm_scheduler.dart';
@@ -17,12 +18,16 @@ class AlarmService {
   AlarmService({
     required this.store,
     required this.scheduler,
+    this.widget,
     DateTime Function()? clock,
     this.utcOffset = const Duration(hours: 6),
   }) : _clock = clock ?? DateTime.now;
 
   final LocalStore store;
   final AlarmScheduler scheduler;
+
+  /// Home-screen widget, redrawn whenever the alarms change.
+  final DoseWidget? widget;
   final DateTime Function() _clock;
   final Duration utcOffset;
 
@@ -53,6 +58,14 @@ class AlarmService {
         if (a.at.isAfter(wallNow)) a,
     ];
     await scheduler.replaceAll([...alarms, ...refills, ...extras]);
+    await widget?.update(
+      medicines: medicines,
+      settings: settings,
+      wallNow: wallNow,
+      handledKeys: store.handledKeys(),
+      now: _clock().toUtc(),
+      utcOffset: utcOffset,
+    );
     return alarms.where((a) => !a.isNotice).length;
   }
 
