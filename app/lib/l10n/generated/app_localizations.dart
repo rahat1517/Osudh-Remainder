@@ -1405,6 +1405,18 @@ abstract class AppLocalizations {
   /// In bn, this message translates to:
   /// **'পরীক্ষা: অ্যালার্ম ঠিকমতো বাজছে'**
   String get testAlarmLabel;
+
+  /// No description provided for @alarmsBlockedTitle.
+  ///
+  /// In bn, this message translates to:
+  /// **'অ্যালার্ম বাজবে না'**
+  String get alarmsBlockedTitle;
+
+  /// No description provided for @alarmsBlockedBody.
+  ///
+  /// In bn, this message translates to:
+  /// **'নোটিফিকেশন বা ঠিক সময়ের অ্যালার্মের অনুমতি বন্ধ আছে। এখানে চেপে চালু করুন।'**
+  String get alarmsBlockedBody;
 }
 
 class _AppLocalizationsDelegate

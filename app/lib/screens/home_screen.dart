@@ -111,6 +111,26 @@ class HomeScreen extends StatelessWidget {
                 padding: const EdgeInsets.fromLTRB(16, 16, 16, 160),
                 children: [
                   if (state.update case final u?) UpdateBanner(update: u),
+                  if (state.alarmsBlocked)
+                    Card(
+                      key: const Key('alarmsBlocked'),
+                      color: Theme.of(context).colorScheme.errorContainer,
+                      child: ListTile(
+                        leading: const Icon(Icons.notifications_off),
+                        title: Text(l.alarmsBlockedTitle),
+                        subtitle: Text(l.alarmsBlockedBody),
+                        onTap: () async {
+                          await Navigator.of(context).push(
+                            MaterialPageRoute<void>(
+                              builder: (_) => SetupScreen(
+                                notifications: notificationsPlugin,
+                              ),
+                            ),
+                          );
+                          await state.checkAlarmPermissions();
+                        },
+                      ),
+                    ),
                   const InsightsSection(),
                   if (state.offline)
                     Card(

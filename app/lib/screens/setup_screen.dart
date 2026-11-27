@@ -4,50 +4,12 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
+import '../alarms/alarm_permissions.dart';
 import '../alarms/battery_guide.dart';
 import '../l10n/generated/app_localizations.dart';
 import '../state/app_state.dart';
 
 const _appPackage = 'com.oshudh.oshudh_reminder';
-
-/// What the alarm permissions currently are, and how to ask for them. Wraps the notifications
-/// plugin so the screen can be tested.
-abstract interface class AlarmPermissions {
-  /// null when the phone cannot tell (then the button is always shown).
-  Future<bool?> notificationsAllowed();
-  Future<bool?> exactAlarmsAllowed();
-  Future<bool?> requestNotifications();
-  Future<bool?> requestExactAlarms();
-  Future<bool?> requestFullScreen();
-}
-
-class PluginAlarmPermissions implements AlarmPermissions {
-  PluginAlarmPermissions(this._plugin);
-
-  final FlutterLocalNotificationsPlugin _plugin;
-
-  // Resolved on use, not when the screen is built (the platform side may not be ready yet)
-  AndroidFlutterLocalNotificationsPlugin? get _android => _plugin
-      .resolvePlatformSpecificImplementation<
-        AndroidFlutterLocalNotificationsPlugin
-      >();
-
-  @override
-  Future<bool?> notificationsAllowed() async =>
-      _android?.areNotificationsEnabled();
-  @override
-  Future<bool?> exactAlarmsAllowed() async =>
-      _android?.canScheduleExactNotifications();
-  @override
-  Future<bool?> requestNotifications() async =>
-      _android?.requestNotificationsPermission();
-  @override
-  Future<bool?> requestExactAlarms() async =>
-      _android?.requestExactAlarmsPermission();
-  @override
-  Future<bool?> requestFullScreen() async =>
-      _android?.requestFullScreenIntentPermission();
-}
 
 /// Permissions and battery settings that alarms depend on. Each step shows whether it is already
 /// on: when a permission is granted, Android opens nothing, and a button that seems to do nothing

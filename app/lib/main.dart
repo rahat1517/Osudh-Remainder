@@ -6,6 +6,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'alarms/alarm_payload.dart';
+import 'alarms/alarm_permissions.dart';
 import 'alarms/alarm_runtime.dart';
 import 'alarms/alarm_service.dart';
 import 'alarms/dose_log_sync.dart';
@@ -53,6 +54,7 @@ Future<void> main() async {
       caregivers: SupabaseCaregiverRepository(client),
       channels: SupabaseReminderChannelsRepository(client),
       trainingConsent: SupabaseTrainingConsentRepository(client),
+      permissions: PluginAlarmPermissions(notificationsPlugin),
       updates: config.updateManifestUrl == null
           ? null
           : UpdateChecker(

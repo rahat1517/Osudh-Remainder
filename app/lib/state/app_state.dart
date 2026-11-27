@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 
+import '../alarms/alarm_permissions.dart';
 import '../alarms/alarm_service.dart';
 import '../alarms/dose_log_sync.dart';
 import '../alarms/local_store.dart';
@@ -38,6 +39,7 @@ class AppState extends ChangeNotifier {
     this.channels,
     this.trainingConsent,
     this.updates,
+    this.permissions,
     this.logSync,
     DateTime Function()? clock,
     this.utcOffset = const Duration(hours: 6),
@@ -61,6 +63,29 @@ class AppState extends ChangeNotifier {
   void dispose() {
     _authChanges.cancel();
     super.dispose();
+  }
+
+  /// Notification and exact-alarm permissions; [alarmsBlocked] is true when alarms cannot ring.
+  final AlarmPermissions? permissions;
+  bool alarmsBlocked = false;
+
+  /// Notifications are off by default on Android 13+: without them no alarm appears at all, and
+  /// without exact alarms Android may delay them. Never throws.
+  Future<void> checkAlarmPermissions() async {
+    final p = permissions;
+    if (p == null) return;
+    bool? notifications, exact;
+    try {
+      notifications = await p.notificationsAllowed();
+      exact = await p.exactAlarmsAllowed();
+    } on Object {
+      return;
+    }
+    final blocked = notifications == false || exact == false;
+    if (blocked != alarmsBlocked) {
+      alarmsBlocked = blocked;
+      notifyListeners();
+    }
   }
 
   /// Checks for a newer pilot build; [update] is set when one exists.
@@ -139,6 +164,7 @@ class AppState extends ChangeNotifier {
       active = cache.loadMedicines();
       offline = true;
     } finally {
+      await checkAlarmPermissions();
       scheduledAlarms = await alarms?.sync() ?? 0;
       loading = false;
       notifyListeners();
@@ -163,6 +189,7 @@ class AppState extends ChangeNotifier {
     String? forUserId,
     Uint8List? scanImage,
   }) async {
+    final first = active.isEmpty && forUserId == null;
     await medicines.saveConfirmed(
       drafts,
       source: source,
@@ -170,6 +197,16 @@ class AppState extends ChangeNotifier {
       forUserId: forUserId,
     );
     if (forUserId == null) await refresh();
+    // The first medicine is when alarms start to matter: ask for notifications right away (the
+    // system dialog), instead of hoping the user finds Reminder settings
+    if (first && permissions != null) {
+      try {
+        await permissions!.requestNotifications();
+      } on Object {
+        // shown again from the home-screen warning
+      }
+      await checkAlarmPermissions();
+    }
     if (scanImage != null && forUserId == null) {
       await _shareForTraining(scanImage, drafts);
     }
