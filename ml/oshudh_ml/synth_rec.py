@@ -45,6 +45,9 @@ DURATIONS_BN = ["দিন", "মাস", "সপ্তাহ"]
 DURATIONS_LATIN = ["days", "din", "month", "weeks"]
 EXTRAS_BN = ["চলবে", "প্রয়োজনে", "জ্বর হলে", "ব্যথা হলে"]
 FREQUENCIES = ["BD", "TDS", "QID", "OD", "HS", "SOS"]
+# Common courses first, plus values that use every digit (০-৯): a digit never seen in training is
+# a digit the model cannot read
+DAYS = [3, 5, 7, 7, 10, 14, 15, 30, 30, 1, 2, 4, 6, 8, 9, 12, 20, 21, 28, 45, 60, 90]
 
 
 def to_bangla_digits(text: str) -> str:
@@ -71,7 +74,7 @@ def _sample_line(rng: random.Random) -> str:
         strength = f" {rng.choice(STRENGTHS)}" if rng.random() < 0.8 else ""
         return f"{number}{rng.choice(FORMS)} {rng.choice(BRANDS)}{strength}"
     pattern = rng.choice(PATTERNS)
-    days = str(rng.choice([3, 5, 7, 10, 14, 15, 30, 1, 2, 3]))
+    days = str(rng.choice(DAYS))
     if kind < 0.85:  # Bangla instruction line (the main thing the pretrained model lacks)
         parts = [to_bangla_digits(pattern)]
         if rng.random() < 0.8:

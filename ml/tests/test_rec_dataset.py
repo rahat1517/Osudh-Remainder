@@ -53,6 +53,12 @@ def test_synthetic_lines_cover_bangla_and_latin():
     assert max(len(line) for line in lines) <= 25  # the model's label limit
 
 
+def test_synthetic_lines_use_every_bangla_digit():
+    rng = random.Random(2)
+    text = "".join(sample_line(rng) for _ in range(3000))
+    assert set("০১২৩৪৫৬৭৮৯") <= set(text)
+
+
 def test_rendered_line_is_an_rgb_image():
     font = ImageFont.load_default(size=30)
     img = render("1. Tab. Seclo 20 mg", font, random.Random(3))
