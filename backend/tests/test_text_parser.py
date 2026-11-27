@@ -259,6 +259,28 @@ def test_strength_glued_to_the_name_is_split():
     assert only("Tab. Cef-3 200 mg 1+0+1").name == "Cef-3"  # digits that belong to the name
 
 
+@pytest.mark.parametrize(
+    ("line", "form", "name", "strength"),
+    [
+        (". Tab Indever (10mg)", "Tab", "Indever", "10mg"),  # bullet dot, bracketed strength
+        ("- Cap Seclo 20mg", "Cap", "Seclo", "20mg"),
+        ("(2) Tab Napa [500 mg]", "Tab", "Napa", "500 mg"),
+        ("Tob Napa (500mg)", "Tab", "Napa", "500mg"),  # handwritten "Tab" as OCR reads it
+        ("Toub Napa 500mg", "Tab", "Napa", "500mg"),
+        ("Tobo Indever 10 mg", "Tab", "Indever", "10 mg"),
+        ("TabNapa 500mg", "Tab", "Napa", "500mg"),  # glued by OCR
+    ],
+)
+def test_handwritten_list_items(line, form, name, strength):
+    m = only(line)
+    assert (m.form, m.name, m.strength) == (form, name, strength)
+
+
+def test_words_like_tab_are_not_medicines():
+    for text in ("Total amount 500", "Tobacco: no", "Tubewell water", "Capsicum 2 kg"):
+        assert parse_lines([TextLine("Rx", 0.95), TextLine(text, 0.95)]).medicines == []
+
+
 # --- Blurred photos -----------------------------------------------------------------------------
 def test_a_few_garbled_lines_are_an_unclear_photo_not_a_non_prescription():
     # A blurred gallery photo of a prescription: OCR returns a little garbage
