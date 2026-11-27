@@ -36,6 +36,8 @@ double? saving({
 }) {
   final a = current.unitPriceBdt, b = cheaper.unitPriceBdt;
   if (a == null || b == null || b >= a || piecesPerDay <= 0) return null;
+  // A bottle or tube lasts an unknown number of days: no daily saving to work out
+  if (current.pack != null || cheaper.pack != null) return null;
   if (!pricedPerPiece(current.form) || !pricedPerPiece(cheaper.form)) {
     return null;
   }

@@ -14,11 +14,12 @@
           "brand": "Seclo",
           "strength": "20 mg",
           "generic": "Omeprazole",
-          "form": "Capsule",
-          "manufacturer": "Square Pharmaceuticals",
-          "source": "dev-seed",
+          "form": "Capsule (Delayed Release)",
+          "manufacturer": "Square Pharmaceuticals Ltd.",
+          "source": "medex-2023",
           "verified": false,
-          "unit_price_bdt": 6.0
+          "unit_price_bdt": 6.0,
+          "pack": null
         },
         "score": 100.0,
         "strength_matched": true
@@ -70,11 +71,12 @@
           "brand": "Sergel",
           "strength": "20 mg",
           "generic": "Esomeprazole",
-          "form": "Capsule",
-          "manufacturer": "Healthcare Pharmaceuticals",
-          "source": "dev-seed",
+          "form": "Capsule (Delayed Release)",
+          "manufacturer": "Healthcare Pharmaceuticals Ltd.",
+          "source": "medex-2023",
           "verified": false,
-          "unit_price_bdt": 7.0
+          "unit_price_bdt": 7.0,
+          "pack": null
         },
         "score": 83.3,
         "strength_matched": true
@@ -82,62 +84,66 @@
       "alternatives": [
         {
           "drug": {
+            "id": 15442,
+            "brand": "Sergel",
+            "strength": "20 mg",
+            "generic": "Esomeprazole",
+            "form": "Tablet (Enteric Coated)",
+            "manufacturer": "Healthcare Pharmaceuticals Ltd.",
+            "source": "medex-2023",
+            "verified": false,
+            "unit_price_bdt": 7.0,
+            "pack": null
+          },
+          "score": 83.3,
+          "strength_matched": true
+        },
+        {
+          "drug": {
+            "id": 18179,
+            "brand": "Sergel",
+            "strength": "20 mg",
+            "generic": "Esomeprazole",
+            "form": "Oral Powder",
+            "manufacturer": "Healthcare Pharmaceuticals Ltd.",
+            "source": "medex-2023",
+            "verified": false,
+            "unit_price_bdt": 7.0,
+            "pack": "20 mg sachet"
+          },
+          "score": 83.3,
+          "strength_matched": true
+        },
+        {
+          "drug": {
             "id": 15,
             "brand": "Sergel",
             "strength": "40 mg",
             "generic": "Esomeprazole",
-            "form": "Capsule",
-            "manufacturer": "Healthcare Pharmaceuticals",
-            "source": "dev-seed",
+            "form": "Capsule (Delayed Release)",
+            "manufacturer": "Healthcare Pharmaceuticals Ltd.",
+            "source": "medex-2023",
             "verified": false,
-            "unit_price_bdt": 10.0
+            "unit_price_bdt": 10.0,
+            "pack": null
           },
           "score": 68.3,
           "strength_matched": false
         },
         {
           "drug": {
-            "id": 9,
-            "brand": "Seclo",
-            "strength": "20 mg",
-            "generic": "Omeprazole",
-            "form": "Capsule",
-            "manufacturer": "Square Pharmaceuticals",
-            "source": "dev-seed",
+            "id": 1478,
+            "brand": "Sergel",
+            "strength": "40 mg/vial",
+            "generic": "Esomeprazole",
+            "form": "IV Injection",
+            "manufacturer": "Healthcare Pharmaceuticals Ltd.",
+            "source": "medex-2023",
             "verified": false,
-            "unit_price_bdt": 6.0
+            "unit_price_bdt": 100.0,
+            "pack": "40 mg vial"
           },
-          "score": 54.5,
-          "strength_matched": true
-        },
-        {
-          "drug": {
-            "id": 35,
-            "brand": "Osartil",
-            "strength": "50 mg",
-            "generic": "Losartan Potassium",
-            "form": "Tablet",
-            "manufacturer": "Incepta Pharmaceuticals",
-            "source": "dev-seed",
-            "verified": false,
-            "unit_price_bdt": 8.0
-          },
-          "score": 46.5,
-          "strength_matched": false
-        },
-        {
-          "drug": {
-            "id": 10,
-            "brand": "Seclo",
-            "strength": "40 mg",
-            "generic": "Omeprazole",
-            "form": "Capsule",
-            "manufacturer": "Square Pharmaceuticals",
-            "source": "dev-seed",
-            "verified": false,
-            "unit_price_bdt": 9.0
-          },
-          "score": 39.5,
+          "score": 68.3,
           "strength_matched": false
         }
       ],
@@ -181,10 +187,11 @@
           "strength": "665 mg",
           "generic": "Paracetamol",
           "form": "Tablet (Extended Release)",
-          "manufacturer": "Beximco Pharmaceuticals",
-          "source": "dev-seed",
+          "manufacturer": "Beximco Pharmaceuticals Ltd.",
+          "source": "medex-2023",
           "verified": false,
-          "unit_price_bdt": 2.0
+          "unit_price_bdt": 2.0,
+          "pack": null
         },
         "score": 100.0,
         "strength_matched": null

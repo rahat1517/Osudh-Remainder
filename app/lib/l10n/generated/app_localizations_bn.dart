@@ -825,4 +825,19 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get widgetOpenApp => 'পরের ওষুধ দেখতে অ্যাপ খুলুন';
+
+  @override
+  String pricePack(String pack, String price) {
+    return '$pack: $price টাকা';
+  }
+
+  @override
+  String pricePackApprox(String pack, String price) {
+    return '$pack: আনুমানিক $price টাকা';
+  }
+
+  @override
+  String cheaperRowPack(String pack, String price, String percent) {
+    return '$pack: $price টাকা · $percent% কম';
+  }
 }

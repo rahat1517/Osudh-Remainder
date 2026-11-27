@@ -830,4 +830,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get widgetOpenApp => 'Open the app to see the next medicine';
+
+  @override
+  String pricePack(String pack, String price) {
+    return '$pack: $price taka';
+  }
+
+  @override
+  String pricePackApprox(String pack, String price) {
+    return '$pack: about $price taka';
+  }
+
+  @override
+  String cheaperRowPack(String pack, String price, String percent) {
+    return '$pack: $price taka · $percent% cheaper';
+  }
 }

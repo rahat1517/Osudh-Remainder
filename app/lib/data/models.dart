@@ -54,6 +54,7 @@ class Drug {
     required this.generic,
     required this.form,
     this.unitPriceBdt,
+    this.pack,
   });
 
   factory Drug.fromJson(Map<String, dynamic> j) => Drug(
@@ -63,6 +64,7 @@ class Drug {
     generic: j['generic'] as String,
     form: j['form'] as String,
     unitPriceBdt: (j['unit_price_bdt'] as num?)?.toDouble(),
+    pack: j['pack'] as String?,
   );
 
   final int id;
@@ -73,6 +75,9 @@ class Drug {
 
   /// Maximum retail price of one unit (tablet, capsule, sachet; a bottle for liquids), in taka.
   final double? unitPriceBdt;
+
+  /// What the price is for when it is not one piece, e.g. "60 ml bottle".
+  final String? pack;
 
   String get label => strength.isEmpty ? brand : '$brand $strength';
 }

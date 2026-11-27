@@ -5,7 +5,9 @@ Two brands count as the same medicine only when all of these match:
 - every strength number ("500 mg + 65 mg"),
 - the dosage form. Plain tablets and capsules may stand in for each other; anything with a
   modifier, such as "Tablet (Extended Release)", only for exactly the same form, since releasing
-  the medicine over hours instead of at once changes how it is taken.
+  the medicine over hours instead of at once changes how it is taken,
+- the pack, when the price is for a pack ("60 ml bottle"): a 100 ml bottle is not cheaper for
+  costing more than a 60 ml one.
 
 The app shows these as information only: the user is told to ask a doctor or pharmacist before
 switching, and nothing changes on its own.
@@ -31,16 +33,19 @@ def _form_key(form: str) -> str:
     return "oral solid" if form in _INTERCHANGEABLE_FORMS else form
 
 
+def equivalence_key(d: Drug) -> tuple:
+    """Drugs with the same key are the same medicine, priced the same way."""
+    pack = " ".join(d.pack.lower().split()) if d.pack else None
+    return (ingredients(d.generic), strength_numbers(d.strength), _form_key(d.form), pack)
+
+
 def same_medicine(a: Drug, b: Drug) -> bool:
-    return (
-        ingredients(a.generic) == ingredients(b.generic)
-        and strength_numbers(a.strength) == strength_numbers(b.strength)
-        and _form_key(a.form) == _form_key(b.form)
-    )
+    return equivalence_key(a) == equivalence_key(b)
 
 
 def cheaper_alternatives(drug: Drug, catalog: list[Drug], limit: int = 5) -> AlternativesResult:
-    """Up to `limit` cheaper brands of the same medicine, cheapest first."""
+    """Up to `limit` cheaper brands of the same medicine, cheapest first. `catalog` may be the
+    whole catalogue or only the drugs with the same `equivalence_key`."""
     found: list[Alternative] = []
     price = drug.unit_price_bdt
     if price is not None:

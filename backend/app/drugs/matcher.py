@@ -9,7 +9,7 @@ from collections import defaultdict
 
 from rapidfuzz import fuzz, process
 
-from app.drugs.alternatives import cheaper_alternatives
+from app.drugs.alternatives import cheaper_alternatives, equivalence_key
 from app.drugs.models import AlternativesResult, Confidence, Drug, DrugCandidate, MatchResult
 from app.drugs.normalize import ParsedName, normalize_brand, parse, strength_numbers
 
@@ -35,8 +35,12 @@ class DrugMatcher:
         self._drugs = drugs
         self._by_id = {d.id: d for d in drugs}
         self._by_brand: dict[str, list[Drug]] = defaultdict(list)
+        # Same medicine, priced the same way: the candidates for cheaper brands
+        self._equivalents: dict[tuple, list[Drug]] = defaultdict(list)
         for d in drugs:
             self._by_brand[normalize_brand(d.brand)].append(d)
+            if d.unit_price_bdt is not None:
+                self._equivalents[equivalence_key(d)].append(d)
         self._brand_keys = list(self._by_brand)
         # Brands with a digit in the name, such as "Cef-3"
         self._has_numeric_brands = any(ch.isdigit() for key in self._brand_keys for ch in key)
@@ -56,7 +60,9 @@ class DrugMatcher:
     # ------------------------------------------------------------------
     def cheaper_alternatives(self, drug_id: int, limit: int = 5) -> AlternativesResult | None:
         drug = self._by_id.get(drug_id)
-        return None if drug is None else cheaper_alternatives(drug, self._drugs, limit)
+        if drug is None:
+            return None
+        return cheaper_alternatives(drug, self._equivalents.get(equivalence_key(drug), []), limit)
 
     def match(self, text: str, limit: int = 5) -> MatchResult:
         parsed = parse(text)
