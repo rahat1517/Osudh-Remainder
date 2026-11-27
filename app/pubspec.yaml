@@ -8,6 +8,7 @@ environment:
 
 dependencies:
   android_intent_plus: ^6.1.0
+  audioplayers: ^6.8.1
   device_info_plus: ^13.3.0
   firebase_core: ^5.2.0
   firebase_messaging: ^17.1.0
@@ -38,6 +39,10 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   generate: true
+
+  # Recorded voice lines for the alarm screen (see lib/alarms/voice.dart)
+  assets:
+    - assets/voice/
 
   fonts:
     - family: HindSiliguri

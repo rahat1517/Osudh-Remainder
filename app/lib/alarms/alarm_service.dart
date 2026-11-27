@@ -57,7 +57,7 @@ class AlarmService {
   }
 
   Future<void> record(AlarmPayload payload, DoseStatus status) async {
-    await _dismiss(payload);
+    await dismiss(payload);
     final now = _clock().toUtc();
     for (final item in payload.items) {
       if (item.medicineId == testAlarmMedicineId) continue;
@@ -90,12 +90,12 @@ class AlarmService {
 
   /// Stops the ringing notification once the alarm is answered (in the app or from the
   /// notification); it is "ongoing", so it would otherwise stay in the tray.
-  Future<void> _dismiss(AlarmPayload payload) async {
+  Future<void> dismiss(AlarmPayload payload) async {
     if (payload.notificationId case final id?) await scheduler.cancel(id);
   }
 
   Future<SnoozeResult> snooze(AlarmPayload payload) async {
-    await _dismiss(payload);
+    await dismiss(payload);
     if (store.snoozeCount(payload.reminderKey) >= maxSnoozes) {
       return SnoozeResult.limitReached;
     }
