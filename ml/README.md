@@ -41,6 +41,24 @@ uv run python -m eval.run_eval --yes --reader hybrid
 
 Promote the local model only if its high-confidence accuracy is at least the cloud reader's.
 
+## Reviewing shared prescriptions
+
+Users who turn on "help improve the reader" in Settings share each confirmed scan. The server
+blacks out lines that look personal (name, phone, age, address), stores the image in the private
+`training-examples` bucket and adds a `training_examples` row with `review_status = 'pending'`.
+Nothing is used for training until a person approves it. In the Supabase dashboard:
+
+1. Table Editor → `training_examples`, filter `review_status = pending`.
+2. For each row, open its `image_path` in Storage → `training-examples` and check the image:
+   - **Reject** if any personal detail is still readable (a name, phone number, address, face, ID,
+     or the doctor's signature or seal), or if it is not a prescription.
+   - Otherwise check `label` (what the user confirmed) against the image; **reject** if it is wrong.
+3. Set `review_status` to `approved` or `rejected`, `reviewed_by` to your name and `reviewed_at`
+   to now.
+
+Only approved rows are exported (`oshudh_ml.export_rec`). Revoking consent in the app deletes the
+user's examples that have not been exported yet.
+
 ## PaddleOCR fine-tuning (free reader)
 
 Without a Claude key the backend reads prescriptions with PaddleOCR + rules
