@@ -52,7 +52,7 @@
   "addAnother": "আরেকটা ওষুধ যোগ করুন",
   "removeMedicine": "বাদ দিন",
   "fieldName": "ওষুধের নাম",
-  "fieldStrength": "শক্তি (mg)",
+  "fieldStrength": "মাত্রা (mg)",
   "fieldDose": "ডোজ (সকাল+দুপুর+রাত)",
   "fieldDoseHint": "১+০+১",
   "fieldTiming": "কখন খাবেন",
@@ -395,5 +395,15 @@
   "errInvalidLabel": "প্রেসক্রিপশনের তথ্য শেয়ার করা যায়নি।",
   "mealTimesTitle": "খাবারের সময়",
   "mealTimesHelp": "রিমাইন্ডারের সময় এগুলো থেকে হিসাব হয়। খাবারের আগের ওষুধ ৩০ মিনিট আগে, পরের ওষুধ ১৫ মিনিট পরে মনে করানো হয়।",
-  "mealTimesSaveFailed": "সময় সেভ করা যায়নি। ইন্টারনেট দেখে আবার চেষ্টা করুন।"
+  "mealTimesSaveFailed": "সময় সেভ করা যায়নি। ইন্টারনেট দেখে আবার চেষ্টা করুন।",
+  "daysCount": "{days} দিন",
+  "@daysCount": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "stopShort": "বন্ধ",
+  "reportNoDoses": "গত ৭ দিনে এখনো কোনো ডোজের সময় হয়নি।"
 }

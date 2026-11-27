@@ -45,7 +45,7 @@ Category: Medical. Contains ads: No. Target audience: 18+.
 | **Exact alarms** (`SCHEDULE_EXACT_ALARM`) | Core function: medication reminders must ring at the prescribed time; the user grants the permission in settings |
 | **Full-screen intent** (`USE_FULL_SCREEN_INTENT`) | Alarm-style dose reminders over the lock screen, chosen by the user |
 | **Account deletion** | In-app (Settings → Delete my account) and on request; deletes all data |
-| **Privacy policy URL** | Host `docs/legal/privacy-policy.md` (and the Bangla version) on a public page |
+| **Privacy policy URL** | `https://oshudh-api.onrender.com/privacy` (Bangla) and `/privacy/en`, served by the backend from `docs/legal/` |
 
 ## Data safety form
 

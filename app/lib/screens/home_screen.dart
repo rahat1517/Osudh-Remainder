@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../alarms/alarm_runtime.dart';
 import '../alarms/speaker.dart';
 import '../assistant/voice_input.dart';
+import '../l10n/format.dart';
 import '../l10n/generated/app_localizations.dart';
 import '../state/app_state.dart';
 import 'assistant_screen.dart';
@@ -32,17 +33,13 @@ class HomeScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(l.homeTitle),
+        // Three icons and a menu: with more, the title is cut off on a phone ("আজ...")
         actions: [
           IconButton(
-            tooltip: l.assistantTitle,
-            icon: const Icon(Icons.support_agent),
+            tooltip: l.myMedicines,
+            icon: const Icon(Icons.medication_outlined),
             onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute<void>(
-                builder: (_) => AssistantScreen(
-                  voice: SpeechVoiceInput(),
-                  speaker: TtsSpeaker(),
-                ),
-              ),
+              MaterialPageRoute<void>(builder: (_) => const MedicinesScreen()),
             ),
           ),
           IconButton(
@@ -54,14 +51,6 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
           ),
-          if (state.caregivers != null)
-            IconButton(
-              tooltip: l.familyTitle,
-              icon: const Icon(Icons.family_restroom),
-              onPressed: () => Navigator.of(context).push(
-                MaterialPageRoute<void>(builder: (_) => const FamilyScreen()),
-              ),
-            ),
           IconButton(
             tooltip: l.settingsTitle,
             icon: const Icon(Icons.settings_outlined),
@@ -69,12 +58,36 @@ class HomeScreen extends StatelessWidget {
               MaterialPageRoute<void>(builder: (_) => const SettingsScreen()),
             ),
           ),
-          IconButton(
-            tooltip: l.myMedicines,
-            icon: const Icon(Icons.medication_outlined),
-            onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute<void>(builder: (_) => const MedicinesScreen()),
+          PopupMenuButton<String>(
+            key: const Key('homeMenu'),
+            onSelected: (item) => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => switch (item) {
+                  'family' => const FamilyScreen(),
+                  _ => AssistantScreen(
+                    voice: SpeechVoiceInput(),
+                    speaker: TtsSpeaker(),
+                  ),
+                },
+              ),
             ),
+            itemBuilder: (_) => [
+              PopupMenuItem(
+                value: 'assistant',
+                child: ListTile(
+                  leading: const Icon(Icons.support_agent),
+                  title: Text(l.assistantTitle),
+                ),
+              ),
+              if (state.caregivers != null)
+                PopupMenuItem(
+                  value: 'family',
+                  child: ListTile(
+                    leading: const Icon(Icons.family_restroom),
+                    title: Text(l.familyTitle),
+                  ),
+                ),
+            ],
           ),
         ],
       ),
@@ -92,7 +105,8 @@ class HomeScreen extends StatelessWidget {
                 ],
               )
             : ListView(
-                padding: const EdgeInsets.all(16),
+                // Room at the bottom so the floating buttons never cover the last reminder
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 160),
                 children: [
                   const InsightsSection(),
                   if (state.offline)
@@ -105,7 +119,12 @@ class HomeScreen extends StatelessWidget {
                   if (state.scheduledAlarms > 0)
                     Padding(
                       padding: const EdgeInsets.only(bottom: 8),
-                      child: Text(l.remindersScheduled(state.scheduledAlarms)),
+                      child: Text(
+                        localDigits(
+                          context,
+                          l.remindersScheduled(state.scheduledAlarms),
+                        ),
+                      ),
                     ),
                   for (final r in reminders)
                     Card(
@@ -119,7 +138,10 @@ class HomeScreen extends StatelessWidget {
                         ),
                         title: Text(
                           r.items
-                              .map((i) => '${i.medicine.label} × ${i.amount}')
+                              .map(
+                                (i) =>
+                                    '${i.medicine.label}\u00A0×\u00A0${formatAmount(i.amount)}',
+                              )
                               .join('\n'),
                         ),
                         trailing: r.at == next?.at

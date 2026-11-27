@@ -392,5 +392,15 @@
   "errInvalidLabel": "The prescription details could not be shared.",
   "mealTimesTitle": "Meal times",
   "mealTimesHelp": "Reminder times are calculated from these. Before-meal medicines are reminded 30 minutes before, after-meal ones 15 minutes after.",
-  "mealTimesSaveFailed": "Could not save the time. Check the internet connection and try again."
+  "mealTimesSaveFailed": "Could not save the time. Check the internet connection and try again.",
+  "daysCount": "{days} days",
+  "@daysCount": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "stopShort": "Stop",
+  "reportNoDoses": "No doses were due in the last 7 days yet."
 }

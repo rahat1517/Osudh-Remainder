@@ -111,7 +111,7 @@ void main() {
     await tester.tap(find.byKey(const Key('saveStock')));
     await tester.pumpAndSettle();
     expect(state.active.single.pillsOnHand, 6);
-    expect(find.textContaining('আর প্রায় 3.0 দিন চলবে'), findsOneWidget);
+    expect(find.textContaining('আর প্রায় ৩ দিন চলবে'), findsOneWidget);
   });
 
   testWidgets(

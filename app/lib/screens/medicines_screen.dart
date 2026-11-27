@@ -2,6 +2,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
 import '../insights/insights.dart';
+import '../l10n/format.dart';
 import '../l10n/generated/app_localizations.dart';
 import '../state/app_state.dart';
 import '../widgets/medicine_editor.dart';
@@ -46,7 +47,10 @@ class MedicinesScreen extends StatelessWidget {
           controller: controller,
           autofocus: true,
           keyboardType: TextInputType.number,
-          decoration: InputDecoration(helperText: l.stockHelp),
+          decoration: InputDecoration(
+            helperText: l.stockHelp,
+            helperMaxLines: 3,
+          ),
         ),
         actions: [
           TextButton(
@@ -70,21 +74,8 @@ class MedicinesScreen extends StatelessWidget {
     final l = AppLocalizations.of(context);
     final state = context.watch<AppState>();
     return Scaffold(
-      appBar: AppBar(
-        title: Text(l.myMedicines),
-        actions: [
-          IconButton(
-            tooltip: l.signOut,
-            icon: const Icon(Icons.logout),
-            onPressed: () async {
-              await state.signOut();
-              if (context.mounted) {
-                Navigator.of(context).popUntil((r) => r.isFirst);
-              }
-            },
-          ),
-        ],
-      ),
+      // No sign-out here: it is in Settings, away from everyday buttons
+      appBar: AppBar(title: Text(l.myMedicines)),
       body: ListView(
         children: [
           for (final m in state.active)
@@ -92,22 +83,26 @@ class MedicinesScreen extends StatelessWidget {
               title: Text(m.label),
               subtitle: Text(
                 [
-                  if (m.asNeeded) l.asNeeded else m.dosePattern ?? '',
+                  if (m.asNeeded)
+                    l.asNeeded
+                  else
+                    formatPattern(m.dosePattern ?? ''),
                   timingLabel(l, m.timing),
                   if (refillStatus(m, state.settings, state.wallNow)
                       case final r?)
-                    l.daysLeft(r.daysLeft.toStringAsFixed(1)),
+                    l.daysLeft(localDigits(context, formatDays(r.daysLeft))),
                   if (m.durationDays != null)
-                    '${m.durationDays} ${l.fieldDuration}'
+                    localDigits(context, l.daysCount(m.durationDays!))
                   else
                     l.continueIndefinitely,
                 ].join(' · '),
               ),
               onTap: () => _stock(context, m.id, m.pillsOnHand),
-              trailing: IconButton(
-                tooltip: l.stopMedicine,
-                icon: const Icon(Icons.stop_circle_outlined),
+              // A word, not just an icon: what the button does must be clear
+              trailing: TextButton(
+                key: Key('stop-${m.id}'),
                 onPressed: () => _stop(context, m.id, m.label),
+                child: Text(l.stopShort),
               ),
             ),
         ],

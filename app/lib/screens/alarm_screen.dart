@@ -1,5 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 
+import '../l10n/format.dart';
 import '../alarms/alarm_payload.dart';
 import '../alarms/alarm_service.dart';
 import '../alarms/dose_log.dart';
@@ -90,7 +91,10 @@ class _AlarmScreenState extends State<AlarmScreen> {
                   child: ListTile(
                     leading: const Icon(Icons.medication, size: 36),
                     title: Text(item.label, style: big),
-                    trailing: Text('× ${item.amount}', style: big),
+                    trailing: Text(
+                      '× ${formatAmount(item.amount)}',
+                      style: big,
+                    ),
                   ),
                 ),
               const Spacer(),

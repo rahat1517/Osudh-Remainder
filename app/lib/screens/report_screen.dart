@@ -6,6 +6,7 @@ import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 import 'package:provider/provider.dart';
 
+import '../l10n/format.dart';
 import '../insights/insights.dart';
 import '../state/app_state.dart';
 import '../l10n/generated/app_localizations.dart';
@@ -33,8 +34,11 @@ class ReportScreen extends StatelessWidget {
             ),
             pw.SizedBox(height: 16),
             pw.Text(
-              'Overall: ${a.taken} of ${a.scheduled} doses taken (${(a.rate * 100).round()}%), '
-              '${a.skipped} skipped, ${a.missed} missed',
+              a.scheduled == 0
+                  ? 'No doses were due in these 7 days.'
+                  : 'Overall: ${a.taken} of ${a.scheduled} doses taken '
+                        '(${(a.rate * 100).round()}%), '
+                        '${a.skipped} skipped, ${a.missed} missed',
             ),
             pw.SizedBox(height: 12),
             pw.TableHelper.fromTextArray(
@@ -75,11 +79,22 @@ class ReportScreen extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          Text(
-            l.reportOverall(a.taken, a.scheduled, (a.rate * 100).round()),
-            style: Theme.of(context).textTheme.titleLarge,
-          ),
-          Text(l.reportMissed(a.missed, a.skipped)),
+          // "0 of 0 doses taken (100%)" is meaningless: say that nothing was due yet
+          if (a.scheduled == 0)
+            Text(
+              l.reportNoDoses,
+              style: Theme.of(context).textTheme.titleMedium,
+            )
+          else ...[
+            Text(
+              localDigits(
+                context,
+                l.reportOverall(a.taken, a.scheduled, (a.rate * 100).round()),
+              ),
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            Text(localDigits(context, l.reportMissed(a.missed, a.skipped))),
+          ],
           const SizedBox(height: 12),
           for (final m in state.active)
             if (a.byMedicine[m.id] case final s?)

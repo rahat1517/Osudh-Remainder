@@ -111,8 +111,8 @@ void main() {
 
     // Back on home: tonight's reminder for both before-meal medicines
     expect(find.text('21:00'), findsOneWidget);
-    expect(find.textContaining('Seclo 20 mg × 1'), findsOneWidget);
-    expect(find.textContaining('Sergel 20 mg × 1'), findsOneWidget);
+    expect(find.textContaining('Seclo 20 mg\u00A0×\u00A01'), findsOneWidget);
+    expect(find.textContaining('Sergel 20 mg\u00A0×\u00A01'), findsOneWidget);
     expect(context(tester).active, hasLength(3));
   });
 
