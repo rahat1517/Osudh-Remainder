@@ -275,6 +275,23 @@ class AppState extends ChangeNotifier {
     );
   }
 
+  final Map<int, Future<DrugAlternatives?>> _alternatives = {};
+
+  /// Price and cheaper brands of a medicine from the catalogue; null when it is not from the
+  /// catalogue or the server cannot be reached. Asked once per drug while the app runs.
+  Future<DrugAlternatives?> alternativesFor(Medicine m) {
+    final id = m.drugId;
+    if (id == null) return Future.value();
+    return _alternatives.putIfAbsent(id, () async {
+      try {
+        return await api.drugAlternatives(id);
+      } on Object {
+        _alternatives.remove(id); // try again next time
+        return null;
+      }
+    });
+  }
+
   Future<void> setStock(String medicineId, double pills) async {
     await medicines.updateStock(medicineId, pills);
     await refresh();

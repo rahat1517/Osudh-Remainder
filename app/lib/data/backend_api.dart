@@ -25,6 +25,9 @@ abstract interface class BackendApi {
 
   Future<List<Drug>> searchDrugs(String query, {int limit = 8});
 
+  /// Cheaper brands of the same medicine as catalogue drug [drugId].
+  Future<DrugAlternatives> drugAlternatives(int drugId);
+
   Future<AssistantReply> askAssistant(
     List<ChatTurn> history,
     Map<String, dynamic> context,
@@ -81,6 +84,13 @@ class HttpBackendApi implements BackendApi {
       for (final c in _decode(response) as List)
         Drug.fromJson((c as Map)['drug'] as Map<String, dynamic>),
     ];
+  }
+
+  @override
+  Future<DrugAlternatives> drugAlternatives(int drugId) async {
+    final uri = Uri.parse('$baseUrl/drugs/$drugId/alternatives');
+    final response = await _send(() => _client.get(uri, headers: _headers));
+    return DrugAlternatives.fromJson(_decode(response) as Map<String, dynamic>);
   }
 
   @override

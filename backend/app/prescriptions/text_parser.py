@@ -142,7 +142,15 @@ _STOP_RE = re.compile(
     re.IGNORECASE,
 )
 
-_PRESCRIPTION_HINTS = re.compile(r"\brx\b|℞|\bmg\b|\btab\b|\bcap\b|\bsyp\b|\badv", re.IGNORECASE)
+_PRESCRIPTION_HINTS = re.compile(
+    r"\brx\b|℞|\bmg\b|\btab\b|\bcap\b|\bsyp\b|\badv"
+    # The doctor's header and a dose pattern ("1+0+1") are as telling as a medicine
+    r"|\bmbbs\b|\bbmdc\b|\bfcps\b|\bfrcs\b|\bmrcp\b|\d\s*\+\s*\d\s*\+\s*\d",
+    re.IGNORECASE,
+)
+# Fewer lines than this, or a poor read, is too little to say an image is NOT a prescription:
+# a blurred photo of one often gives a few lines of garbage
+_MIN_LEGIBLE_LINES = 3
 
 
 def _base_confidence(score: float) -> Confidence:
@@ -258,11 +266,16 @@ def _dose_confidence(base: Confidence, pattern: str | None, explicit: bool) -> C
     return base
 
 
-def _build(form: str | None, rest: str, lines: list[TextLine]) -> ExtractedMedicine:
+def _build(
+    form: str | None,
+    rest: str,
+    lines: list[TextLine],
+    ceiling: Confidence = Confidence.HIGH,
+) -> ExtractedMedicine:
     raw_text = " ".join(line.text for line in lines)
     text = _unglue(raw_text)
     score = min(line.score for line in lines)
-    base = _base_confidence(score)
+    base = _cap(_base_confidence(score), ceiling)
     name, strength = _split_name(rest)
     as_needed = bool(_AS_NEEDED_RE.search(text))
     dose_raw, dose_pattern, explicit = _find_dose(text)
@@ -297,8 +310,17 @@ def _build(form: str | None, rest: str, lines: list[TextLine]) -> ExtractedMedic
     )
 
 
-def parse_lines(lines: list[TextLine]) -> PrescriptionExtraction:
-    """Lines in reading order (top to bottom) → extraction."""
+def parse_lines(
+    lines: list[TextLine], *, blurry: bool = False, soft: bool = False
+) -> PrescriptionExtraction:
+    """Lines in reading order (top to bottom) → extraction.
+
+    `soft`: the photo is not crisp (see `ocr_reader.is_soft`). OCR can then misread a digit with
+    full confidence ("7 days" as "1 days"), so no field is marked certain: the user checks each.
+
+    `blurry`: the photo itself is out of focus (see `ocr_reader.is_blurry`). With nothing found in
+    it, it is reported as a poor photo to retake, never as "not a prescription".
+    """
     lines = [TextLine(line.text.strip(), line.score) for line in lines if line.text.strip()]
     if not lines:
         return PrescriptionExtraction(
@@ -314,6 +336,7 @@ def parse_lines(lines: list[TextLine]) -> PrescriptionExtraction:
         else ImageQuality.POOR
     )
 
+    ceiling = Confidence.MEDIUM if (soft or blurry) else Confidence.HIGH
     medicines: list[ExtractedMedicine] = []
     current: tuple[str | None, str, list[TextLine]] | None = None
     for line in lines:
@@ -321,24 +344,30 @@ def parse_lines(lines: list[TextLine]) -> PrescriptionExtraction:
         if _STOP_RE.match(line.text):
             start = None
             if current:
-                medicines.append(_build(*current))
+                medicines.append(_build(*current, ceiling))
                 current = None
             continue
         if start:
             if current:
-                medicines.append(_build(*current))
+                medicines.append(_build(*current, ceiling))
             current = (start[0], start[1], [line])
         elif current and _is_instruction(line.text):
             current[2].append(line)
         elif current:
-            medicines.append(_build(*current))
+            medicines.append(_build(*current, ceiling))
             current = None
     if current:
-        medicines.append(_build(*current))
+        medicines.append(_build(*current, ceiling))
 
     looks_like_prescription = bool(medicines) or any(
         _PRESCRIPTION_HINTS.search(line.text) for line in lines
     )
+    if blurry and quality == ImageQuality.GOOD:
+        quality = ImageQuality.READABLE_WITH_EFFORT
+    legible = not blurry and quality != ImageQuality.POOR and len(lines) >= _MIN_LEGIBLE_LINES
+    if not medicines and not legible:
+        # Unclear rather than wrong: the app asks for a clearer photo (or manual entry)
+        looks_like_prescription, quality = True, ImageQuality.POOR
     return PrescriptionExtraction(
         is_prescription=looks_like_prescription, image_quality=quality, medicines=medicines
     )

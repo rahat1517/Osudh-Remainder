@@ -16,7 +16,7 @@ from app.prescriptions.ocr_reader import (
     RapidOcrEngine,
     reading_order,
 )
-from app.prescriptions.schemas import Timing
+from app.prescriptions.schemas import ImageQuality, Timing
 
 
 def box(x: float, y: float, w: float = 200, h: float = 30):
@@ -196,6 +196,38 @@ def test_text_detection_runs_on_a_small_copy_of_the_photo():
     pre = engine._engine.text_det.get_preprocess(1568)
     assert pre.limit_side_len == 960
     assert pre.limit_type == "max"
+
+
+# --- Blur ---------------------------------------------------------------------------------------
+def test_blur_detection_tells_a_sharp_photo_from_a_blurred_one():
+    pytest.importorskip("cv2")
+    from PIL import ImageFilter
+
+    from app.prescriptions.ocr_reader import is_blurry
+
+    sharp = Image.open(io.BytesIO(rendered_prescription()))
+    blurred = sharp.filter(ImageFilter.GaussianBlur(3))
+
+    def jpeg(img):
+        out = io.BytesIO()
+        img.save(out, format="JPEG", quality=70)
+        return prepare_image(out.getvalue()).data
+
+    assert not is_blurry(jpeg(sharp))
+    assert is_blurry(jpeg(blurred))
+
+
+def test_blurred_photo_with_garbled_text_is_reported_as_unclear():
+    from PIL import ImageFilter
+
+    pytest.importorskip("cv2")
+    blurred = Image.open(io.BytesIO(rendered_prescription())).filter(ImageFilter.GaussianBlur(4))
+    out = io.BytesIO()
+    blurred.save(out, format="JPEG", quality=70)
+    reader = OcrPrescriptionReader(FakeEngine([OcrLine("2.1bpe500g", 0.8, box(20, 100))]))
+    result = reader.read(prepare_image(out.getvalue()))
+    assert result.is_prescription
+    assert result.image_quality == ImageQuality.POOR
 
 
 def test_bundled_bangla_model_reads_bangla_instructions():

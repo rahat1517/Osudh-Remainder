@@ -257,3 +257,50 @@ def test_strength_glued_to_the_name_is_split():
     m = only("2.Tab.Ciprocin500 1BD PC x7days")
     assert (m.name, m.strength, m.duration_days) == ("Ciprocin", "500", 7)
     assert only("Tab. Cef-3 200 mg 1+0+1").name == "Cef-3"  # digits that belong to the name
+
+
+# --- Blurred photos -----------------------------------------------------------------------------
+def test_a_few_garbled_lines_are_an_unclear_photo_not_a_non_prescription():
+    # A blurred gallery photo of a prescription: OCR returns a little garbage
+    result = parse_lines([TextLine("L.T", 0.6), TextLine("14-1ibeg", 0.55)])
+    assert result.is_prescription
+    assert result.image_quality == ImageQuality.POOR
+    assert result.medicines == []
+
+
+def test_a_blurry_photo_without_medicines_asks_for_a_retake():
+    lines = [TextLine(t, 0.95) for t in ["Grocery list", "Rice 5 kg", "Oil 2 litre", "Eggs"]]
+    assert not parse_lines(lines).is_prescription  # read clearly: really not a prescription
+    blurred = parse_lines(lines, blurry=True)
+    assert blurred.is_prescription
+    assert blurred.image_quality == ImageQuality.POOR
+
+
+def test_a_blurry_photo_is_never_good_quality():
+    lines = [TextLine("Tab. Seclo 20 mg", 0.98), TextLine("1+0+1 30 din", 0.97)]
+    assert parse_lines(lines).image_quality == ImageQuality.GOOD
+    blurred = parse_lines(lines, blurry=True)
+    assert blurred.image_quality == ImageQuality.READABLE_WITH_EFFORT
+    assert [m.name for m in blurred.medicines] == ["Seclo"]
+
+
+def test_doctor_header_or_dose_pattern_marks_a_prescription():
+    header = [TextLine(t, 0.95) for t in ["Dr. Rahman", "MBBS, FCPS", "Chamber: Dhanmondi"]]
+    assert parse_lines(header).is_prescription
+    dose = [TextLine(t, 0.95) for t in ["Unreadable name", "1 + 0 + 1", "after meal"]]
+    assert parse_lines(dose).is_prescription
+
+
+def test_a_soft_photo_marks_nothing_certain():
+    lines = [TextLine("Tab. Alatrol 10 mg", 0.99), TextLine("0+0+1  7 days", 0.99)]
+    sharp = parse_lines(lines).medicines[0]
+    assert sharp.duration_confidence == Confidence.HIGH
+    soft = parse_lines(lines, soft=True).medicines[0]
+    assert soft.duration_days == 7
+    assert Confidence.HIGH not in {
+        soft.name_confidence,
+        soft.strength_confidence,
+        soft.dose_confidence,
+        soft.timing_confidence,
+        soft.duration_confidence,
+    }

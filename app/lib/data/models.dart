@@ -53,6 +53,7 @@ class Drug {
     required this.strength,
     required this.generic,
     required this.form,
+    this.unitPriceBdt,
   });
 
   factory Drug.fromJson(Map<String, dynamic> j) => Drug(
@@ -61,6 +62,7 @@ class Drug {
     strength: j['strength'] as String? ?? '',
     generic: j['generic'] as String,
     form: j['form'] as String,
+    unitPriceBdt: (j['unit_price_bdt'] as num?)?.toDouble(),
   );
 
   final int id;
@@ -69,7 +71,38 @@ class Drug {
   final String generic;
   final String form;
 
+  /// Maximum retail price of one unit (tablet, capsule, sachet; a bottle for liquids), in taka.
+  final double? unitPriceBdt;
+
   String get label => strength.isEmpty ? brand : '$brand $strength';
+}
+
+/// Cheaper brands of the same medicine (same ingredients, strength and form), cheapest first.
+/// Information only: switching is for the patient to discuss with a doctor or pharmacist.
+class DrugAlternatives {
+  const DrugAlternatives({
+    required this.drug,
+    required this.alternatives,
+    required this.pricesVerified,
+  });
+
+  factory DrugAlternatives.fromJson(Map<String, dynamic> j) => DrugAlternatives(
+    drug: Drug.fromJson(j['drug'] as Map<String, dynamic>),
+    alternatives: [
+      for (final a in j['alternatives'] as List)
+        (
+          drug: Drug.fromJson((a as Map)['drug'] as Map<String, dynamic>),
+          savingPercent: a['saving_percent'] as int,
+        ),
+    ],
+    pricesVerified: j['prices_verified'] as bool,
+  );
+
+  final Drug drug;
+  final List<({Drug drug, int savingPercent})> alternatives;
+
+  /// False while prices come from an unverified list: shown as "approximate".
+  final bool pricesVerified;
 }
 
 /// One medicine as read from a prescription, after server-side verification.

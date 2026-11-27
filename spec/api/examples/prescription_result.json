@@ -17,7 +17,8 @@
           "form": "Capsule",
           "manufacturer": "Square Pharmaceuticals",
           "source": "dev-seed",
-          "verified": false
+          "verified": false,
+          "unit_price_bdt": 6.0
         },
         "score": 100.0,
         "strength_matched": true
@@ -72,7 +73,8 @@
           "form": "Capsule",
           "manufacturer": "Healthcare Pharmaceuticals",
           "source": "dev-seed",
-          "verified": false
+          "verified": false,
+          "unit_price_bdt": 7.0
         },
         "score": 83.3,
         "strength_matched": true
@@ -87,7 +89,8 @@
             "form": "Capsule",
             "manufacturer": "Healthcare Pharmaceuticals",
             "source": "dev-seed",
-            "verified": false
+            "verified": false,
+            "unit_price_bdt": 10.0
           },
           "score": 68.3,
           "strength_matched": false
@@ -101,7 +104,8 @@
             "form": "Capsule",
             "manufacturer": "Square Pharmaceuticals",
             "source": "dev-seed",
-            "verified": false
+            "verified": false,
+            "unit_price_bdt": 6.0
           },
           "score": 54.5,
           "strength_matched": true
@@ -115,7 +119,8 @@
             "form": "Tablet",
             "manufacturer": "Incepta Pharmaceuticals",
             "source": "dev-seed",
-            "verified": false
+            "verified": false,
+            "unit_price_bdt": 8.0
           },
           "score": 46.5,
           "strength_matched": false
@@ -129,7 +134,8 @@
             "form": "Capsule",
             "manufacturer": "Square Pharmaceuticals",
             "source": "dev-seed",
-            "verified": false
+            "verified": false,
+            "unit_price_bdt": 9.0
           },
           "score": 39.5,
           "strength_matched": false
@@ -177,7 +183,8 @@
           "form": "Tablet (Extended Release)",
           "manufacturer": "Beximco Pharmaceuticals",
           "source": "dev-seed",
-          "verified": false
+          "verified": false,
+          "unit_price_bdt": 2.0
         },
         "score": 100.0,
         "strength_matched": null

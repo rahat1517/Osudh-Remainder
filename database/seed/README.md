@@ -4,6 +4,8 @@
 > It is a small sample of common Bangladeshi brands for development and tests
 > (`source=dev-seed`, `verified=false`). Manufacturers or strengths may be wrong.
 > **Replace it with the official DGDA register before the app reaches patients.**
+> The `unit_price_bdt` values are rough development estimates, not real MRPs: the app labels
+> unverified prices "approximate", but they must be replaced with the DGDA maximum retail prices.
 
 ## Columns
 
@@ -16,6 +18,7 @@
 | `manufacturer` | Square Pharmaceuticals | no |
 | `source` | dev-seed, dgda-2026 | yes |
 | `verified` | true / false | yes |
+| `unit_price_bdt` | 6, 1.2, 35 (taka per tablet / capsule / sachet; per bottle for liquids) | no |
 
 ## Adding the official list
 
