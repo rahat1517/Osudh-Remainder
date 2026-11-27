@@ -1,0 +1,5 @@
+{
+  "approved_examples": 0,
+  "trained": "2026-11-27",
+  "note": "v1: synthetic lines only (ml/paddleocr/cpu/train_rec_cpu.sh)"
+}

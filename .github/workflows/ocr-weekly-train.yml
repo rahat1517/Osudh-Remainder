@@ -1,0 +1,127 @@
+# Retrains the prescription OCR model every week from approved real photos (users who opted in,
+# personal lines blacked out, every photo checked by a person) plus synthetic lines, then switches
+# the server to the new model only if it passes the eval gate: nothing worse than the current model
+# and nothing wrong while marked high. Runs on a free GitHub CPU runner (about 1.5 hours).
+#
+# Skipped (in a minute) unless at least MIN_NEW photos were approved since the last training.
+# Secret: SUPABASE_SERVICE_ROLE_KEY (reads approved examples and their private photos).
+name: OCR weekly training
+
+on:
+  schedule:
+    - cron: "37 19 * * 6" # Saturday 19:37 UTC = Sunday 01:37 in Bangladesh
+  workflow_dispatch:
+    inputs:
+      force:
+        description: "Train even without new approved photos"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write # commits the new model to main (Render deploys it)
+
+concurrency:
+  group: ocr-weekly-train
+  cancel-in-progress: false
+
+env:
+  SUPABASE_URL: https://jbwttngkuewtoarhsipn.supabase.co
+  MIN_NEW: "20"
+
+jobs:
+  train:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+
+      - name: New approved photos since the last training?
+        id: check
+        env:
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          if [ -z "$SUPABASE_SERVICE_ROLE_KEY" ]; then
+            echo "SUPABASE_SERVICE_ROLE_KEY secret not set; skipping."; echo "train=false" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          approved=$(curl -sf "$SUPABASE_URL/rest/v1/training_examples?select=id&review_status=eq.approved" \
+            -H "apikey: $SUPABASE_SERVICE_ROLE_KEY" -H "Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY" \
+            | python3 -c "import sys,json; print(len(json.load(sys.stdin)))")
+          last=$(python3 -c "import json; print(json.load(open('backend/models/training.json')).get('approved_examples', 0))" 2>/dev/null || echo 0)
+          echo "approved photos: $approved (last training used $last)"
+          echo "approved=$approved" >> "$GITHUB_OUTPUT"
+          if [ "${{ inputs.force }}" = "true" ] || [ $((approved - last)) -ge "$MIN_NEW" ]; then
+            echo "train=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "Fewer than $MIN_NEW new approved photos; nothing to do this week."
+            echo "train=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Data (synthetic lines and approved real photos)
+        if: steps.check.outputs.train == 'true'
+        working-directory: ml
+        env:
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          uv sync --extra ocr
+          (cd paddleocr && uv run python fetch_fonts.py ../fonts ../fonts_holdout)
+          uv run python -m oshudh_ml.synth_rec --fonts fonts --out data/synth --count 30000 --seed "$GITHUB_RUN_NUMBER"
+          uv run python -m oshudh_ml.synth_rec --fonts fonts_holdout --out data/holdout --count 600 --seed 99
+          uv run python -m oshudh_ml.export_rec --out data/real \
+            --rec-model ../backend/models/rec.onnx --rec-keys ../backend/models/dict.txt
+          wc -l data/real/*.txt
+
+      - name: Train (CPU, frozen backbone)
+        if: steps.check.outputs.train == 'true'
+        working-directory: ml
+        run: |
+          sets=(data/synth)
+          [ -s data/real/train.txt ] && sets+=(data/real)
+          HOLDOUT=data/holdout EPOCHS=10 bash paddleocr/cpu/train_rec_cpu.sh "${sets[@]}" 2>&1 \
+            | grep -vE "^\s*$|Warning|warn\(" | tail -n 60
+
+      - name: Eval gate
+        if: steps.check.outputs.train == 'true'
+        id: gate
+        working-directory: backend
+        run: |
+          uv sync
+          OCR_REC_MODEL_PATH=models/rec.onnx OCR_REC_KEYS_PATH=models/dict.txt \
+            uv run python -m eval.run_eval --reader ocr --variant all
+          mv "$(ls -t eval/reports/2*.md | head -1)" /tmp/current.md
+          OCR_REC_MODEL_PATH=../ml/out/rec.onnx OCR_REC_KEYS_PATH=../ml/out/dict.txt \
+            uv run python -m eval.run_eval --reader ocr --variant all
+          mv "$(ls -t eval/reports/2*.md | head -1)" /tmp/candidate.md
+          if python3 ../ml/paddleocr/cpu/eval_gate.py /tmp/current.md /tmp/candidate.md; then
+            echo "passed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "passed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Switch the server to the new model
+        if: steps.gate.outputs.passed == 'true'
+        run: |
+          cp ml/out/rec.onnx backend/models/rec.onnx
+          cp ml/out/dict.txt backend/models/dict.txt
+          day=$(date -u +%F)
+          cp /tmp/candidate.md "backend/eval/reports/ocr-weekly-$day.md"
+          python3 - "${{ steps.check.outputs.approved }}" "$day" <<'PY'
+          import json, sys
+          json.dump({"approved_examples": int(sys.argv[1]), "trained": sys.argv[2]},
+                    open("backend/models/training.json", "w"), indent=2)
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add backend/models backend/eval/reports
+          git commit -m "OCR model: weekly retraining ($day, ${{ steps.check.outputs.approved }} approved photos)"
+          git push
+
+      - name: Summary
+        if: always() && steps.check.outputs.train == 'true'
+        run: |
+          {
+            echo "### OCR weekly training"
+            echo "Approved photos: ${{ steps.check.outputs.approved }}"
+            if [ "${{ steps.gate.outputs.passed }}" = "true" ]; then echo "New model passed the gate and is live."; else echo "New model did not pass the gate; the current model stays."; fi
+            [ -f /tmp/candidate.md ] && sed -n '1,40p' /tmp/candidate.md
+          } >> "$GITHUB_STEP_SUMMARY"

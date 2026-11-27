@@ -42,6 +42,22 @@ Remove the two variables to go back to the pretrained model.
   will score lower; handwriting is not covered yet.
 - Speed and memory: same as the pretrained model (about 1.2 s and 304 MB peak for a 12 MP photo).
 
+## Weekly retraining (automatic)
+
+`.github/workflows/ocr-weekly-train.yml` runs every Saturday night (UTC). Once at least 20 more
+photos have been approved since the last training (`training.json`), it:
+
+1. generates fresh synthetic lines and exports line crops of every approved, consented photo
+   (`oshudh_ml.export_rec`, labelled only where they agree with what the user confirmed);
+2. trains a new model on a GitHub CPU runner (`ml/paddleocr/cpu/train_rec_cpu.sh`, ~1.5 hours);
+3. runs the eval for the current and the new model (clean, photo and gallery variants) and the gate
+   (`ml/paddleocr/cpu/eval_gate.py`): no field worse, nothing wrong while marked `high`;
+4. only if it passes, commits the new `rec.onnx`, `dict.txt`, `training.json` and the eval report to
+   `main`, and Render deploys it.
+
+Run it by hand from GitHub → Actions → OCR weekly training → Run workflow (tick "force" to train
+without new photos). It needs the `SUPABASE_SERVICE_ROLE_KEY` repository secret.
+
 ## Replacing the model
 
 Only switch after the eval gate passes (`uv run python -m eval.run_eval --reader ocr` with the two
