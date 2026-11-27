@@ -707,4 +707,15 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get mealTimesSaveFailed =>
       'Could not save the time. Check the internet connection and try again.';
+
+  @override
+  String daysCount(int days) {
+    return '$days days';
+  }
+
+  @override
+  String get stopShort => 'Stop';
+
+  @override
+  String get reportNoDoses => 'No doses were due in the last 7 days yet.';
 }

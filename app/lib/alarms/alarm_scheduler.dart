@@ -1,6 +1,7 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
 
+import '../l10n/format.dart';
 import '../l10n/generated/app_localizations.dart';
 import 'alarm_payload.dart';
 import 'alarm_planner.dart';
@@ -81,7 +82,9 @@ class NotificationAlarmScheduler implements AlarmScheduler {
       id: a.id,
       scheduledDate: when,
       title: _l10n.alarmTitle,
-      body: a.items.map((i) => '${i.label} × ${i.amount}').join('\n'),
+      body: a.items
+          .map((i) => '${i.label} × ${formatAmount(i.amount)}')
+          .join('\n'),
       payload: AlarmPayload.fromSpec(a).encode(),
       androidScheduleMode: mode,
       notificationDetails: NotificationDetails(

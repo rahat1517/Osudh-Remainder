@@ -66,6 +66,7 @@ class ConfirmScreen extends StatefulWidget {
 class _ConfirmScreenState extends State<ConfirmScreen> {
   late final List<MedicineDraft> _drafts = [...widget.drafts];
   bool _saving = false;
+  bool _edited = false;
 
   List<DraftProblem> get _problems =>
       {for (final d in _drafts) ...d.problems}.toList();
@@ -109,14 +110,16 @@ class _ConfirmScreenState extends State<ConfirmScreen> {
         children: [
           Text(l.confirmHelp),
           for (final w in widget.warnings)
-            if (localizeNotice(l, w) case final text?)
-              Card(
-                color: Theme.of(context).colorScheme.secondaryContainer,
-                child: ListTile(
-                  leading: const Icon(Icons.info_outline),
-                  title: Text(text),
+            // The help line above already says this; a second card only repeats it
+            if (w.code != 'review_highlighted_fields')
+              if (localizeNotice(l, w) case final text?)
+                Card(
+                  color: Theme.of(context).colorScheme.secondaryContainer,
+                  child: ListTile(
+                    leading: const Icon(Icons.info_outline),
+                    title: Text(text),
+                  ),
                 ),
-              ),
           for (final g in duplicateTherapies([
             ...context.read<AppState>().active,
             for (final (i, d) in _drafts.indexed)
@@ -128,25 +131,27 @@ class _ConfirmScreenState extends State<ConfirmScreen> {
                   startAt: DateTime.now(),
                 ),
           ]))
-            Card(
-              color: Theme.of(context).colorScheme.errorContainer,
-              child: ListTile(
-                leading: const Icon(Icons.warning_amber),
-                title: Text(l.duplicateTitle),
-                subtitle: Text(
-                  l.duplicateBody(
-                    g.medicines.map((m) => m.label).join(', '),
-                    g.ingredient,
+            // Only duplicates this prescription adds; existing ones are shown on the home screen
+            if (g.medicines.any((m) => m.id.startsWith('draft-')))
+              Card(
+                color: Theme.of(context).colorScheme.errorContainer,
+                child: ListTile(
+                  leading: const Icon(Icons.warning_amber),
+                  title: Text(l.duplicateTitle),
+                  subtitle: Text(
+                    l.duplicateBody(
+                      g.medicines.map((m) => m.label).join(', '),
+                      g.ingredient,
+                    ),
                   ),
                 ),
               ),
-            ),
           for (final (i, draft) in _drafts.indexed)
             MedicineEditor(
               key: ObjectKey(draft),
               draft: draft,
               api: api,
-              onChanged: () => setState(() {}),
+              onChanged: () => setState(() => _edited = true),
               onRemove: _drafts.length > 1
                   ? () => setState(() => _drafts.removeAt(i))
                   : null,
@@ -166,11 +171,16 @@ class _ConfirmScreenState extends State<ConfirmScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              for (final p in problems)
-                Text(
-                  problemLabel(l, p),
-                  style: TextStyle(color: Theme.of(context).colorScheme.error),
-                ),
+              // A new, empty form should not open with a list of errors: show them once the user
+              // has started (a scan is different: the highlighted fields need attention at once)
+              if (_edited || widget.source == 'scan')
+                for (final p in problems)
+                  Text(
+                    problemLabel(l, p),
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.error,
+                    ),
+                  ),
               const SizedBox(height: 8),
               FilledButton(
                 key: const Key('confirm'),

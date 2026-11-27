@@ -14,6 +14,8 @@ COPY backend/app ./app
 # Fine-tuned OCR models, if any (see backend/models/README.md)
 COPY backend/models ./models
 COPY database/seed /srv/database/seed
+# Public privacy policy and terms, served at /privacy and /terms
+COPY docs/legal /srv/docs/legal
 
 # Run as an unprivileged user
 RUN useradd --system --uid 10001 api && chown -R api /srv

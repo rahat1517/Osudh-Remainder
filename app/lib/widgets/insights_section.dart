@@ -2,6 +2,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
 import '../insights/insights.dart';
+import '../l10n/format.dart';
 import '../l10n/generated/app_localizations.dart';
 import '../state/app_state.dart';
 
@@ -60,7 +61,8 @@ class _InsightsSectionState extends State<InsightsSection> {
             subtitle: Text(
               l.lowStockBody(
                 low.medicine.label,
-                low.status.daysLeft.toStringAsFixed(1),
+                // Only the number: the medicine label keeps its own digits ("20 mg")
+                localDigits(context, formatDays(low.status.daysLeft)),
               ),
             ),
           ),

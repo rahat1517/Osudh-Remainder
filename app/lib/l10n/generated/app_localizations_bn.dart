@@ -123,7 +123,7 @@ class AppLocalizationsBn extends AppLocalizations {
   String get fieldName => 'ওষুধের নাম';
 
   @override
-  String get fieldStrength => 'শক্তি (mg)';
+  String get fieldStrength => 'মাত্রা (mg)';
 
   @override
   String get fieldDose => 'ডোজ (সকাল+দুপুর+রাত)';
@@ -703,4 +703,15 @@ class AppLocalizationsBn extends AppLocalizations {
   @override
   String get mealTimesSaveFailed =>
       'সময় সেভ করা যায়নি। ইন্টারনেট দেখে আবার চেষ্টা করুন।';
+
+  @override
+  String daysCount(int days) {
+    return '$days দিন';
+  }
+
+  @override
+  String get stopShort => 'বন্ধ';
+
+  @override
+  String get reportNoDoses => 'গত ৭ দিনে এখনো কোনো ডোজের সময় হয়নি।';
 }

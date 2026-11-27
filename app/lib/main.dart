@@ -78,6 +78,15 @@ Future<void> main() async {
   }
 
   final navigatorKey = GlobalKey<NavigatorState>();
+  // When the session changes outside the sign-in screens (restored at startup, or expired), go
+  // back to the first screen, which shows home or sign-in; screens opened on top would otherwise
+  // stay, signed out, or leave the sign-in screens over a restored session.
+  var wasSignedIn = state.signedIn;
+  state.addListener(() {
+    if (state.signedIn == wasSignedIn) return;
+    wasSignedIn = state.signedIn;
+    navigatorKey.currentState?.popUntil((r) => r.isFirst);
+  });
   final speaker = TtsSpeaker();
   void openAlarm(String payload) => navigatorKey.currentState?.push(
     MaterialPageRoute<void>(

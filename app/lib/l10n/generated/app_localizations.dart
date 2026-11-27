@@ -311,7 +311,7 @@ abstract class AppLocalizations {
   /// No description provided for @fieldStrength.
   ///
   /// In bn, this message translates to:
-  /// **'শক্তি (mg)'**
+  /// **'মাত্রা (mg)'**
   String get fieldStrength;
 
   /// No description provided for @fieldDose.
@@ -1327,6 +1327,24 @@ abstract class AppLocalizations {
   /// In bn, this message translates to:
   /// **'সময় সেভ করা যায়নি। ইন্টারনেট দেখে আবার চেষ্টা করুন।'**
   String get mealTimesSaveFailed;
+
+  /// No description provided for @daysCount.
+  ///
+  /// In bn, this message translates to:
+  /// **'{days} দিন'**
+  String daysCount(int days);
+
+  /// No description provided for @stopShort.
+  ///
+  /// In bn, this message translates to:
+  /// **'বন্ধ'**
+  String get stopShort;
+
+  /// No description provided for @reportNoDoses.
+  ///
+  /// In bn, this message translates to:
+  /// **'গত ৭ দিনে এখনো কোনো ডোজের সময় হয়নি।'**
+  String get reportNoDoses;
 }
 
 class _AppLocalizationsDelegate

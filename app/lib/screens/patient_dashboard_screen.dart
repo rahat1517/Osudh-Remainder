@@ -1,6 +1,7 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
+import '../l10n/format.dart';
 import '../caregivers/caregiver_models.dart';
 import '../caregivers/dashboard.dart';
 import '../l10n/generated/app_localizations.dart';
@@ -92,7 +93,9 @@ class _PatientDashboardScreenState extends State<PatientDashboardScreen> {
                           formatClock(r.at),
                           style: Theme.of(context).textTheme.titleLarge,
                         ),
-                        title: Text('${r.label} × ${r.amount}'),
+                        title: Text(
+                          '${r.label}\u00A0×\u00A0${formatAmount(r.amount)}',
+                        ),
                         trailing: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [

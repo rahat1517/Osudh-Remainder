@@ -1,6 +1,8 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
+import '../config/app_config.dart';
 import '../l10n/generated/app_localizations.dart';
 import '../state/app_state.dart';
 import '../widgets/meal_times_tile.dart';
@@ -9,8 +11,9 @@ import '../widgets/training_consent_tile.dart';
 import 'ramadan_screen.dart';
 import 'report_screen.dart';
 
-const privacyPolicyUrl =
-    'https://github.com/rahat1517/Osudh-Remainder/blob/main/docs/legal/privacy-policy.md';
+/// Public page served by the backend (the GitHub repository is private, so it cannot host it).
+String privacyPolicyUrl([AppConfig config = const AppConfig()]) =>
+    '${config.backendUrl}/privacy';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -55,10 +58,15 @@ class SettingsScreen extends StatelessWidget {
       body: ListView(
         children: [
           ListTile(
+            key: const Key('privacyPolicy'),
             leading: const Icon(Icons.privacy_tip_outlined),
             title: Text(l.privacyPolicy),
-            subtitle: Text('${l.privacySummary}\n$privacyPolicyUrl'),
-            isThreeLine: true,
+            subtitle: Text(l.privacySummary),
+            trailing: const Icon(Icons.open_in_new),
+            onTap: () => launchUrl(
+              Uri.parse(privacyPolicyUrl()),
+              mode: LaunchMode.externalApplication,
+            ),
           ),
           const MealTimesTile(),
           const Divider(),
