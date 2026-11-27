@@ -179,8 +179,10 @@ def main(argv=None) -> int:
     lines = [
         f"# Prescription reader eval ({dt.date.today()})",
         "",
-        f"- Reader: `{args.reader}`; cloud model `{settings.reader_model}`, effort "
-        f"`{settings.reader_effort}`",
+        # The cloud model's settings only matter when it reads; reports are committed, so they
+        # stay out of OCR-only runs
+        f"- Reader: `{args.reader}`"
+        + ("" if args.reader == "ocr" else f", effort `{settings.reader_effort}`"),
         f"- Cases: {len(cases)} fictional printed prescriptions × {', '.join(variants)}",
         "",
     ]

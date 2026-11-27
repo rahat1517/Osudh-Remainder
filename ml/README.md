@@ -95,6 +95,19 @@ bash paddleocr/train_rec_colab.sh data/rec-v1 data/synth        # EPOCHS=30 by d
 It fine-tunes PaddleOCR's English PP-OCRv4 recognition model with a character list that includes
 Bangla, then exports `out/rec.onnx` and `out/dict.txt`.
 
+**Without a GPU: `paddleocr/cpu/train_rec_cpu.sh`** (how `backend/models/rec.onnx` v1 was made).
+It keeps the pretrained backbone frozen, computes its features once with ONNX Runtime and trains
+only the sequence neck and CTC head, so it runs on an ordinary 4-core machine in about 1.5 hours:
+
+```bash
+HOLDOUT=data/synth-heldout-font bash paddleocr/cpu/train_rec_cpu.sh data/synth data/rec-v1
+```
+
+The GPU route trains the whole model and should cope better with handwriting; the CPU route is
+enough for printed Bangla. The CPU script flushes denormal weights to zero (the pretrained English
+weights contain many, which made the model 2x slower on CPU); do the same for a Colab model with
+`python paddleocr/cpu/flush_denormals.py rec.onnx rec.onnx` (needs `onnx`).
+
 ### 3. Eval gate, then switch
 
 ```bash
