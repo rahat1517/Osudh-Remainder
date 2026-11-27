@@ -1309,6 +1309,24 @@ abstract class AppLocalizations {
   /// In bn, this message translates to:
   /// **'প্রেসক্রিপশনের তথ্য শেয়ার করা যায়নি।'**
   String get errInvalidLabel;
+
+  /// No description provided for @mealTimesTitle.
+  ///
+  /// In bn, this message translates to:
+  /// **'খাবারের সময়'**
+  String get mealTimesTitle;
+
+  /// No description provided for @mealTimesHelp.
+  ///
+  /// In bn, this message translates to:
+  /// **'রিমাইন্ডারের সময় এগুলো থেকে হিসাব হয়। খাবারের আগের ওষুধ ৩০ মিনিট আগে, পরের ওষুধ ১৫ মিনিট পরে মনে করানো হয়।'**
+  String get mealTimesHelp;
+
+  /// No description provided for @mealTimesSaveFailed.
+  ///
+  /// In bn, this message translates to:
+  /// **'সময় সেভ করা যায়নি। ইন্টারনেট দেখে আবার চেষ্টা করুন।'**
+  String get mealTimesSaveFailed;
 }
 
 class _AppLocalizationsDelegate

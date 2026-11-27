@@ -164,6 +164,11 @@ void main() {
     await signIn(tester);
     await tester.tap(find.byIcon(Icons.settings_outlined));
     await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(
+      find.byKey(const Key('deleteAccount')),
+      300,
+      scrollable: find.byType(Scrollable).last,
+    );
     await tester.tap(find.byKey(const Key('deleteAccount')));
     await tester.pumpAndSettle();
     expect(find.textContaining('চিরতরে মুছে যাবে'), findsOneWidget);

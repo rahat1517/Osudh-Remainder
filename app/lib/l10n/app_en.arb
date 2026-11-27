@@ -389,5 +389,8 @@
   "trainingConsentBody": "When on, photos of prescriptions you scan and confirm are shared to train our reader. Names, ages, phone numbers and addresses are blacked out, and a person checks every photo before use. You can turn this off at any time; unused photos are then deleted.",
   "errTrainingDisabled": "Sharing is not available right now.",
   "errTrainingNotConsented": "Turn on sharing in Settings first.",
-  "errInvalidLabel": "The prescription details could not be shared."
+  "errInvalidLabel": "The prescription details could not be shared.",
+  "mealTimesTitle": "Meal times",
+  "mealTimesHelp": "Reminder times are calculated from these. Before-meal medicines are reminded 30 minutes before, after-meal ones 15 minutes after.",
+  "mealTimesSaveFailed": "Could not save the time. Check the internet connection and try again."
 }

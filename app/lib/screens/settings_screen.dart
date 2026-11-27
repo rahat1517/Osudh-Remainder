@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../l10n/generated/app_localizations.dart';
 import '../state/app_state.dart';
+import '../widgets/meal_times_tile.dart';
 import '../widgets/reminder_channels_tile.dart';
 import '../widgets/training_consent_tile.dart';
 import 'ramadan_screen.dart';
@@ -59,6 +60,8 @@ class SettingsScreen extends StatelessWidget {
             subtitle: Text('${l.privacySummary}\n$privacyPolicyUrl'),
             isThreeLine: true,
           ),
+          const MealTimesTile(),
+          const Divider(),
           if (state.channels != null && state.auth.currentUserId != null)
             ReminderChannelsTile(
               repository: state.channels!,
