@@ -1585,6 +1585,30 @@ abstract class AppLocalizations {
   /// In bn, this message translates to:
   /// **'{pack}: {price} টাকা · {percent}% কম'**
   String cheaperRowPack(String pack, String price, String percent);
+
+  /// No description provided for @trainingAskTitle.
+  ///
+  /// In bn, this message translates to:
+  /// **'অ্যাপকে আরও ভালো পড়তে শেখাবেন?'**
+  String get trainingAskTitle;
+
+  /// No description provided for @trainingAskBody.
+  ///
+  /// In bn, this message translates to:
+  /// **'আপনার মতো প্রেসক্রিপশন, হাতের লেখা সহ, আরও ভালো পড়তে অ্যাপ এই ছবি থেকে শিখতে পারে। নাম, বয়স, ফোন নম্বর ও ঠিকানা কালো করে ঢেকে দেওয়া হয়, আর ব্যবহারের আগে একজন মানুষ প্রতিটি ছবি দেখে নেন। সেটিংসে যেকোনো সময় বন্ধ করতে পারবেন; তখন অব্যবহৃত ছবি মুছে ফেলা হবে।'**
+  String get trainingAskBody;
+
+  /// No description provided for @trainingAskYes.
+  ///
+  /// In bn, this message translates to:
+  /// **'হ্যাঁ, শেখাতে দিন'**
+  String get trainingAskYes;
+
+  /// No description provided for @trainingAskNo.
+  ///
+  /// In bn, this message translates to:
+  /// **'না'**
+  String get trainingAskNo;
 }
 
 class _AppLocalizationsDelegate

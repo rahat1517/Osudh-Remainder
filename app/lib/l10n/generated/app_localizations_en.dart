@@ -870,4 +870,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String cheaperRowPack(String pack, String price, String percent) {
     return '$pack: $price taka · $percent% cheaper';
   }
+
+  @override
+  String get trainingAskTitle => 'Help the app read better?';
+
+  @override
+  String get trainingAskBody =>
+      'The app can learn from this photo to read prescriptions like yours, handwriting included, better. Name, age, phone number and address are blacked out, and a person checks every photo before it is used. You can turn this off at any time in Settings; unused photos are then deleted.';
+
+  @override
+  String get trainingAskYes => 'Yes, help';
+
+  @override
+  String get trainingAskNo => 'No';
 }
