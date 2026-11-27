@@ -137,7 +137,15 @@ _STOP_RE = re.compile(
     re.IGNORECASE,
 )
 
-_PRESCRIPTION_HINTS = re.compile(r"\brx\b|℞|\bmg\b|\btab\b|\bcap\b|\bsyp\b|\badv", re.IGNORECASE)
+_PRESCRIPTION_HINTS = re.compile(
+    r"\brx\b|℞|\bmg\b|\btab\b|\bcap\b|\bsyp\b|\badv"
+    # The doctor's header and a dose pattern ("1+0+1") are as telling as a medicine
+    r"|\bmbbs\b|\bbmdc\b|\bfcps\b|\bfrcs\b|\bmrcp\b|\d\s*\+\s*\d\s*\+\s*\d",
+    re.IGNORECASE,
+)
+# Fewer lines than this, or a poor read, is too little to say an image is NOT a prescription:
+# a blurred photo of one often gives a few lines of garbage
+_MIN_LEGIBLE_LINES = 3
 
 
 def _base_confidence(score: float) -> Confidence:
@@ -292,8 +300,12 @@ def _build(form: str | None, rest: str, lines: list[TextLine]) -> ExtractedMedic
     )
 
 
-def parse_lines(lines: list[TextLine]) -> PrescriptionExtraction:
-    """Lines in reading order (top to bottom) → extraction."""
+def parse_lines(lines: list[TextLine], *, blurry: bool = False) -> PrescriptionExtraction:
+    """Lines in reading order (top to bottom) → extraction.
+
+    `blurry`: the photo itself is out of focus (see `ocr_reader.is_blurry`). With nothing found in
+    it, it is reported as a poor photo to retake, never as "not a prescription".
+    """
     lines = [TextLine(line.text.strip(), line.score) for line in lines if line.text.strip()]
     if not lines:
         return PrescriptionExtraction(
@@ -334,6 +346,12 @@ def parse_lines(lines: list[TextLine]) -> PrescriptionExtraction:
     looks_like_prescription = bool(medicines) or any(
         _PRESCRIPTION_HINTS.search(line.text) for line in lines
     )
+    if blurry and quality == ImageQuality.GOOD:
+        quality = ImageQuality.READABLE_WITH_EFFORT
+    legible = not blurry and quality != ImageQuality.POOR and len(lines) >= _MIN_LEGIBLE_LINES
+    if not medicines and not legible:
+        # Unclear rather than wrong: the app asks for a clearer photo (or manual entry)
+        looks_like_prescription, quality = True, ImageQuality.POOR
     return PrescriptionExtraction(
         is_prescription=looks_like_prescription, image_quality=quality, medicines=medicines
     )

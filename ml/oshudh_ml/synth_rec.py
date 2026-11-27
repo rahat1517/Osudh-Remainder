@@ -12,6 +12,7 @@ format: `images/*.jpg` and `train.txt` / `val.txt` lines of `images/name.jpg<TAB
 """
 
 import argparse
+import io
 import random
 from collections.abc import Iterator
 from pathlib import Path
@@ -92,7 +93,9 @@ def _sample_line(rng: random.Random) -> str:
 
 
 def render(text: str, font: ImageFont.FreeTypeFont, rng: random.Random) -> Image.Image:
-    """The line as a phone camera might capture it: tilt, blur, uneven light, noise."""
+    """The line as a phone camera might capture it: tilt, blur, uneven light, noise, and the low
+    resolution and heavy JPEG compression of a picture forwarded on a messenger and picked from the
+    gallery."""
     left, top, right, bottom = font.getbbox(text)
     pad = rng.randint(6, 16)
     w, h = right - left + 2 * pad, bottom - top + 2 * pad
@@ -102,13 +105,25 @@ def render(text: str, font: ImageFont.FreeTypeFont, rng: random.Random) -> Image
     ImageDraw.Draw(img).text((pad - left, pad - top), text, fill=ink, font=font)
     if rng.random() < 0.7:
         img = img.rotate(rng.uniform(-3, 3), expand=True, fillcolor=paper)
-    if rng.random() < 0.5:
+    blur = rng.random()
+    if blur < 0.15:  # out of focus, still readable to a person
+        img = img.filter(ImageFilter.GaussianBlur(rng.uniform(1.2, 2.0)))
+    elif blur < 0.5:
         img = img.filter(ImageFilter.GaussianBlur(rng.uniform(0.3, 1.2)))
+    if rng.random() < 0.25:  # low resolution, scaled back up
+        small = rng.uniform(0.45, 0.75)
+        size = img.size
+        img = img.resize((max(int(size[0] * small), 8), max(int(size[1] * small), 8)))
+        img = img.resize(size, Image.Resampling.BICUBIC)
     if rng.random() < 0.5:  # noise
         noise = Image.effect_noise(img.size, rng.uniform(5, 25))
         img = Image.blend(img, noise, rng.uniform(0.05, 0.15))
     if rng.random() < 0.3:  # squash, as with an oblique photo
         img = img.resize((int(img.width * rng.uniform(0.8, 1.1)), img.height))
+    if rng.random() < 0.3:  # recompressed JPEG
+        buf = io.BytesIO()
+        img.save(buf, format="JPEG", quality=rng.randint(25, 60))
+        img = Image.open(io.BytesIO(buf.getvalue()))
     return img.convert("RGB")
 
 
