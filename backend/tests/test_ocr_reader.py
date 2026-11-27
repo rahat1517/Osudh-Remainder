@@ -160,11 +160,17 @@ def test_engine_is_tuned_for_a_small_cpu():
 
 def test_warm_up_loads_the_models_once(monkeypatch):
     engine = RapidOcrEngine()
-    loads = []
-    monkeypatch.setattr(engine, "_load", lambda: loads.append(1) or object())
+    loads, runs = [], []
+
+    def fake_engine(image):
+        runs.append(image)  # the warm-up also runs the models once
+        return [], None
+
+    monkeypatch.setattr(engine, "_load", lambda: loads.append(1) or fake_engine)
     engine.warm_up()
     engine.warm_up()
     assert loads == [1]
+    assert len(runs) == 2
 
 
 def test_shutdown_waits_for_the_model_warm_up():
@@ -179,3 +185,14 @@ def test_shutdown_waits_for_the_model_warm_up():
     import threading
 
     assert not [t for t in threading.enumerate() if t.name == "ocr-warm-up"]
+
+
+def test_text_detection_runs_on_a_small_copy_of_the_photo():
+    # Regression: RapidOCR ignored its detection-size setting and detected phone photos at full
+    # size, a ~300 MB spike that got the 512 MB server killed mid-scan
+    pytest.importorskip("rapidocr_onnxruntime")
+    engine = RapidOcrEngine()
+    engine.warm_up()
+    pre = engine._engine.text_det.get_preprocess(1568)
+    assert pre.limit_side_len == 960
+    assert pre.limit_type == "max"
