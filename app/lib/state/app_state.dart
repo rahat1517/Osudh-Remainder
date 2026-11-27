@@ -232,6 +232,32 @@ class AppState extends ChangeNotifier {
     }
   }
 
+  /// True once, after a scan, until the user has answered whether their confirmed scans may
+  /// improve the reader (and never when sharing is not available or already allowed).
+  Future<bool> shouldAskTrainingConsent() async {
+    final consent = trainingConsent;
+    final cache = store;
+    if (consent == null || cache == null || cache.trainingConsentAsked) {
+      return false;
+    }
+    try {
+      return !await consent.isGranted();
+    } on Object {
+      return false; // offline: ask another time
+    }
+  }
+
+  /// Records the answer; asked only once whatever it is.
+  Future<void> answerTrainingConsent(bool granted) async {
+    await store?.markTrainingConsentAsked();
+    if (!granted) return;
+    try {
+      await trainingConsent?.set(true);
+    } on Object {
+      // Can still be turned on in Settings
+    }
+  }
+
   /// Best effort and only with consent; never blocks or fails the confirmation.
   Future<void> _shareForTraining(
     Uint8List image,

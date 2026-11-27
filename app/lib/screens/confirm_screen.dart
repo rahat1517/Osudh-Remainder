@@ -71,11 +71,43 @@ class _ConfirmScreenState extends State<ConfirmScreen> {
   List<DraftProblem> get _problems =>
       {for (final d in _drafts) ...d.problems}.toList();
 
+  /// After the first scan the user confirms: may confirmed scans help improve the reader?
+  /// Asked once, with no answer chosen in advance; changeable in Settings.
+  Future<void> _askAboutTrainingOnce() async {
+    final state = context.read<AppState>();
+    if (widget.image == null || widget.forUserId != null) return;
+    if (!await state.shouldAskTrainingConsent() || !mounted) return;
+    final l = AppLocalizations.of(context);
+    final granted = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        title: Text(l.trainingAskTitle),
+        content: SingleChildScrollView(child: Text(l.trainingAskBody)),
+        actions: [
+          TextButton(
+            key: const Key('trainingAskNo'),
+            onPressed: () => Navigator.of(context).pop(false),
+            child: Text(l.trainingAskNo),
+          ),
+          FilledButton(
+            key: const Key('trainingAskYes'),
+            onPressed: () => Navigator.of(context).pop(true),
+            child: Text(l.trainingAskYes),
+          ),
+        ],
+      ),
+    );
+    await state.answerTrainingConsent(granted ?? false);
+  }
+
   Future<void> _confirm() async {
     final messenger = ScaffoldMessenger.of(context);
     final l = AppLocalizations.of(context);
     setState(() => _saving = true);
     try {
+      await _askAboutTrainingOnce();
+      if (!mounted) return;
       await context.read<AppState>().confirm(
         _drafts,
         source: widget.source,

@@ -34,7 +34,8 @@ Location and device information embedded in the photo (EXIF, including GPS) is r
   number, address) blacked out first. We use Google's free service, under which **Google may keep what
   it is sent and use it to improve its products**, and people at Google may review it. Clear photos
   our own reader is sure of are never sent. You can change this at any time in Settings.
-- **Helping improve the reader (only if you turn it on).** With "Help improve prescription reading"
+- **Helping improve the reader (only if you turn it on).** The app asks once, when you confirm your
+  first scan; answering "No" shares nothing. With "Help improve prescription reading"
   on, photos you scan and confirm are kept, with personal lines blacked out, in private storage that
   only we can access. A person checks every photo before it is used to train our reader. Turning it
   off deletes your photos that have not been used yet.

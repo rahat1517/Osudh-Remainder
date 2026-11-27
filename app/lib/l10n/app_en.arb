@@ -533,5 +533,9 @@
         "type": "String"
       }
     }
-  }
+  },
+  "trainingAskTitle": "Help the app read better?",
+  "trainingAskBody": "The app can learn from this photo to read prescriptions like yours, handwriting included, better. Name, age, phone number and address are blacked out, and a person checks every photo before it is used. You can turn this off at any time in Settings; unused photos are then deleted.",
+  "trainingAskYes": "Yes, help",
+  "trainingAskNo": "No"
 }

@@ -28,6 +28,7 @@ class LocalStore {
   static const _logsKey = 'dose_logs_v1';
   static const _snoozeKey = 'snoozes_v1';
   static const _cloudReaderKey = 'cloud_reader_consent_v1';
+  static const _trainingAskedKey = 'training_consent_asked_v1';
 
   /// Logs older than this are pruned once synced.
   static const logRetention = Duration(days: 90);
@@ -204,6 +205,12 @@ class LocalStore {
 
   Future<void> setCloudReaderConsent(bool allowed) =>
       _prefs.setBool(_cloudReaderKey, allowed);
+
+  /// Whether the user has been asked, after their first scan, to help improve the reader.
+  bool get trainingConsentAsked => _prefs.getBool(_trainingAskedKey) ?? false;
+
+  Future<void> markTrainingConsentAsked() =>
+      _prefs.setBool(_trainingAskedKey, true);
 
   Future<void> clear() => _prefs.clear();
 }

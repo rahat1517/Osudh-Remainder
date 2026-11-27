@@ -865,4 +865,17 @@ class AppLocalizationsBn extends AppLocalizations {
   String cheaperRowPack(String pack, String price, String percent) {
     return '$pack: $price টাকা · $percent% কম';
   }
+
+  @override
+  String get trainingAskTitle => 'অ্যাপকে আরও ভালো পড়তে শেখাবেন?';
+
+  @override
+  String get trainingAskBody =>
+      'আপনার মতো প্রেসক্রিপশন, হাতের লেখা সহ, আরও ভালো পড়তে অ্যাপ এই ছবি থেকে শিখতে পারে। নাম, বয়স, ফোন নম্বর ও ঠিকানা কালো করে ঢেকে দেওয়া হয়, আর ব্যবহারের আগে একজন মানুষ প্রতিটি ছবি দেখে নেন। সেটিংসে যেকোনো সময় বন্ধ করতে পারবেন; তখন অব্যবহৃত ছবি মুছে ফেলা হবে।';
+
+  @override
+  String get trainingAskYes => 'হ্যাঁ, শেখাতে দিন';
+
+  @override
+  String get trainingAskNo => 'না';
 }
