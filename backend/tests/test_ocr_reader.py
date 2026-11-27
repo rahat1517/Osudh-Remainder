@@ -228,3 +228,27 @@ def test_blurred_photo_with_garbled_text_is_reported_as_unclear():
     result = reader.read(prepare_image(out.getvalue()))
     assert result.is_prescription
     assert result.image_quality == ImageQuality.POOR
+
+
+def test_bundled_bangla_model_reads_bangla_instructions():
+    # backend/models/rec.onnx (see its README): the pretrained model reads none of this line
+    pytest.importorskip("rapidocr_onnxruntime")
+    from pathlib import Path
+
+    models = Path(__file__).parent.parent / "models"
+    font = Path(__file__).parent.parent.parent / "app/assets/fonts/HindSiliguri_500Medium.ttf"
+    img = Image.new("RGB", (1000, 700), "white")
+    draw = ImageDraw.Draw(img)
+    big = ImageFont.truetype(str(font), 40, layout_engine=ImageFont.Layout.RAQM)
+    draw.text((30, 200), "Tab. Seclo 20 mg", fill="black", font=big)
+    draw.text((60, 270), "১+০+১  খাবারের আগে  ৭ দিন", fill="black", font=big)
+    out = io.BytesIO()
+    img.save(out, format="JPEG", quality=92)
+    engine = RapidOcrEngine(str(models / "rec.onnx"), str(models / "dict.txt"))
+    (m,) = OcrPrescriptionReader(engine).read(prepare_image(out.getvalue())).medicines
+    assert (m.name, m.dose_pattern, m.timing, m.duration_days) == (
+        "Seclo",
+        "1+0+1",
+        Timing.BEFORE_MEAL,
+        7,
+    )

@@ -1,6 +1,6 @@
 # Prescription reader eval (2026-11-26)
 
-- Reader: `ocr`; cloud model `claude-opus-5-5`, effort `high`
+- Reader: `ocr`
 - Cases: 10 fictional printed prescriptions × clean, photo
 
 ## clean

@@ -66,6 +66,22 @@ def test_dose_patterns(line, pattern):
 
 
 @pytest.mark.parametrize(
+    "line",
+    [
+        "Tab. Camlodin 5mg ১+০+০ - ২ মাস",
+        "Tab. Camlodin 5mg ১+০+০ — ২ মাস",
+        "Tab. Napa 1+0+1 - 7 days",
+    ],
+)
+def test_a_dash_after_a_plus_pattern_is_not_part_of_the_dose(line):
+    # Regression: "১+০+০ — ২ মাস" (1+0+0 for 2 months) was read as the dose 1+0+0+2, marked high
+    m = only(line)
+    assert m.dose_pattern.count("+") == 2
+    assert m.dose_pattern in ("1+0+0", "1+0+1")
+    assert m.duration_days in (60, 7)
+
+
+@pytest.mark.parametrize(
     ("text", "pattern"),
     [("BD", "1+0+1"), ("TDS", "1+1+1"), ("QID", "1+1+1+1"), ("OD", "1+0+0"), ("HS", "0+0+1")],
 )

@@ -48,6 +48,8 @@ GoogleService-Info.plist
 *.pt
 *.pth
 *.onnx
+# The fine-tuned Bangla OCR model the backend ships with (7.7 MB, see backend/models/README.md)
+!backend/models/rec.onnx
 ml/checkpoints/
 ml/outputs/
 ml/models/
