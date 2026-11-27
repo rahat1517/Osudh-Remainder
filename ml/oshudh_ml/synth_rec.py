@@ -72,7 +72,8 @@ def _sample_line(rng: random.Random) -> str:
         strength = f" {rng.choice(STRENGTHS)}" if rng.random() < 0.8 else ""
         return f"{number}{rng.choice(FORMS)} {rng.choice(BRANDS)}{strength}"
     pattern = rng.choice(PATTERNS)
-    days = str(rng.choice([3, 5, 7, 10, 14, 15, 30, 1, 2, 3]))
+    # Every digit must appear: a digit never seen in training is never read
+    days = str(rng.choice([3, 5, 7, 10, 14, 15, 30, 1, 2, 3, 6, 8, 9, 20, 28, 45, 60, 90]))
     if kind < 0.85:  # Bangla instruction line (the main thing the pretrained model lacks)
         parts = [to_bangla_digits(pattern)]
         if rng.random() < 0.8:

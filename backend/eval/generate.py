@@ -1,7 +1,9 @@
 """Renders fictional prescription images for the eval.
 
-Each case has two variants: "clean" (crisp print) and "photo" (like a phone photo: tilted, blurred,
-noisy). Images go to eval/out/, which is not committed. The Bangla header text is fictional.
+Each case has three variants: "clean" (crisp print), "photo" (like a phone photo: tilted, blurred,
+noisy) and "gallery" (that photo forwarded on a messenger and picked from the gallery: out of focus,
+low resolution, heavily compressed). Images go to eval/out/, which is not committed. The Bangla
+header text is fictional.
 
     uv run python -m eval.generate
 """
@@ -71,14 +73,31 @@ def degrade(img: Image.Image, seed: int) -> Image.Image:
     return img.resize((int(w * 0.7), int(h * 0.7)))
 
 
+def gallery(img: Image.Image, seed: int) -> Image.Image:
+    """`degrade`, then the blur, shrinking and (on saving) compression of a forwarded picture."""
+    rng = random.Random(seed + 1000)
+    img = degrade(img, seed).filter(ImageFilter.GaussianBlur(rng.uniform(0.9, 1.3)))
+    w, h = img.size
+    scale = 640 / w
+    return img.resize((640, int(h * scale)))
+
+
+QUALITY = {"clean": 90, "photo": 60, "gallery": 35}
+
+
 def generate() -> list[Path]:
     OUT_DIR.mkdir(exist_ok=True)
     paths = []
     for n, case in enumerate(load_cases()):
         clean = render_clean(case)
-        for variant, img in (("clean", clean), ("photo", degrade(clean, seed=n))):
+        variants = (
+            ("clean", clean),
+            ("photo", degrade(clean, seed=n)),
+            ("gallery", gallery(clean, seed=n)),
+        )
+        for variant, img in variants:
             path = OUT_DIR / f"{case['id']}__{variant}.jpg"
-            img.save(path, quality=60 if variant == "photo" else 90)
+            img.save(path, quality=QUALITY[variant])
             paths.append(path)
     return paths
 
