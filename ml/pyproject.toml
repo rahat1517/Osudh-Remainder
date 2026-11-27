@@ -41,6 +41,8 @@ pythonpath = ["."]
 
 [tool.ruff]
 line-length = 100
+# Generated from oshudh_ml/synth_rec.py and paddleocr/train_rec_colab.sh, which are checked
+extend-exclude = ["paddleocr/*.ipynb"]
 target-version = "py312"
 
 [tool.ruff.lint]
@@ -52,3 +54,4 @@ select = ["E", "F", "I", "B", "UP", "SIM"]
 "tests/*.py" = ["E501"]
 "oshudh_ml/synth_rec.py" = ["E501"]
 "oshudh_ml/export_rec.py" = ["E501"]
+"paddleocr/make_colab_notebook.py" = ["E501"]
