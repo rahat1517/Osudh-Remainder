@@ -257,3 +257,89 @@ def test_hybrid_routes_and_counts():
     hybrid._local = StubReader(error=ReaderError("ai_failed", "down"))
     assert hybrid.read(image) == cloud_answer
     assert dict(hybrid.routes) == {"local": 1, "cloud_fallback": 1, "cloud_after_error": 1}
+
+
+# --- Server wiring ------------------------------------------------------------------------------
+def test_repository_opens_a_pooler_safe_connection_per_call(monkeypatch):
+    # Regression: the server passed DATABASE_URL (a string) where a connection was expected, so
+    # every shared example failed
+    from app.training import repository
+
+    calls = []
+
+    class FakeConn:
+        def __init__(self):
+            self.committed = False
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *exc):
+            return False
+
+        def execute(self, sql, params):
+            calls.append(sql.split()[0])
+            row = (2,) if sql.lstrip().startswith("select") else ("example-1",)
+            return type("Cursor", (), {"fetchone": lambda _self: row})()
+
+        def commit(self):
+            self.committed = True
+
+    def fake_connect(url, **kw):
+        assert url == "postgresql://u:p@pooler:6543/postgres"
+        assert kw["prepare_threshold"] is None  # Supabase's pooler has no prepared statements
+        return FakeConn()
+
+    monkeypatch.setattr(repository.psycopg, "connect", fake_connect)
+    repo = repository.PostgresTrainingRepository("postgresql://u:p@pooler:6543/postgres")
+    assert repo.consent_version("user") == 2
+    fields = dict(
+        user_id="u",
+        consent_version=2,
+        image_path="training/x.jpg",
+        label={"medicines": []},
+        group_key="g",
+        redacted_lines=1,
+    )
+    assert repo.insert_example(**fields) == "example-1"
+    assert calls == ["select", "insert"]
+
+
+def test_training_service_is_built_only_with_all_settings():
+    from app.config import Settings
+    from app.main import build_training_service
+
+    base = dict(
+        database_url="postgresql://u:p@pooler:6543/postgres",
+        supabase_url="https://x.supabase.co",
+        supabase_service_role_key="service",
+        training_pepper="pepper",
+    )
+    assert build_training_service(Settings(_env_file=None, **base)) is not None
+    for missing in base:
+        settings = Settings(_env_file=None, **{**base, missing: None})
+        assert build_training_service(settings) is None
+
+
+def test_ocr_redaction_blacks_out_the_whole_patient_row():
+    pytest.importorskip("rapidocr_onnxruntime")
+    from PIL import ImageDraw, ImageFont
+
+    from app.prescriptions.ocr_reader import RapidOcrEngine
+    from app.training.deid import OcrLineDetector
+
+    font = ImageFont.load_default(size=34)
+    img = Image.new("RGB", (1200, 700), "white")
+    draw = ImageDraw.Draw(img)
+    # Label and name far apart: OCR returns them as separate boxes
+    draw.text((60, 120), "Patient:", fill="black", font=font)
+    draw.text((420, 120), "Karim Uddin", fill="black", font=font)
+    draw.text((60, 260), "1. Tab. Seclo 20 mg  1+0+1", fill="black", font=font)
+    out = io.BytesIO()
+    img.save(out, format="JPEG", quality=92)
+    engine = RapidOcrEngine()
+    redacted, count = redact(out.getvalue(), OcrLineDetector(engine).detect(out.getvalue()))
+    assert count == 1
+    texts = " ".join(line.text for line in engine.lines(redacted))
+    assert "Karim" not in texts and "Patient" not in texts
+    assert "Seclo" in texts
