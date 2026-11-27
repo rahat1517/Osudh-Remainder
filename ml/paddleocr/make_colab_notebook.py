@@ -62,6 +62,7 @@ def code(text: str) -> dict:
 def fonts_literal(fonts: dict[str, str]) -> str:
     return "\n".join(f'    "{name}": "{path}",' for name, path in fonts.items())
 
+
 cells = [
     md("""
 # ওষুধ রিমাইন্ডার: বাংলা ও হাতের লেখা OCR ট্রেনিং (Bangla + handwriting OCR training)
