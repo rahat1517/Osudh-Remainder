@@ -10,6 +10,7 @@ import copy
 import json
 import logging
 import time
+from concurrent.futures import FIRST_COMPLETED, Future, ThreadPoolExecutor, wait
 from typing import Any
 
 import httpx2
@@ -54,18 +55,19 @@ class GeminiPrescriptionReader:
         model: str,
         client: httpx2.Client | None = None,
         *,
-        per_model_seconds: float = 25,
-        budget_seconds: float = 70,
-        clock=time.monotonic,
+        deadline_seconds: float = 8,
+        parallel: int = 3,
     ):
-        """`model`: one model name, or several separated by commas, tried in order when one is
-        overloaded (503), retired (404), out of free quota (429), or slower than
-        `per_model_seconds`. No new model is tried after `budget_seconds`, so the app (which waits
-        90 s) always gets an answer, if need be the own model's reading."""
+        """`model`: one model name, or several separated by commas. Up to `parallel` of them are
+        asked at once and the first good answer wins (free models are often busy or slow); a
+        failed one makes room for the next. With no answer within `deadline_seconds` the read
+        fails as unavailable, and the hybrid reader returns the own model's reading instead, so
+        a scan never waits long for Google."""
         self.models = [m.strip() for m in model.split(",") if m.strip()]
         self._headers = {"x-goog-api-key": api_key}
-        self._client = client or httpx2.Client(timeout=per_model_seconds)
-        self._budget, self._clock = budget_seconds, clock
+        self._deadline, self._parallel = deadline_seconds, max(1, parallel)
+        # Requests still running after the deadline end soon after it, in the background
+        self._client = client or httpx2.Client(timeout=deadline_seconds + 2)
 
     def available_models(self) -> list[str]:
         """Model names this key may use for generateContent (for the startup log). Never raises."""
@@ -123,22 +125,50 @@ class GeminiPrescriptionReader:
         return r
 
     def read(self, image: PreparedImage) -> PrescriptionExtraction:
-        start = self._clock()
-        r: httpx2.Response | None = None
-        error: ReaderError | None = None
-        for i, model in enumerate(self.models):
-            t0 = self._clock()
-            try:
-                r, error = self._generate(model, image), None
-            except ReaderError as e:  # timeout or no connection
-                r, error = None, e
-            outcome = error.code if error else r.status_code
-            logger.warning("Gemini %s: %s in %.1f s", model, outcome, self._clock() - t0)
-            last = i == len(self.models) - 1 or self._clock() - start > self._budget
-            if (r is not None and r.status_code not in (404, 429, 503)) or last:
-                break
-        if error:
-            raise error
+        deadline = time.monotonic() + self._deadline
+        waiting = list(self.models)
+        running: dict[Future, str] = {}
+        last_error: ReaderError | None = None
+        pool = ThreadPoolExecutor(max_workers=max(1, len(self.models)))
+
+        def launch() -> None:
+            while waiting and len(running) < self._parallel:
+                model = waiting.pop(0)
+                running[pool.submit(self._attempt, model, image)] = model
+
+        try:
+            launch()
+            while running:
+                remaining = deadline - time.monotonic()
+                if remaining <= 0:
+                    break
+                done, _ = wait(running, timeout=remaining, return_when=FIRST_COMPLETED)
+                for future in done:
+                    running.pop(future)
+                    try:
+                        return future.result()
+                    except ReaderError as e:
+                        last_error = e
+                launch()
+        finally:
+            pool.shutdown(wait=False, cancel_futures=True)
+        if running:
+            logger.warning("Gemini: no answer within %.0f s", self._deadline)
+            raise ReaderError("ai_unavailable", "The AI did not answer in time", retryable=True)
+        raise last_error or ReaderError("ai_failed", "No Gemini model configured")
+
+    def _attempt(self, model: str, image: PreparedImage) -> PrescriptionExtraction:
+        t0 = time.monotonic()
+        outcome = "ok"
+        try:
+            return self._parse(self._generate(model, image))
+        except ReaderError as e:
+            outcome = e.code
+            raise
+        finally:
+            logger.warning("Gemini %s: %s in %.1f s", model, outcome, time.monotonic() - t0)
+
+    def _parse(self, r: httpx2.Response) -> PrescriptionExtraction:
         if r.status_code == 429:
             raise ReaderError(
                 "ai_rate_limited", "Too many requests to the AI service", retryable=True

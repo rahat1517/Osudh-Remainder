@@ -28,6 +28,8 @@ class Settings(BaseSettings):
     gemini_api_key: str | None = None
     # One name, or several separated by commas, tried in order when one is overloaded or retired
     gemini_model: str = "gemini-3.8-flash"
+    # Longest wait for Gemini; then the own model's reading is shown instead
+    gemini_deadline_seconds: float = 8
 
     # Direct PostgreSQL connection for server jobs (Phase 6), e.g. the Supabase pooler URL.
     # Uses a privileged role: never expose it to clients.

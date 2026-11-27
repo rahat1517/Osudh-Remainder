@@ -161,7 +161,11 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         logger.warning("ANTHROPIC_API_KEY is not set: the assistant is disabled")
     cloud_needs_consent = False
     if cloud is None and settings.gemini_api_key:
-        cloud = GeminiPrescriptionReader(settings.gemini_api_key, settings.gemini_model)
+        cloud = GeminiPrescriptionReader(
+            settings.gemini_api_key,
+            settings.gemini_model,
+            deadline_seconds=settings.gemini_deadline_seconds,
+        )
         cloud_needs_consent = True
         logger.warning("Second reader: Gemini %s, for users who agreed", cloud.models)
         # Which models this key may use: names change as Google retires models (see GEMINI_MODEL)

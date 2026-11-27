@@ -241,7 +241,7 @@ def test_next_model_is_tried_when_one_is_overloaded_or_retired():
     reader = GeminiPrescriptionReader("k", "busy, old ,good", client)
     assert reader.models == ["busy", "old", "good"]
     assert reader.read(prepare_image(image_bytes())) == expected
-    assert tried == ["busy", "old", "good"]
+    assert sorted(tried) == ["busy", "good", "old"]  # asked at once, the good one wins
 
 
 def test_the_last_models_error_is_reported():
@@ -279,18 +279,36 @@ def test_a_model_that_times_out_is_skipped():
     assert reader.read(prepare_image(image_bytes())) == expected
 
 
-def test_no_new_model_is_tried_after_the_time_budget():
-    # Each call "takes" 40 s on a fake clock: after two, the 70 s budget is spent
-    now = [0.0]
-    tried = []
+def test_no_answer_within_the_deadline_is_unavailable():
+    # Google busy: the scan must not wait; the hybrid reader then shows the own reading
+    import time as _time
 
     def handler(request):
-        tried.append(request.url.path)
-        now[0] += 40
+        _time.sleep(1.0)
         return httpx2.Response(503, text="high demand")
 
     client = httpx2.Client(transport=httpx2.MockTransport(handler))
-    reader = GeminiPrescriptionReader("k", "a,b,c,d", client, clock=lambda: now[0])
-    with pytest.raises(ReaderError):
+    reader = GeminiPrescriptionReader("k", "a,b", client, deadline_seconds=0.3)
+    t0 = _time.monotonic()
+    with pytest.raises(ReaderError) as e:
         reader.read(prepare_image(image_bytes()))
-    assert len(tried) == 2
+    assert e.value.code == "ai_unavailable" and e.value.retryable
+    assert _time.monotonic() - t0 < 0.9
+
+
+def test_the_fastest_model_wins():
+    import time as _time
+
+    expected = extraction(medicine(name="Fast"))
+
+    def handler(request):
+        if "slow" in request.url.path:
+            _time.sleep(0.8)
+            return answer(extraction(medicine(name="Slow")))
+        return answer(expected)
+
+    client = httpx2.Client(transport=httpx2.MockTransport(handler))
+    reader = GeminiPrescriptionReader("k", "slow,fast", client, deadline_seconds=5)
+    t0 = _time.monotonic()
+    assert reader.read(prepare_image(image_bytes())) == expected
+    assert _time.monotonic() - t0 < 0.6
