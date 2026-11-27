@@ -84,8 +84,12 @@ def build_reader(settings: Settings, cloud):
     return HybridReader(local, cloud) if cloud else local
 
 
-def build_training_service(settings: Settings):
-    from app.training.deid import NoLineDetector
+def build_training_service(settings: Settings, ocr_engine=None):
+    """None unless DATABASE_URL, SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY and TRAINING_PEPPER are set.
+
+    `ocr_engine` (the prescription reader's, to share its memory) finds the lines to redact.
+    """
+    from app.training.deid import OcrLineDetector
     from app.training.repository import PostgresTrainingRepository
     from app.training.service import TrainingService
     from app.training.storage import SupabaseStorageStore
@@ -101,7 +105,9 @@ def build_training_service(settings: Settings):
     return TrainingService(
         PostgresTrainingRepository(settings.database_url),
         SupabaseStorageStore(settings.supabase_url, settings.supabase_service_role_key),
-        NoLineDetector(),  # replace with TesseractLineDetector where OCR is installed
+        OcrLineDetector(
+            ocr_engine or RapidOcrEngine(settings.ocr_rec_model_path, settings.ocr_rec_keys_path)
+        ),
         settings.training_pepper,
     )
 
@@ -121,7 +127,6 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
 
     app.state.prescription_service = None
     app.state.assistant_service = None
-    app.state.training_service = build_training_service(settings)
     warming: list = []
     cloud = None
     if settings.anthropic_api_key:
@@ -133,6 +138,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     else:
         logger.warning("ANTHROPIC_API_KEY is not set: the assistant is disabled")
     reader = build_reader(settings, cloud)
+    ocr_engine = None
     if reader is None:
         logger.warning("No prescription reader for READER_MODE=%s", settings.reader_mode)
     else:
@@ -140,7 +146,10 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         for r in (reader, getattr(reader, "_local", None)):
             if isinstance(r, OcrPrescriptionReader):
                 warming.append(r.warm_up_in_background())
+                ocr_engine = r._engine
         app.state.prescription_service = PrescriptionService(reader, PrescriptionVerifier(matcher))
+    app.state.training_service = build_training_service(settings, ocr_engine)
+    logger.info("Training-example collection: %s", "on" if app.state.training_service else "off")
     yield
     # Let a model load that is still running finish, so shutdown never aborts mid-load
     for thread in warming:

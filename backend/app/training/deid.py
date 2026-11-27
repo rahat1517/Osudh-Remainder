@@ -97,6 +97,28 @@ class TesseractLineDetector:
         return result
 
 
+class OcrLineDetector:
+    """Text lines from the server's own OCR engine (the one that reads prescriptions).
+
+    Boxes on one row are merged ("Patient:" and "Karim Uddin" are often separate boxes), so a
+    personal row is blacked out whole, not just its label.
+    """
+
+    def __init__(self, engine):
+        self._engine = engine
+
+    def detect(self, image: bytes) -> list[TextLine]:
+        from app.prescriptions.ocr_reader import reading_order
+
+        result = []
+        for line in reading_order(self._engine.lines(image)):
+            xs = [x for x, _ in line.box]
+            ys = [y for _, y in line.box]
+            box = (int(min(xs)), int(min(ys)), int(max(xs) + 0.5), int(max(ys) + 0.5))
+            result.append(TextLine(line.text, box))
+        return result
+
+
 class NoLineDetector:
     """No OCR available: nothing is redacted automatically; human review must catch everything."""
 

@@ -69,3 +69,42 @@ def test_repository_respects_consent(db):
         ).fetchone()[0]
         == "pending"
     )
+
+
+def test_backend_role_can_only_check_consent_and_add_examples(db):
+    # The server's own login (oshudh_backend), not the all-powerful owner
+    from app.training.repository import PostgresTrainingRepository
+
+    user = new_user(db)
+    with as_user(db, user):
+        db.execute("select set_training_consent(true, 1)")
+    _example(db, user)
+    db.execute("set local role oshudh_backend")
+    repo = PostgresTrainingRepository(conn=db)
+    assert repo.consent_version(str(user)) == 1
+    with db.transaction():
+        repo_example = db.execute(
+            "insert into training_examples "
+            "(user_id, consent_version, image_path, label, group_key, redacted_lines) "
+            "values (%s, 1, 'training/b.jpg', '{}', 'g', 0) returning id",
+            (user,),
+        ).fetchone()[0]
+    assert repo_example
+    for sql in (
+        "select label from training_examples",  # labels and images are for reviewers only
+        "update training_examples set review_status = 'approved'",
+        "delete from training_examples",
+        "update training_consents set revoked_at = null",
+        "select count(*) from auth.users",
+    ):
+        with fails_with(db, psycopg.errors.InsufficientPrivilege):
+            db.execute(sql)
+    with fails_with(db, psycopg.errors.InsufficientPrivilege):
+        # Examples always start pending review
+        db.execute(
+            "insert into training_examples "
+            "(user_id, consent_version, image_path, label, group_key, review_status) "
+            "values (%s, 1, 'x', '{}', 'g', 'approved')",
+            (user,),
+        )
+    db.execute("reset role")
