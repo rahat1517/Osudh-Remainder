@@ -48,9 +48,24 @@ SCHEMA = inline_refs(PrescriptionExtraction.model_json_schema())
 
 class GeminiPrescriptionReader:
     def __init__(self, api_key: str, model: str, client: httpx2.Client | None = None):
-        self._url = f"{API}/{model}:generateContent"
+        """`model`: one model name, or several separated by commas, tried in order when one is
+        overloaded (503), retired (404) or out of free quota (429)."""
+        self.models = [m.strip() for m in model.split(",") if m.strip()]
         self._headers = {"x-goog-api-key": api_key}
         self._client = client or httpx2.Client(timeout=90)
+
+    def available_models(self) -> list[str]:
+        """Model names this key may use for generateContent (for the startup log). Never raises."""
+        try:
+            r = self._client.get(API, headers=self._headers, params={"pageSize": 200})
+            r.raise_for_status()
+            return sorted(
+                m["name"].removeprefix("models/")
+                for m in r.json().get("models", [])
+                if "generateContent" in m.get("supportedGenerationMethods", [])
+            )
+        except Exception:  # noqa: BLE001 - diagnostics only
+            return []
 
     def _body(self, image: PreparedImage, with_schema: bool) -> dict[str, Any]:
         config: dict[str, Any] = {"temperature": 0, "responseMimeType": "application/json"}
@@ -78,18 +93,30 @@ class GeminiPrescriptionReader:
             "generationConfig": config,
         }
 
-    def _post(self, body: dict[str, Any]) -> httpx2.Response:
+    def _post(self, model: str, body: dict[str, Any]) -> httpx2.Response:
         try:
-            return self._client.post(self._url, json=body, headers=self._headers)
+            return self._client.post(
+                f"{API}/{model}:generateContent", json=body, headers=self._headers
+            )
         except httpx2.HTTPError as e:
             raise ReaderError(
                 "ai_unavailable", "Cannot reach the AI service", retryable=True
             ) from e
 
-    def read(self, image: PreparedImage) -> PrescriptionExtraction:
-        r = self._post(self._body(image, with_schema=True))
+    def _generate(self, model: str, image: PreparedImage) -> httpx2.Response:
+        r = self._post(model, self._body(image, with_schema=True))
         if r.status_code == 400 and "responseJsonSchema" in r.text:
-            r = self._post(self._body(image, with_schema=False))
+            r = self._post(model, self._body(image, with_schema=False))
+        return r
+
+    def read(self, image: PreparedImage) -> PrescriptionExtraction:
+        for i, model in enumerate(self.models):
+            r = self._generate(model, image)
+            if r.status_code not in (404, 429, 503) or i == len(self.models) - 1:
+                break
+            logger.warning(
+                "Gemini %s answered %s, trying %s", model, r.status_code, self.models[i + 1]
+            )
         if r.status_code == 429:
             raise ReaderError(
                 "ai_rate_limited", "Too many requests to the AI service", retryable=True

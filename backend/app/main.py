@@ -1,4 +1,5 @@
 import logging
+import threading
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
@@ -162,7 +163,14 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     if cloud is None and settings.gemini_api_key:
         cloud = GeminiPrescriptionReader(settings.gemini_api_key, settings.gemini_model)
         cloud_needs_consent = True
-        logger.info("Second reader: Gemini (%s), for users who agreed", settings.gemini_model)
+        logger.warning("Second reader: Gemini %s, for users who agreed", cloud.models)
+        # Which models this key may use: names change as Google retires models (see GEMINI_MODEL)
+        threading.Thread(
+            target=lambda r=cloud: logger.warning(
+                "Gemini models for this key: %s", ", ".join(r.available_models()) or "unknown"
+            ),
+            daemon=True,
+        ).start()
     reader = build_reader(settings, cloud, cloud_needs_consent=cloud_needs_consent)
     ocr_engine = None
     if reader is None:
