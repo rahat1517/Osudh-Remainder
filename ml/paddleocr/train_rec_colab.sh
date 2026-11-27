@@ -98,10 +98,12 @@ for key, head, axis in [
         old, new = old + ["<extra>"], new + ["<extra>"]
     shape = list(t.shape)
     shape[axis] = len(new)
+    # New characters start silent (tiny weights, the lowest bias): random ones fired everywhere
+    # and scattered Bangla letters through English words until training suppressed them
     if t.ndim > 1:
-        out = rng.normal(0, float(t.std()), shape).astype(t.dtype)
+        out = rng.normal(0, 0.01 * float(t.std()), shape).astype(t.dtype)
     else:
-        out = np.full(shape, t.mean(), t.dtype)
+        out = np.full(shape, t.min(), t.dtype)
     index = {c: i for i, c in enumerate(old)}
     for j, c in enumerate(new):
         if c in index:
