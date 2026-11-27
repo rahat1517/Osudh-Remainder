@@ -31,6 +31,10 @@ class FakeBackendApi implements BackendApi {
   Map<int, DrugAlternatives> alternatives;
   int extractCalls = 0;
   int alternativesCalls = 0;
+  int wakeUps = 0;
+
+  @override
+  Future<void> wakeUp() async => wakeUps++;
 
   @override
   Future<DrugAlternatives> drugAlternatives(int drugId) async {

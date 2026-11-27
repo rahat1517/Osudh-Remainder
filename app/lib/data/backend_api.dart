@@ -38,6 +38,11 @@ abstract interface class BackendApi {
     Uint8List image,
     Map<String, dynamic> label,
   );
+
+  /// Starts waking the server, without waiting for it. On the free plan it sleeps when idle and
+  /// takes a minute or more to start; called when the scan screen opens, it is awake by the time
+  /// the photo is taken. Never throws.
+  Future<void> wakeUp();
 }
 
 class HttpBackendApi implements BackendApi {
@@ -135,6 +140,17 @@ class HttpBackendApi implements BackendApi {
       () async => http.Response.fromStream(await _client.send(request)),
     );
     _decode(response);
+  }
+
+  @override
+  Future<void> wakeUp() async {
+    try {
+      await _client
+          .get(Uri.parse('$baseUrl/health'))
+          .timeout(const Duration(minutes: 3));
+    } on Object {
+      // Only a head start: the scan itself reports any real problem
+    }
   }
 
   Future<http.Response> _send(Future<http.Response> Function() call) async {
