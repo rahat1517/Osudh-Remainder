@@ -63,11 +63,17 @@ _FORMS = {
     "ক্যাপ": "Cap",
     "সিরাপ": "Syp",
 }
+_HANDWRITTEN_TAB = re.compile(r"t[o0]u?b[oa]?")
 # Single letters ("T.", "C.") only count with a dot, so ordinary words are not taken as forms
+# A list item may start with a number ("1.", "2)", "(3)") or, in handwriting, a bullet dot or dash
+_ITEM_PREFIX = r"^\s*(?:\d{1,2}\s*[.)]|\(\d{1,2}\)|[.•·*\-–])?\s*"
 _FORM_RE = re.compile(
-    r"^\s*(?:\d{1,2}\s*[.)]\s*)?"
-    r"(?P<form>(?:eye\s+drop|tablet|tab|tb|capsule|cap|syrup|syp|suspension|susp|injection|inj"
-    r"|drops?|cream|ointment|oint|gel|inhaler|inh|sachet|supp|ট্যাব|ক্যাপ|সিরাপ)\.?|[tc]\.)"
+    _ITEM_PREFIX
+    # "tob", "toub", "tobo": how OCR reads a handwritten "Tab"
+    + r"(?P<form>(?:eye\s+drop|tablet|tab|tb|t[o0]u?b[oa]?|capsule|cap|syrup|syp|suspension|susp"
+    r"|injection|inj|drops?|cream|ointment|oint|gel|inhaler|inh|sachet|supp|ট্যাব|ক্যাপ|সিরাপ)\.?|[tc]\.)"
+    # The form word ends here: "Tobacco" and "Capsicum" are not forms, "TabNapa" (glued) is
+    r"(?:(?<=\.)|(?-i:(?![a-z])))"
     r"\s*(?P<rest>\S.*)$",
     re.IGNORECASE,
 )
@@ -225,7 +231,8 @@ def _split_name(rest: str) -> tuple[str | None, str | None]:
     # A bare number after the name is a strength without its unit: "Ciprocin 500 1BD"
     bare_m = _BARE_STRENGTH_RE.search(rest)
     cut = min([m.start() for m in (strength_m, dose_m, bare_m) if m] + [len(rest)])
-    name = re.sub(r"[\s,.;:-]+$", "", rest[:cut]).strip() or None
+    # "Napa (500mg)": the bracket around the strength is not part of the name
+    name = re.sub(r"[\s,.;:(\[-]+$", "", rest[:cut]).strip() or None
     if strength_m:
         strength = re.sub(r"\s+", " ", strength_m.group(0)).strip()
     elif bare_m and (not dose_m or bare_m.start() < dose_m.start()):
@@ -240,6 +247,8 @@ def _medicine_start(text: str) -> tuple[str | None, str] | None:
     if m := _FORM_RE.match(text):
         form_key = m.group("form").rstrip(".").lower()
         form_key = re.sub(r"\s+", " ", form_key)
+        if _HANDWRITTEN_TAB.fullmatch(form_key):
+            form_key = "tab"
         return _FORMS.get(form_key, form_key.title()), m.group("rest")
     if m := _NUMBERED_RE.match(text):
         rest = m.group("rest")
