@@ -815,4 +815,19 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get pricesApproximate =>
       'Prices are approximate and may differ at the shop.';
+
+  @override
+  String get widgetNext => 'Next medicine';
+
+  @override
+  String get widgetDue => 'Time to take now';
+
+  @override
+  String get widgetTomorrow => 'Tomorrow';
+
+  @override
+  String get widgetNoMedicines => 'No medicines added';
+
+  @override
+  String get widgetOpenApp => 'Open the app to see the next medicine';
 }

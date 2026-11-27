@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dose_widget_label">পরের ওষুধ</string>
+    <string name="dose_widget_description">পরের ওষুধের সময়; সময় হলে \"খেয়েছি\" বোতাম</string>
+    <string name="dose_widget_loading">ওষুধ রিমাইন্ডার</string>
+    <color name="widget_background">#FFF3FAF6</color>
+    <color name="widget_text">#FF17211D</color>
+    <color name="widget_muted">#FF4A5A53</color>
+    <color name="widget_accent">#FF0F7B5F</color>
+    <color name="widget_due_background">#FFFFF4E0</color>
+    <color name="widget_on_accent">#FFFFFFFF</color>
+</resources>

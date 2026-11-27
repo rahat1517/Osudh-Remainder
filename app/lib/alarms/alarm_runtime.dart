@@ -8,7 +8,10 @@ import 'package:timezone/data/latest_all.dart' as tzdata;
 import 'package:timezone/timezone.dart' as tz;
 
 import '../l10n/generated/app_localizations.dart';
+import '../widget/dose_widget.dart';
+import 'alarm_payload.dart';
 import 'alarm_scheduler.dart';
+import 'dose_log.dart';
 import 'alarm_service.dart';
 import 'local_store.dart';
 
@@ -28,7 +31,20 @@ Future<AlarmService> createAlarmService(
   return AlarmService(
     store: store,
     scheduler: NotificationAlarmScheduler(notificationsPlugin, location, l10n),
+    widget: DoseWidget(HomeWidgetPublisher(), l10n),
   );
+}
+
+/// Runs in a background isolate when "Taken" is pressed on the home-screen widget: records the
+/// dose exactly as the alarm's own "Taken" button does (and stops the alarm if it is ringing).
+@pragma('vm:entry-point')
+Future<void> onWidgetAction(Uri? uri) async {
+  final raw = uri?.queryParameters['payload'];
+  if (uri?.host != 'taken' || raw == null) return;
+  WidgetsFlutterBinding.ensureInitialized();
+  await notificationsPlugin.initialize(settings: _initSettings);
+  final service = await createAlarmService(await LocalStore.open());
+  await service.record(AlarmPayload.decode(raw), DoseStatus.taken);
 }
 
 /// Runs in a background isolate when an alarm button is pressed with the app closed.

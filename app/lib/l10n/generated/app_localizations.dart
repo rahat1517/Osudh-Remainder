@@ -1495,6 +1495,36 @@ abstract class AppLocalizations {
   /// In bn, this message translates to:
   /// **'দামগুলো আনুমানিক; দোকানে কম-বেশি হতে পারে।'**
   String get pricesApproximate;
+
+  /// No description provided for @widgetNext.
+  ///
+  /// In bn, this message translates to:
+  /// **'পরের ওষুধ'**
+  String get widgetNext;
+
+  /// No description provided for @widgetDue.
+  ///
+  /// In bn, this message translates to:
+  /// **'এখন খাওয়ার সময়'**
+  String get widgetDue;
+
+  /// No description provided for @widgetTomorrow.
+  ///
+  /// In bn, this message translates to:
+  /// **'আগামীকাল'**
+  String get widgetTomorrow;
+
+  /// No description provided for @widgetNoMedicines.
+  ///
+  /// In bn, this message translates to:
+  /// **'কোনো ওষুধ যোগ করা হয়নি'**
+  String get widgetNoMedicines;
+
+  /// No description provided for @widgetOpenApp.
+  ///
+  /// In bn, this message translates to:
+  /// **'পরের ওষুধ দেখতে অ্যাপ খুলুন'**
+  String get widgetOpenApp;
 }
 
 class _AppLocalizationsDelegate

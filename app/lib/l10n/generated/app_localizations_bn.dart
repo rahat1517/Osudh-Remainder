@@ -810,4 +810,19 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get pricesApproximate => 'দামগুলো আনুমানিক; দোকানে কম-বেশি হতে পারে।';
+
+  @override
+  String get widgetNext => 'পরের ওষুধ';
+
+  @override
+  String get widgetDue => 'এখন খাওয়ার সময়';
+
+  @override
+  String get widgetTomorrow => 'আগামীকাল';
+
+  @override
+  String get widgetNoMedicines => 'কোনো ওষুধ যোগ করা হয়নি';
+
+  @override
+  String get widgetOpenApp => 'পরের ওষুধ দেখতে অ্যাপ খুলুন';
 }
