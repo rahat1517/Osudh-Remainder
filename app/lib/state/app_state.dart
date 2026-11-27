@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 
 import '../alarms/alarm_service.dart';
@@ -37,7 +39,27 @@ class AppState extends ChangeNotifier {
     this.logSync,
     DateTime Function()? clock,
     this.utcOffset = const Duration(hours: 6),
-  }) : _clock = clock ?? DateTime.now;
+  }) : _clock = clock ?? DateTime.now {
+    // React to the session being restored at startup, refreshed or expiring, not only to sign-in
+    // from this screen: otherwise a restored session can still show the sign-in screen.
+    _wasSignedIn = signedIn;
+    _authChanges = auth.changes.listen((_) {
+      final now = signedIn;
+      if (now == _wasSignedIn) return;
+      _wasSignedIn = now;
+      notifyListeners();
+      if (now) unawaited(refresh().catchError((Object _) {}));
+    });
+  }
+
+  late final StreamSubscription<void> _authChanges;
+  late bool _wasSignedIn;
+
+  @override
+  void dispose() {
+    _authChanges.cancel();
+    super.dispose();
+  }
 
   /// Opt-in for sharing confirmed scans (Phase 11).
   final TrainingConsentRepository? trainingConsent;
