@@ -123,4 +123,8 @@ class _FlakyRepository implements MedicineRepository {
   @override
   Future<void> updateStock(String medicineId, double pillsOnHand) =>
       inner.updateStock(medicineId, pillsOnHand);
+
+  @override
+  Future<void> updateTiming(String medicineId, Timing timing) =>
+      inner.updateTiming(medicineId, timing);
 }

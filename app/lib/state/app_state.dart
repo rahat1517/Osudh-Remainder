@@ -306,6 +306,12 @@ class AppState extends ChangeNotifier {
     await refresh();
   }
 
+  /// Before/after meals etc.; the alarms move to the new times (refresh re-syncs them).
+  Future<void> setTiming(String medicineId, Timing timing) async {
+    await medicines.updateTiming(medicineId, timing);
+    await refresh();
+  }
+
   /// Replaces all meal times at once (Ramadan mode on/off).
   Future<void> applySettings(ScheduleSettings updated) async {
     validateSettings(updated);

@@ -406,6 +406,8 @@
       }
     }
   },
+  "timingEditTitle": "When to take it: before or after food",
+  "timingChanged": "{name}: time changed; the alarms moved to the new time",
   "stopShort": "Stop",
   "reportNoDoses": "No doses were due in the last 7 days yet.",
   "updateTitle": "A new version is available",

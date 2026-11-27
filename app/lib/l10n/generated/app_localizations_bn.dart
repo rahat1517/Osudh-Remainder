@@ -727,6 +727,14 @@ class AppLocalizationsBn extends AppLocalizations {
   }
 
   @override
+  String get timingEditTitle => 'খাওয়ার সময়: খাবারের আগে না পরে';
+
+  @override
+  String timingChanged(String name) {
+    return '$name: খাওয়ার সময় বদলানো হয়েছে, এলার্মও নতুন সময়ে সেট হয়েছে';
+  }
+
+  @override
   String get stopShort => 'বন্ধ';
 
   @override

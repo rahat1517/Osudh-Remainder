@@ -17,8 +17,11 @@ typedef ImagePickerFn = Future<Uint8List?> Function({required bool camera});
 Future<Uint8List?> pickWithImagePicker({required bool camera}) async {
   final file = await ImagePicker().pickImage(
     source: camera ? ImageSource.camera : ImageSource.gallery,
-    maxWidth: 2400,
-    imageQuality: 90,
+    // The server reads at most 1568 px on the long side: sending more only slows the upload
+    // (about 3x smaller than 2400 px on mobile data)
+    maxWidth: 1600,
+    maxHeight: 1600,
+    imageQuality: 85,
   );
   return file?.readAsBytes();
 }
