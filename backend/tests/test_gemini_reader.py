@@ -264,3 +264,33 @@ def test_available_models_lists_generate_content_models_and_never_raises():
     assert GeminiPrescriptionReader("k", "m", ok).available_models() == ["gemini-x-flash"]
     down = httpx2.Client(transport=httpx2.MockTransport(lambda r: httpx2.Response(500)))
     assert GeminiPrescriptionReader("k", "m", down).available_models() == []
+
+
+def test_a_model_that_times_out_is_skipped():
+    expected = extraction(medicine())
+
+    def handler(request):
+        if "slow" in request.url.path:
+            raise httpx2.ReadTimeout("no answer in 25 s")
+        return answer(expected)
+
+    client = httpx2.Client(transport=httpx2.MockTransport(handler))
+    reader = GeminiPrescriptionReader("k", "slow,fast", client)
+    assert reader.read(prepare_image(image_bytes())) == expected
+
+
+def test_no_new_model_is_tried_after_the_time_budget():
+    # Each call "takes" 40 s on a fake clock: after two, the 70 s budget is spent
+    now = [0.0]
+    tried = []
+
+    def handler(request):
+        tried.append(request.url.path)
+        now[0] += 40
+        return httpx2.Response(503, text="high demand")
+
+    client = httpx2.Client(transport=httpx2.MockTransport(handler))
+    reader = GeminiPrescriptionReader("k", "a,b,c,d", client, clock=lambda: now[0])
+    with pytest.raises(ReaderError):
+        reader.read(prepare_image(image_bytes()))
+    assert len(tried) == 2
