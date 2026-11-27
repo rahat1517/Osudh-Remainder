@@ -222,3 +222,45 @@ def test_the_app_sends_consent_with_each_scan():
             == 200
         )
     assert calls == [False, True]  # no consent unless the app says so
+
+
+def test_next_model_is_tried_when_one_is_overloaded_or_retired():
+    expected = extraction(medicine())
+    tried = []
+
+    def handler(request):
+        model = request.url.path.split("/")[-1].split(":")[0]
+        tried.append(model)
+        if model == "busy":
+            return httpx2.Response(503, json={"error": {"status": "UNAVAILABLE"}})
+        if model == "old":
+            return httpx2.Response(404, json={"error": {"status": "NOT_FOUND"}})
+        return answer(expected)
+
+    client = httpx2.Client(transport=httpx2.MockTransport(handler))
+    reader = GeminiPrescriptionReader("k", "busy, old ,good", client)
+    assert reader.models == ["busy", "old", "good"]
+    assert reader.read(prepare_image(image_bytes())) == expected
+    assert tried == ["busy", "old", "good"]
+
+
+def test_the_last_models_error_is_reported():
+    client = httpx2.Client(
+        transport=httpx2.MockTransport(lambda r: httpx2.Response(503, text="high demand"))
+    )
+    with pytest.raises(ReaderError) as e:
+        GeminiPrescriptionReader("k", "a,b", client).read(prepare_image(image_bytes()))
+    assert e.value.code == "ai_failed" and e.value.retryable
+
+
+def test_available_models_lists_generate_content_models_and_never_raises():
+    models = {
+        "models": [
+            {"name": "models/gemini-x-flash", "supportedGenerationMethods": ["generateContent"]},
+            {"name": "models/embedding-y", "supportedGenerationMethods": ["embedContent"]},
+        ]
+    }
+    ok = httpx2.Client(transport=httpx2.MockTransport(lambda r: httpx2.Response(200, json=models)))
+    assert GeminiPrescriptionReader("k", "m", ok).available_models() == ["gemini-x-flash"]
+    down = httpx2.Client(transport=httpx2.MockTransport(lambda r: httpx2.Response(500)))
+    assert GeminiPrescriptionReader("k", "m", down).available_models() == []
