@@ -1567,6 +1567,24 @@ abstract class AppLocalizations {
   /// In bn, this message translates to:
   /// **'পরের ওষুধ দেখতে অ্যাপ খুলুন'**
   String get widgetOpenApp;
+
+  /// No description provided for @pricePack.
+  ///
+  /// In bn, this message translates to:
+  /// **'{pack}: {price} টাকা'**
+  String pricePack(String pack, String price);
+
+  /// No description provided for @pricePackApprox.
+  ///
+  /// In bn, this message translates to:
+  /// **'{pack}: আনুমানিক {price} টাকা'**
+  String pricePackApprox(String pack, String price);
+
+  /// No description provided for @cheaperRowPack.
+  ///
+  /// In bn, this message translates to:
+  /// **'{pack}: {price} টাকা · {percent}% কম'**
+  String cheaperRowPack(String pack, String price, String percent);
 }
 
 class _AppLocalizationsDelegate

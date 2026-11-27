@@ -497,5 +497,41 @@
   "widgetDue": "Time to take now",
   "widgetTomorrow": "Tomorrow",
   "widgetNoMedicines": "No medicines added",
-  "widgetOpenApp": "Open the app to see the next medicine"
+  "widgetOpenApp": "Open the app to see the next medicine",
+  "pricePack": "{pack}: {price} taka",
+  "@pricePack": {
+    "placeholders": {
+      "pack": {
+        "type": "String"
+      },
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "pricePackApprox": "{pack}: about {price} taka",
+  "@pricePackApprox": {
+    "placeholders": {
+      "pack": {
+        "type": "String"
+      },
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "cheaperRowPack": "{pack}: {price} taka · {percent}% cheaper",
+  "@cheaperRowPack": {
+    "placeholders": {
+      "pack": {
+        "type": "String"
+      },
+      "price": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "String"
+      }
+    }
+  }
 }

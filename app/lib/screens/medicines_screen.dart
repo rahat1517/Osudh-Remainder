@@ -223,11 +223,12 @@ class _PriceLine extends StatelessWidget {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              result.pricesVerified
-                  ? l.priceEach(taka)
-                  : l.priceEachApprox(taka),
-            ),
+            Text(switch ((result.drug.pack, result.pricesVerified)) {
+              (final pack?, true) => l.pricePack(pack, taka),
+              (final pack?, false) => l.pricePackApprox(pack, taka),
+              (null, true) => l.priceEach(taka),
+              (null, false) => l.priceEachApprox(taka),
+            }),
             if (result.alternatives.isNotEmpty)
               TextButton(
                 key: Key('cheaper-${medicine.id}'),
@@ -297,10 +298,17 @@ class CheaperSheet extends StatelessWidget {
                 title: Text(a.drug.label),
                 subtitle: Text(
                   [
-                    l.cheaperRow(
-                      localDigits(context, formatTaka(a.drug.unitPriceBdt!)),
-                      localDigits(context, a.savingPercent),
-                    ),
+                    switch (a.drug.pack) {
+                      final pack? => l.cheaperRowPack(
+                        pack,
+                        localDigits(context, formatTaka(a.drug.unitPriceBdt!)),
+                        localDigits(context, a.savingPercent),
+                      ),
+                      null => l.cheaperRow(
+                        localDigits(context, formatTaka(a.drug.unitPriceBdt!)),
+                        localDigits(context, a.savingPercent),
+                      ),
+                    },
                     if (saving(
                           current: current,
                           cheaper: a.drug,

@@ -14,6 +14,8 @@ class Drug(BaseModel):
     verified: bool = False
     # Maximum retail price of one unit (tablet, capsule, sachet; a bottle for liquids), in taka
     unit_price_bdt: float | None = None
+    # What the price is for when it is not one piece, e.g. "60 ml bottle"; None for a tablet etc.
+    pack: str | None = None
 
 
 class Confidence(StrEnum):

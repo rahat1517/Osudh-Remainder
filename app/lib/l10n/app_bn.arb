@@ -501,5 +501,41 @@
   "widgetDue": "এখন খাওয়ার সময়",
   "widgetTomorrow": "আগামীকাল",
   "widgetNoMedicines": "কোনো ওষুধ যোগ করা হয়নি",
-  "widgetOpenApp": "পরের ওষুধ দেখতে অ্যাপ খুলুন"
+  "widgetOpenApp": "পরের ওষুধ দেখতে অ্যাপ খুলুন",
+  "pricePack": "{pack}: {price} টাকা",
+  "@pricePack": {
+    "placeholders": {
+      "pack": {
+        "type": "String"
+      },
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "pricePackApprox": "{pack}: আনুমানিক {price} টাকা",
+  "@pricePackApprox": {
+    "placeholders": {
+      "pack": {
+        "type": "String"
+      },
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "cheaperRowPack": "{pack}: {price} টাকা · {percent}% কম",
+  "@cheaperRowPack": {
+    "placeholders": {
+      "pack": {
+        "type": "String"
+      },
+      "price": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "String"
+      }
+    }
+  }
 }

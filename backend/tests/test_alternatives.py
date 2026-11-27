@@ -57,6 +57,19 @@ def test_ingredient_order_does_not_matter():
     assert [x.drug.brand for x in cheaper_alternatives(a, [a, b]).alternatives] == ["X"]
 
 
+def test_pack_prices_are_only_compared_pack_for_pack():
+    def syrup(i, brand, pack, price):
+        d = drug(i, brand, "120 mg/5 ml", "Paracetamol", "Syrup", price)
+        return d.model_copy(update={"pack": pack})
+
+    napa = syrup(50, "Napa", "60 ml bottle", 35)
+    big = syrup(51, "Big", "100 ml bottle", 30)  # cheaper, but a different pack
+    same = syrup(52, "Same", "60  ML bottle", 30)
+    assert [a.drug.brand for a in cheaper_alternatives(napa, [napa, big, same]).alternatives] == [
+        "Same"
+    ]
+
+
 def test_without_a_price_there_is_nothing_to_compare():
     assert cheaper_alternatives(NO_PRICE, CATALOG).alternatives == []
 
@@ -105,9 +118,13 @@ def test_api_lists_cheaper_brands_from_the_seed(client):
     seclo_20 = next(c["drug"] for c in seclo if c["drug"]["strength"] == "20 mg")
     body = client.get(f"/drugs/{seclo_20['id']}/alternatives").json()
     assert body["drug"]["brand"] == "Seclo"
-    assert body["alternatives"][0]["drug"]["brand"] == "Losectil"
-    assert body["alternatives"][0]["drug"]["unit_price_bdt"] < seclo_20["unit_price_bdt"]
-    assert body["prices_verified"] is False  # development seed
+    alternatives = [a["drug"] for a in body["alternatives"]]
+    assert alternatives, "the catalogue has cheaper omeprazole 20 mg capsules"
+    prices = [d["unit_price_bdt"] for d in alternatives]
+    assert prices == sorted(prices) and prices[-1] < seclo_20["unit_price_bdt"]
+    for d in alternatives:
+        assert (d["generic"], d["strength"], d["form"]) == ("Omeprazole", "20 mg", seclo_20["form"])
+    assert body["prices_verified"] is False  # not checked against the DGDA list
 
 
 def test_api_unknown_drug(client):

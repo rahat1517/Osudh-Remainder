@@ -13,7 +13,7 @@ from app.drugs.normalize import normalize_brand
 
 REQUIRED_COLUMNS = ("brand", "strength", "generic", "form", "manufacturer", "source", "verified")
 # Optional: lists without prices still load
-OPTIONAL_COLUMNS = ("unit_price_bdt",)
+OPTIONAL_COLUMNS = ("unit_price_bdt", "pack")
 
 
 class CatalogError(ValueError):
@@ -100,6 +100,7 @@ def parse_rows(
                 source=source,
                 verified=verified,
                 unit_price_bdt=price,
+                pack=_clean(row.get("pack")) or None,
             )
         )
     report.loaded = len(drugs)

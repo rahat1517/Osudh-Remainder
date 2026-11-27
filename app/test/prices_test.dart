@@ -115,6 +115,31 @@ void main() {
       );
     });
 
+    test('no daily saving for a priced pack (bottle, tube)', () {
+      const napaSyrup = Drug(
+        id: 4,
+        brand: 'Napa',
+        strength: '120 mg/5 ml',
+        generic: 'Paracetamol',
+        form: 'Tablet', // even when the form looks like a piece
+        unitPriceBdt: 35,
+        pack: '60 ml bottle',
+      );
+      const other = Drug(
+        id: 5,
+        brand: 'B',
+        strength: '120 mg/5 ml',
+        generic: 'Paracetamol',
+        form: 'Tablet',
+        unitPriceBdt: 30,
+        pack: '60 ml bottle',
+      );
+      expect(
+        saving(current: napaSyrup, cheaper: other, piecesPerDay: 3, days: 30),
+        isNull,
+      );
+    });
+
     test('formatTaka drops needless decimals', () {
       expect(formatTaka(6), '6');
       expect(formatTaka(1.2), '1.20');
@@ -150,6 +175,29 @@ void main() {
     await tester.tap(find.byKey(Key('cheaper-${state.active.single.id}')));
     await tester.pumpAndSettle();
     expect(find.textContaining('এই কোর্সে প্রায় ১৪ টাকা কম'), findsOneWidget);
+  });
+
+  testWidgets('a pack price names the pack', (tester) async {
+    const syrup = Drug(
+      id: 9,
+      brand: 'Seclo',
+      strength: '20 mg',
+      generic: 'Omeprazole',
+      form: 'Oral Suspension',
+      unitPriceBdt: 35,
+      pack: '60 ml bottle',
+    );
+    final (state, _) = await stateWithSeclo(
+      alternatives: {
+        seclo.id: const DrugAlternatives(
+          drug: syrup,
+          alternatives: [],
+          pricesVerified: false,
+        ),
+      },
+    );
+    await openMedicines(tester, state);
+    expect(find.text('60 ml bottle: আনুমানিক ৩৫ টাকা'), findsOneWidget);
   });
 
   testWidgets('verified prices are not called approximate', (tester) async {
