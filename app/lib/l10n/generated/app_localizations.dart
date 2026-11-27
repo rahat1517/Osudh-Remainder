@@ -1292,6 +1292,36 @@ abstract class AppLocalizations {
   /// **'চালু থাকলে, আপনার স্ক্যান করে নিশ্চিত করা প্রেসক্রিপশনের ছবি আমাদের পাঠক উন্নত করতে ব্যবহার হবে। নাম, বয়স, ফোন নম্বর ও ঠিকানা কালো করে ঢেকে দেওয়া হয়, আর ব্যবহারের আগে একজন মানুষ প্রতিটি ছবি দেখে নেন। যেকোনো সময় বন্ধ করতে পারবেন; তখন অব্যবহৃত ছবি মুছে ফেলা হবে।'**
   String get trainingConsentBody;
 
+  /// No description provided for @cloudReaderTitle.
+  ///
+  /// In bn, this message translates to:
+  /// **'কঠিন প্রেসক্রিপশন Google-এর AI দিয়ে পড়া'**
+  String get cloudReaderTitle;
+
+  /// No description provided for @cloudReaderBody.
+  ///
+  /// In bn, this message translates to:
+  /// **'হাতে লেখা বা অস্পষ্ট প্রেসক্রিপশন আমাদের নিজস্ব পাঠকের পক্ষে পড়া কঠিন। আপনি অনুমতি দিলে, যে ছবি আমাদের পাঠক ঠিকমতো পড়তে পারে না, সেটি Google-এর বিনামূল্যের AI (Gemini)-ও পড়বে। পাঠানোর আগে নাম, বয়স, ফোন নম্বর ও ঠিকানা কালো করে ঢেকে দেওয়া হয়। Google পাঠানো ছবি রেখে দিতে ও তাদের সেবা উন্নত করতে ব্যবহার করতে পারে। পরিষ্কার ছাপা প্রেসক্রিপশন শুধু আমাদের সার্ভারেই পড়া হয়। কোনো রিমাইন্ডার সেট হওয়ার আগে আপনি প্রতিটি ওষুধ মিলিয়ে দেখবেন। সেটিংসে যেকোনো সময় বদলাতে পারবেন।'**
+  String get cloudReaderBody;
+
+  /// No description provided for @cloudReaderAllow.
+  ///
+  /// In bn, this message translates to:
+  /// **'অনুমতি দিন'**
+  String get cloudReaderAllow;
+
+  /// No description provided for @cloudReaderDeny.
+  ///
+  /// In bn, this message translates to:
+  /// **'না, শুধু আমাদের পাঠক'**
+  String get cloudReaderDeny;
+
+  /// No description provided for @cloudReaderSetting.
+  ///
+  /// In bn, this message translates to:
+  /// **'আমাদের পাঠক যে ছবি ঠিকমতো পড়তে পারে না (প্রায়ই হাতের লেখা), সেটি Google-এর AI-ও পড়বে, ব্যক্তিগত তথ্য ঢেকে দিয়ে। Google পাঠানো ছবি রেখে দিতে পারে।'**
+  String get cloudReaderSetting;
+
   /// No description provided for @errTrainingDisabled.
   ///
   /// In bn, this message translates to:

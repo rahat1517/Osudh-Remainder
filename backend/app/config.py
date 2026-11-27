@@ -23,6 +23,10 @@ class Settings(BaseSettings):
     anthropic_api_key: str | None = None
     reader_model: str = "claude-opus-5-5"
     reader_effort: str = "high"
+    # Google Gemini (free key from aistudio.google.com): the second reader when there is no
+    # ANTHROPIC_API_KEY. Used only for users who agreed, as Google may use free-tier inputs.
+    gemini_api_key: str | None = None
+    gemini_model: str = "gemini-2.5-flash"
 
     # Direct PostgreSQL connection for server jobs (Phase 6), e.g. the Supabase pooler URL.
     # Uses a privileged role: never expose it to clients.

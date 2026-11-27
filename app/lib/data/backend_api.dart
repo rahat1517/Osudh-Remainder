@@ -18,9 +18,12 @@ class ApiException implements Exception {
 }
 
 abstract interface class BackendApi {
+  /// [cloudOk]: the user agreed that a photo the server's own reader is unsure of may be read by
+  /// Google's AI (with personal lines blacked out first).
   Future<PrescriptionScan> extractPrescription(
     Uint8List image, {
     String filename = 'rx.jpg',
+    bool cloudOk = false,
   });
 
   Future<List<Drug>> searchDrugs(String query, {int limit = 8});
@@ -64,6 +67,7 @@ class HttpBackendApi implements BackendApi {
   Future<PrescriptionScan> extractPrescription(
     Uint8List image, {
     String filename = 'rx.jpg',
+    bool cloudOk = false,
   }) async {
     final request =
         http.MultipartRequest(
@@ -71,6 +75,7 @@ class HttpBackendApi implements BackendApi {
             Uri.parse('$baseUrl/prescriptions/extract'),
           )
           ..headers.addAll(_headers)
+          ..fields['cloud_ok'] = cloudOk ? 'true' : 'false'
           ..files.add(
             http.MultipartFile.fromBytes('image', image, filename: filename),
           );

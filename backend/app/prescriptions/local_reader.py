@@ -8,6 +8,8 @@ import base64
 import json
 import logging
 from collections import Counter
+from collections.abc import Callable
+from dataclasses import replace
 from typing import Any
 
 import httpx2
@@ -92,23 +94,55 @@ def needs_cloud(extraction: PrescriptionExtraction, max_uncertain_share: float =
 class HybridReader:
     """Local model first; the cloud model when the local one fails or is unsure.
 
-    `routes` counts which path served each request (local, cloud_fallback, cloud_after_error), which
-    is the main cost and quality signal to monitor.
+    With `needs_consent` (a cloud service that may keep what it is sent, such as Gemini's free
+    tier) the cloud model is used only for requests with `allow_cloud`, and `redact` (if given)
+    blacks out personal lines in the photo first. If the cloud model fails (e.g. its free quota is
+    used up), the local reading is returned rather than an error: the user confirms every field.
+
+    `routes` counts which path served each request (local, cloud_fallback, cloud_after_error,
+    local_no_consent, local_after_cloud_error), the main cost and quality signal to monitor.
     """
 
-    def __init__(self, local: Reader, cloud: Reader):
+    def __init__(
+        self,
+        local: Reader,
+        cloud: Reader,
+        *,
+        needs_consent: bool = False,
+        redact: Callable[[bytes], bytes] | None = None,
+    ):
         self._local, self._cloud = local, cloud
+        self._needs_consent, self._redact = needs_consent, redact
         self.routes: Counter[str] = Counter()
 
-    def read(self, image: PreparedImage) -> PrescriptionExtraction:
+    def _cloud_read(self, image: PreparedImage) -> PrescriptionExtraction:
+        if self._redact:
+            image = replace(image, data=self._redact(image.data), media_type="image/jpeg")
+        return self._cloud.read(image)
+
+    def read(self, image: PreparedImage, *, allow_cloud: bool = True) -> PrescriptionExtraction:
+        cloud_ok = allow_cloud or not self._needs_consent
         try:
             local = self._local.read(image)
         except ReaderError as e:
+            if not cloud_ok:
+                raise
             logger.warning("local reader failed, using cloud: %s", e.code)
             self.routes["cloud_after_error"] += 1
-            return self._cloud.read(image)
-        if needs_cloud(local):
-            self.routes["cloud_fallback"] += 1
-            return self._cloud.read(image)
-        self.routes["local"] += 1
-        return local
+            return self._cloud_read(image)
+        if not needs_cloud(local):
+            self.routes["local"] += 1
+            return local
+        if not cloud_ok:
+            self.routes["local_no_consent"] += 1
+            return local
+        try:
+            result = self._cloud_read(image)
+        except ReaderError as e:
+            if not self._needs_consent:
+                raise
+            logger.warning("cloud reader failed, keeping the local reading: %s", e.code)
+            self.routes["local_after_cloud_error"] += 1
+            return local
+        self.routes["cloud_fallback"] += 1
+        return result

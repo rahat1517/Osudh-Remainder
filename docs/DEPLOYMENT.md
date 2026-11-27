@@ -30,7 +30,8 @@ Environment variables (see `.env.example`):
 | `ENVIRONMENT=production` | yes | enforces authentication |
 | `SUPABASE_URL` | yes | token verification (JWKS) |
 | `SUPABASE_JWT_SECRET` | legacy projects | HS256 token verification |
-| `ANTHROPIC_API_KEY` | yes | prescription reading |
+| `ANTHROPIC_API_KEY` | optional | Claude reads prescriptions (paid). Without it the server's own OCR model reads them |
+| `GEMINI_API_KEY`, `GEMINI_MODEL` | optional | free key from aistudio.google.com: Gemini reads photos the own model is unsure of, only for users who allowed it in the app, with personal lines blacked out first. Default model `gemini-2.5-flash` |
 | `SENTRY_DSN` | optional | error monitoring (scrubbed) |
 | `READER_MODE`, `LOCAL_READER_URL`, `LOCAL_READER_MODEL` | optional | `hybrid` routes to a self-hosted model first (Phase 11) |
 | `DATABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `TRAINING_PEPPER` | optional | collect consented training examples (Phase 11). `DATABASE_URL` logs in as `oshudh_backend` (can only check consent and add examples) through the pooler: `postgresql://oshudh_backend.<project-ref>:<password>@aws-0-<region>.pooler.supabase.com:6543/postgres?sslmode=require`. Keep `TRAINING_PEPPER` unchanged once set |
@@ -55,7 +56,7 @@ and redeploys on every push to `main`. Use the service URL as the app's `BACKEND
 |---|---|---|
 | Supabase | Free plan | pauses after a week with no activity |
 | Backend | Render `plan: free` (default in `render.yaml`) | sleeps after 15 min idle; first request ~1 min |
-| Prescription reading | leave `ANTHROPIC_API_KEY` unset | the app asks users to add medicines manually |
+| Prescription reading | leave `ANTHROPIC_API_KEY` unset; add a free `GEMINI_API_KEY` | the server's own OCR model reads, Gemini helps with hard photos for users who allow it |
 | Reminders and alarms | on the phone, offline | none |
 | Caregiver push alerts | Firebase Cloud Messaging is free; the job needs Actions minutes | private repo: 2,000 min/month is not enough for a 5-minute job; a public repo is free |
 | SMS / voice calls | leave off | each message costs money |

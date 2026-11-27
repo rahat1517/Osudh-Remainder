@@ -20,6 +20,7 @@ class FlakyApi extends FakeBackendApi {
   Future<PrescriptionScan> extractPrescription(
     Uint8List image, {
     String filename = 'rx.jpg',
+    bool cloudOk = false,
   }) async {
     extractCalls++;
     if (failures > 0) {

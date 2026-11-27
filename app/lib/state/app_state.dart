@@ -142,6 +142,15 @@ class AppState extends ChangeNotifier {
   /// Started without a phone number (see [AuthRepository.isAnonymous]).
   bool get isAnonymous => auth.isAnonymous;
 
+  /// Whether a photo the server's own reader is unsure of may be read by Google's AI (personal
+  /// lines blacked out first). Null until asked, before the first scan.
+  bool? get cloudReaderConsent => store?.cloudReaderConsent;
+
+  Future<void> setCloudReaderConsent(bool allowed) async {
+    await store?.setCloudReaderConsent(allowed);
+    notifyListeners();
+  }
+
   /// "শুরু করুন": an account right away, no phone number or SMS needed.
   Future<void> startWithoutSignIn() async {
     await auth.signInAnonymously();

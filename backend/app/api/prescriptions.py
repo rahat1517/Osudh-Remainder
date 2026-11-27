@@ -1,6 +1,7 @@
+from functools import partial
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, File, Request, UploadFile, status
+from fastapi import APIRouter, Depends, File, Form, Request, UploadFile, status
 from fastapi.concurrency import run_in_threadpool
 
 from app.api.errors import api_error
@@ -41,6 +42,10 @@ async def extract_prescription(
     user: AiUser,
     service: ServiceDep,
     image: Annotated[UploadFile, File(description="Prescription photo (JPEG, PNG or WebP)")],
+    cloud_ok: Annotated[
+        bool,
+        Form(description="The user agreed that hard-to-read photos may go to Google's AI"),
+    ] = False,
 ) -> PrescriptionResult:
     """Read the medicines from a prescription photo, with a confidence for every field.
 
@@ -50,7 +55,7 @@ async def extract_prescription(
     raw = await image.read(MAX_UPLOAD_BYTES + 1)
     try:
         # The AI call takes seconds; keep the event loop free for other requests
-        return await run_in_threadpool(service.extract, raw)
+        return await run_in_threadpool(partial(service.extract, raw, allow_cloud=cloud_ok))
     except (ImageError, NotAPrescriptionError) as e:
         raise api_error(status.HTTP_422_UNPROCESSABLE_CONTENT, e.code, e.message) from e
     except PrescriptionError as e:
