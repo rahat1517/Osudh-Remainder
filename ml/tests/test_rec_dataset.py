@@ -50,6 +50,7 @@ def test_synthetic_lines_cover_bangla_and_latin():
     assert any("Tab" in line for line in lines)
     assert any("খাবারের" in line for line in lines)
     assert to_bangla_digits("1+0+1") == "১+০+১"
+    assert max(len(line) for line in lines) <= 25  # the model's label limit
 
 
 def test_rendered_line_is_an_rgb_image():

@@ -18,11 +18,23 @@ OUT=${OUT:-out}
 mkdir -p "$WORK" "$OUT"
 WORK=$(realpath "$WORK"); OUT=$(realpath "$OUT")
 
-# 1. PaddleOCR 2.9 (the commands below match that release) and the GPU build of PaddlePaddle
-# PaddlePaddle 2.6 is built against NumPy 1.x; Colab ships NumPy 2, so keep it below 2 throughout
-pip install -q "numpy<2" "paddlepaddle-gpu==2.6.2" paddle2onnx==1.3.1
+# 1. A Python 3.11 environment of its own: PaddlePaddle 2.6 has no build for newer Pythons, and
+#    Colab moves on (it ships Python 3.13 now). uv downloads that Python in seconds.
+pip install -q uv
+VENV="$WORK/py311"
+[ -x "$VENV/bin/python" ] || uv venv -q --python 3.11 "$VENV"
+PY="$VENV/bin/python"
+PIP=(uv pip install -q --python "$PY")
+# PaddlePaddle 2.6 is built against NumPy 1.x and dlopens cuDNN 8, which newer Colab images lack:
+# install both into the environment and put cuDNN on the library path
+# setuptools: PaddlePaddle imports it at start-up, and uv environments do not include it
+"${PIP[@]}" "numpy<2" "paddlepaddle-gpu==2.6.2" paddle2onnx==1.3.1 "nvidia-cudnn-cu12==8.9.7.29" setuptools
+CUDNN_LIB=$("$PY" -c "import nvidia.cudnn, os; print(os.path.join(nvidia.cudnn.__path__[0], 'lib'))")
+export LD_LIBRARY_PATH="$CUDNN_LIB:${LD_LIBRARY_PATH:-}"
 [ -d "$WORK/PaddleOCR" ] || git clone -q --depth 1 -b release/2.9 https://github.com/PaddlePaddle/PaddleOCR "$WORK/PaddleOCR"
-pip install -q -r "$WORK/PaddleOCR/requirements.txt" "numpy<2"
+"${PIP[@]}" -r "$WORK/PaddleOCR/requirements.txt" "numpy<2"
+# Fail in the first minutes, with a clear message, if PaddlePaddle cannot use the GPU
+"$PY" -c "import paddle; assert paddle.device.is_compiled_with_cuda(), 'PaddlePaddle without CUDA'; paddle.utils.run_check()"
 
 # 2. Merge datasets (absolute image paths) and build the character dictionary from all labels
 TRAIN="$WORK/train.txt"; VAL="$WORK/val.txt"; : > "$TRAIN"; : > "$VAL"
@@ -31,7 +43,7 @@ for d in "${DATA_DIRS[@]}"; do
   sed "s#^#$abs/#" "$d/train.txt" >> "$TRAIN"
   [ -f "$d/val.txt" ] && sed "s#^#$abs/#" "$d/val.txt" >> "$VAL"
 done
-python - "$TRAIN" "$VAL" "$OUT/dict.txt" <<'PY'
+"$PY" - "$TRAIN" "$VAL" "$OUT/dict.txt" <<'PY'
 import sys
 chars = set()
 for path in sys.argv[1:3]:
@@ -49,23 +61,21 @@ cd "$WORK"
   tar xf en_PP-OCRv4_rec_train.tar
 }
 cd PaddleOCR
-python tools/train.py -c configs/rec/PP-OCRv4/en_PP-OCRv4_rec.yml -o \
+"$PY" tools/train.py -c configs/rec/PP-OCRv4/en_PP-OCRv4_rec.yml -o \
   Global.pretrained_model="$WORK/en_PP-OCRv4_rec_train/best_accuracy" \
   Global.character_dict_path="$OUT/dict.txt" \
   Global.use_space_char=true \
-  Global.max_text_length=40 \
   Global.epoch_num="$EPOCHS" \
   Global.save_model_dir="$WORK/rec_output" \
   Train.dataset.data_dir=/ Train.dataset.label_file_list="[$TRAIN]" \
   Eval.dataset.data_dir=/ Eval.dataset.label_file_list="[$VAL]"
 
 # 4. Export the best checkpoint and convert it to ONNX (what the backend's RapidOCR loads)
-python tools/export_model.py -c configs/rec/PP-OCRv4/en_PP-OCRv4_rec.yml -o \
+"$PY" tools/export_model.py -c configs/rec/PP-OCRv4/en_PP-OCRv4_rec.yml -o \
   Global.pretrained_model="$WORK/rec_output/best_accuracy" \
   Global.character_dict_path="$OUT/dict.txt" \
   Global.use_space_char=true \
-  Global.max_text_length=40 \
   Global.save_inference_dir="$WORK/rec_inference"
-paddle2onnx --model_dir "$WORK/rec_inference" --model_filename inference.pdmodel \
+"$VENV/bin/paddle2onnx" --model_dir "$WORK/rec_inference" --model_filename inference.pdmodel \
   --params_filename inference.pdiparams --save_file "$OUT/rec.onnx" --opset_version 11
 echo "Done: $OUT/rec.onnx and $OUT/dict.txt"

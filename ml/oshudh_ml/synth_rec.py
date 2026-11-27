@@ -51,16 +51,28 @@ def to_bangla_digits(text: str) -> str:
     return text.translate(str.maketrans("0123456789", BANGLA_DIGITS))
 
 
+# PP-OCRv4's recognition config caps labels at 25 characters in three places (Global, the NRTR head
+# and RecConAug); longer lines would be dropped silently, so the generator stays within it.
+MAX_CHARS = 25
+
+
 def sample_line(rng: random.Random) -> str:
-    """One realistic prescription line."""
+    """One realistic prescription line of at most MAX_CHARS characters."""
+    while True:
+        line = _sample_line(rng)
+        if len(line) <= MAX_CHARS:
+            return line
+
+
+def _sample_line(rng: random.Random) -> str:
     kind = rng.random()
-    if kind < 0.35:  # medicine line
+    if kind < 0.3:  # medicine line
         number = f"{rng.randint(1, 6)}. " if rng.random() < 0.6 else ""
         strength = f" {rng.choice(STRENGTHS)}" if rng.random() < 0.8 else ""
         return f"{number}{rng.choice(FORMS)} {rng.choice(BRANDS)}{strength}"
     pattern = rng.choice(PATTERNS)
     days = str(rng.choice([3, 5, 7, 10, 14, 15, 30, 1, 2, 3]))
-    if kind < 0.75:  # Bangla instruction line
+    if kind < 0.85:  # Bangla instruction line (the main thing the pretrained model lacks)
         parts = [to_bangla_digits(pattern)]
         if rng.random() < 0.8:
             parts.append(rng.choice(TIMINGS_BN))
