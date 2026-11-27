@@ -1417,6 +1417,24 @@ abstract class AppLocalizations {
   /// In bn, this message translates to:
   /// **'নোটিফিকেশন বা ঠিক সময়ের অ্যালার্মের অনুমতি বন্ধ আছে। এখানে চেপে চালু করুন।'**
   String get alarmsBlockedBody;
+
+  /// No description provided for @signInWithPhone.
+  ///
+  /// In bn, this message translates to:
+  /// **'ফোন নম্বর দিয়ে সাইন ইন'**
+  String get signInWithPhone;
+
+  /// No description provided for @startFailed.
+  ///
+  /// In bn, this message translates to:
+  /// **'এখন শুরু করা যাচ্ছে না। ইন্টারনেট দেখে আবার চেষ্টা করুন।'**
+  String get startFailed;
+
+  /// No description provided for @signOutAnonymousWarning.
+  ///
+  /// In bn, this message translates to:
+  /// **'আপনার অ্যাকাউন্টে কোনো ফোন নম্বর যোগ করা নেই। সাইন আউট করলে আপনার ওষুধের তালিকা ও ইতিহাস আর ফেরত পাওয়া যাবে না।'**
+  String get signOutAnonymousWarning;
 }
 
 class _AppLocalizationsDelegate

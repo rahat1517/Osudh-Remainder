@@ -24,6 +24,10 @@ class _ExternalAuth implements AuthRepository {
   @override
   Stream<void> get changes => _changes.stream;
   @override
+  bool get isAnonymous => false;
+  @override
+  Future<void> signInAnonymously() async => set('anonymous');
+  @override
   Future<void> sendCode(String phoneE164) async {}
   @override
   Future<void> verifyCode(String phoneE164, String code) async {}

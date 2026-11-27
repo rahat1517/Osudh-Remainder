@@ -10,7 +10,7 @@ import 'package:oshudh_reminder/state/app_state.dart';
 import 'helpers.dart';
 
 Future<void> signIn(WidgetTester tester) async {
-  await tester.tap(find.text('শুরু করুন'));
+  await tester.tap(find.text('ফোন নম্বর দিয়ে সাইন ইন'));
   await tester.pumpAndSettle();
   await tester.enterText(find.byKey(const Key('phone')), '01712345678');
   await tester.tap(find.text('কোড পাঠান'));
@@ -29,7 +29,7 @@ void main() {
 
   testWidgets('invalid phone numbers are rejected', (tester) async {
     await pumpApp(tester, demoState());
-    await tester.tap(find.text('শুরু করুন'));
+    await tester.tap(find.text('ফোন নম্বর দিয়ে সাইন ইন'));
     await tester.pumpAndSettle();
     await tester.enterText(find.byKey(const Key('phone')), '12345');
     await tester.tap(find.text('কোড পাঠান'));
@@ -39,7 +39,7 @@ void main() {
 
   testWidgets('wrong one-time code shows an error', (tester) async {
     await pumpApp(tester, demoState());
-    await tester.tap(find.text('শুরু করুন'));
+    await tester.tap(find.text('ফোন নম্বর দিয়ে সাইন ইন'));
     await tester.pumpAndSettle();
     await tester.enterText(find.byKey(const Key('phone')), '01712345678');
     await tester.tap(find.text('কোড পাঠান'));

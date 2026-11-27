@@ -139,6 +139,17 @@ class AppState extends ChangeNotifier {
 
   bool get signedIn => auth.currentUserId != null;
 
+  /// Started without a phone number (see [AuthRepository.isAnonymous]).
+  bool get isAnonymous => auth.isAnonymous;
+
+  /// "শুরু করুন": an account right away, no phone number or SMS needed.
+  Future<void> startWithoutSignIn() async {
+    await auth.signInAnonymously();
+    _wasSignedIn = true;
+    notifyListeners();
+    await refresh();
+  }
+
   /// Current wall-clock time in the user's zone.
   DateTime get wallNow {
     final t = _clock().toUtc().add(utcOffset);

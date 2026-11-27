@@ -96,6 +96,28 @@ class SettingsScreen extends StatelessWidget {
             leading: const Icon(Icons.logout),
             title: Text(l.signOut),
             onTap: () async {
+              // Without a phone number, a signed-out account cannot be recovered
+              if (state.isAnonymous) {
+                final ok = await showDialog<bool>(
+                  context: context,
+                  builder: (ctx) => AlertDialog(
+                    title: Text(l.signOut),
+                    content: Text(l.signOutAnonymousWarning),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(ctx, false),
+                        child: Text(l.cancel),
+                      ),
+                      FilledButton(
+                        key: const Key('confirmSignOut'),
+                        onPressed: () => Navigator.pop(ctx, true),
+                        child: Text(l.signOut),
+                      ),
+                    ],
+                  ),
+                );
+                if (ok != true) return;
+              }
               await state.signOut();
               if (context.mounted) {
                 Navigator.of(context).popUntil((r) => r.isFirst);

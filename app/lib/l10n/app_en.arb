@@ -414,5 +414,8 @@
   "setupTestAlarmScheduled": "The alarm will ring within a minute. Lock the phone and wait.",
   "testAlarmLabel": "Test: the alarm works",
   "alarmsBlockedTitle": "Alarms will not ring",
-  "alarmsBlockedBody": "Notifications or exact alarms are not allowed. Tap here to turn them on."
+  "alarmsBlockedBody": "Notifications or exact alarms are not allowed. Tap here to turn them on.",
+  "signInWithPhone": "Sign in with a phone number",
+  "startFailed": "Cannot start right now. Check the internet connection and try again.",
+  "signOutAnonymousWarning": "No phone number is linked to this account. If you sign out, your medicine list and history cannot be recovered."
 }
