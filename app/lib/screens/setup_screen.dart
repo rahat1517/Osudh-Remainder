@@ -57,6 +57,8 @@ class SetupScreen extends StatelessWidget {
         title: Text(title),
         subtitle: help == null ? null : Text(help),
         trailing: FilledButton.tonal(
+          // The theme makes buttons full width; in a list row it must size to its label
+          style: FilledButton.styleFrom(minimumSize: const Size(0, 48)),
           onPressed: onTap,
           child: Text(l.setupOpen),
         ),
