@@ -765,4 +765,49 @@ class AppLocalizationsBn extends AppLocalizations {
   @override
   String get signOutAnonymousWarning =>
       'আপনার অ্যাকাউন্টে কোনো ফোন নম্বর যোগ করা নেই। সাইন আউট করলে আপনার ওষুধের তালিকা ও ইতিহাস আর ফেরত পাওয়া যাবে না।';
+
+  @override
+  String priceEach(String price) {
+    return 'প্রতিটি $price টাকা';
+  }
+
+  @override
+  String priceEachApprox(String price) {
+    return 'প্রতিটি আনুমানিক $price টাকা';
+  }
+
+  @override
+  String cheaperAvailable(String brand, String percent) {
+    return 'একই ওষুধ কম দামে: $brand ($percent% কম)';
+  }
+
+  @override
+  String get cheaperTitle => 'একই ওষুধ, কম দামে';
+
+  @override
+  String cheaperIntro(String generic, String strength) {
+    return 'এগুলোতে একই উপাদান ($generic), একই শক্তি ($strength) ও একই ধরনের ওষুধ।';
+  }
+
+  @override
+  String cheaperRow(String price, String percent) {
+    return 'প্রতিটি $price টাকা · $percent% কম';
+  }
+
+  @override
+  String cheaperMonthly(String amount) {
+    return 'মাসে প্রায় $amount টাকা কম';
+  }
+
+  @override
+  String cheaperCourse(String amount) {
+    return 'এই কোর্সে প্রায় $amount টাকা কম';
+  }
+
+  @override
+  String get cheaperDisclaimer =>
+      'ব্র্যান্ড বদলানোর আগে ডাক্তার বা ফার্মাসিস্টকে জিজ্ঞেস করুন। অ্যাপ নিজে থেকে কিছু বদলাবে না।';
+
+  @override
+  String get pricesApproximate => 'দামগুলো আনুমানিক; দোকানে কম-বেশি হতে পারে।';
 }

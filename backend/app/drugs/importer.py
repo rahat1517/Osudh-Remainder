@@ -25,7 +25,8 @@ def to_sql(drugs: list[Drug]) -> str:
         "-- To change: edit the CSV in database/seed/ and run the importer again.",
         "",
         "insert into public.drugs",
-        "    (brand, strength, generic, form, manufacturer, brand_normalized, source, verified)",
+        "    (brand, strength, generic, form, manufacturer, brand_normalized, source, verified,",
+        "     unit_price_bdt)",
         "values",
     ]
     rows = [
@@ -40,6 +41,7 @@ def to_sql(drugs: list[Drug]) -> str:
                 _sql_str(normalize_brand(d.brand)),
                 _sql_str(d.source),
                 "true" if d.verified else "false",
+                "null" if d.unit_price_bdt is None else f"{d.unit_price_bdt:g}",
             ]
         )
         + ")"
@@ -50,7 +52,7 @@ def to_sql(drugs: list[Drug]) -> str:
     lines.append(
         "    generic = excluded.generic, manufacturer = excluded.manufacturer,\n"
         "    brand_normalized = excluded.brand_normalized, source = excluded.source,\n"
-        "    verified = excluded.verified;"
+        "    verified = excluded.verified, unit_price_bdt = excluded.unit_price_bdt;"
     )
     return "\n".join(lines) + "\n"
 

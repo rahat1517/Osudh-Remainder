@@ -9,7 +9,8 @@ from collections import defaultdict
 
 from rapidfuzz import fuzz, process
 
-from app.drugs.models import Confidence, Drug, DrugCandidate, MatchResult
+from app.drugs.alternatives import cheaper_alternatives
+from app.drugs.models import AlternativesResult, Confidence, Drug, DrugCandidate, MatchResult
 from app.drugs.normalize import ParsedName, normalize_brand, parse, strength_numbers
 
 HIGH_SCORE = 90.0
@@ -53,6 +54,10 @@ class DrugMatcher:
     # ------------------------------------------------------------------
     # One prescription line → closest drug
     # ------------------------------------------------------------------
+    def cheaper_alternatives(self, drug_id: int, limit: int = 5) -> AlternativesResult | None:
+        drug = self._by_id.get(drug_id)
+        return None if drug is None else cheaper_alternatives(drug, self._drugs, limit)
+
     def match(self, text: str, limit: int = 5) -> MatchResult:
         parsed = parse(text)
         if not parsed.name:

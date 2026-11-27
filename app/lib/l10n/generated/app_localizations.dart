@@ -1435,6 +1435,66 @@ abstract class AppLocalizations {
   /// In bn, this message translates to:
   /// **'আপনার অ্যাকাউন্টে কোনো ফোন নম্বর যোগ করা নেই। সাইন আউট করলে আপনার ওষুধের তালিকা ও ইতিহাস আর ফেরত পাওয়া যাবে না।'**
   String get signOutAnonymousWarning;
+
+  /// No description provided for @priceEach.
+  ///
+  /// In bn, this message translates to:
+  /// **'প্রতিটি {price} টাকা'**
+  String priceEach(String price);
+
+  /// No description provided for @priceEachApprox.
+  ///
+  /// In bn, this message translates to:
+  /// **'প্রতিটি আনুমানিক {price} টাকা'**
+  String priceEachApprox(String price);
+
+  /// No description provided for @cheaperAvailable.
+  ///
+  /// In bn, this message translates to:
+  /// **'একই ওষুধ কম দামে: {brand} ({percent}% কম)'**
+  String cheaperAvailable(String brand, String percent);
+
+  /// No description provided for @cheaperTitle.
+  ///
+  /// In bn, this message translates to:
+  /// **'একই ওষুধ, কম দামে'**
+  String get cheaperTitle;
+
+  /// No description provided for @cheaperIntro.
+  ///
+  /// In bn, this message translates to:
+  /// **'এগুলোতে একই উপাদান ({generic}), একই শক্তি ({strength}) ও একই ধরনের ওষুধ।'**
+  String cheaperIntro(String generic, String strength);
+
+  /// No description provided for @cheaperRow.
+  ///
+  /// In bn, this message translates to:
+  /// **'প্রতিটি {price} টাকা · {percent}% কম'**
+  String cheaperRow(String price, String percent);
+
+  /// No description provided for @cheaperMonthly.
+  ///
+  /// In bn, this message translates to:
+  /// **'মাসে প্রায় {amount} টাকা কম'**
+  String cheaperMonthly(String amount);
+
+  /// No description provided for @cheaperCourse.
+  ///
+  /// In bn, this message translates to:
+  /// **'এই কোর্সে প্রায় {amount} টাকা কম'**
+  String cheaperCourse(String amount);
+
+  /// No description provided for @cheaperDisclaimer.
+  ///
+  /// In bn, this message translates to:
+  /// **'ব্র্যান্ড বদলানোর আগে ডাক্তার বা ফার্মাসিস্টকে জিজ্ঞেস করুন। অ্যাপ নিজে থেকে কিছু বদলাবে না।'**
+  String get cheaperDisclaimer;
+
+  /// No description provided for @pricesApproximate.
+  ///
+  /// In bn, this message translates to:
+  /// **'দামগুলো আনুমানিক; দোকানে কম-বেশি হতে পারে।'**
+  String get pricesApproximate;
 }
 
 class _AppLocalizationsDelegate

@@ -12,6 +12,8 @@ class Drug(BaseModel):
     manufacturer: str | None = None
     source: str
     verified: bool = False
+    # Maximum retail price of one unit (tablet, capsule, sachet; a bottle for liquids), in taka
+    unit_price_bdt: float | None = None
 
 
 class Confidence(StrEnum):
@@ -41,3 +43,17 @@ class MatchResult(BaseModel):
 class MatchRequest(BaseModel):
     text: str = Field(min_length=1, max_length=200, examples=["Tab. Sec1o 20mg"])
     limit: int = Field(default=5, ge=1, le=20)
+
+
+class Alternative(BaseModel):
+    drug: Drug
+    saving_percent: int = Field(ge=1, le=99, description="How much cheaper per unit, rounded down")
+
+
+class AlternativesResult(BaseModel):
+    """Brands with the same ingredients, strength and form, cheaper than `drug`."""
+
+    drug: Drug
+    alternatives: list[Alternative]
+    # False while any price shown comes from an unverified (development) list
+    prices_verified: bool
