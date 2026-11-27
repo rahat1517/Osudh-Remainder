@@ -28,7 +28,8 @@ PIP=(uv pip install -q --python "$PY")
 # PaddlePaddle 2.6 is built against NumPy 1.x and dlopens cuDNN 8, which newer Colab images lack:
 # install both into the environment and put cuDNN on the library path
 # setuptools: PaddlePaddle imports it at start-up, and uv environments do not include it
-"${PIP[@]}" "numpy<2" "paddlepaddle-gpu==2.6.2" paddle2onnx==1.3.1 "nvidia-cudnn-cu12==8.9.7.29" setuptools
+"${PIP[@]}" "numpy<2" "paddlepaddle-gpu==2.6.2" paddle2onnx==1.3.1 "nvidia-cudnn-cu12==8.9.7.29" setuptools \
+  onnx
 CUDNN_LIB=$("$PY" -c "import nvidia.cudnn, os; print(os.path.join(nvidia.cudnn.__path__[0], 'lib'))")
 export LD_LIBRARY_PATH="$CUDNN_LIB:${LD_LIBRARY_PATH:-}"
 [ -d "$WORK/PaddleOCR" ] || git clone -q --depth 1 -b release/2.9 https://github.com/PaddlePaddle/PaddleOCR "$WORK/PaddleOCR"
@@ -53,6 +54,10 @@ for path in (train, val):
     for line in open(path, encoding="utf-8"):
         chars.update(line.rstrip("\n").split("\t", 1)[1])
 chars.discard(" ")
+# Every Bangla character, not just those in the labels: real prescriptions use words the
+# synthetic lines do not, and a character missing from the list can never be read
+import unicodedata
+chars |= {chr(c) for c in range(0x0980, 0x0A00) if unicodedata.category(chr(c)) != "Cn"}
 english = [c for c in open(en_dict, encoding="utf-8").read().splitlines() if c != " "]
 new = sorted(chars - set(english))
 open(out, "w", encoding="utf-8").write("\n".join(english + new) + "\n")
@@ -132,4 +137,26 @@ PY
   Global.save_inference_dir="$WORK/rec_inference"
 "$VENV/bin/paddle2onnx" --model_dir "$WORK/rec_inference" --model_filename inference.pdmodel \
   --params_filename inference.pdiparams --save_file "$OUT/rec.onnx" --opset_version 11
+# The pretrained weights contain many denormal (tiny) floats, which CPUs compute with very slowly:
+# set them to zero (same results, about 2x faster on the server; see paddleocr/cpu/flush_denormals.py)
+"$PY" - "$OUT/rec.onnx" <<'PY'
+import sys
+import numpy as np
+import onnx
+from onnx import numpy_helper
+path = sys.argv[1]
+model = onnx.load(path)
+tensors = list(model.graph.initializer)
+tensors += [a.t for n in model.graph.node if n.op_type == "Constant" for a in n.attribute if a.name == "value"]
+flushed = 0
+for t in tensors:
+    w = numpy_helper.to_array(t)
+    if w.dtype == np.float32:
+        tiny = (w != 0) & (np.abs(w) < 1e-30)
+        if tiny.any():
+            flushed += int(tiny.sum())
+            t.CopyFrom(numpy_helper.from_array(np.where(tiny, 0, w).astype(np.float32), t.name))
+onnx.save(model, path)
+print(f"{flushed} denormal weights set to zero")
+PY
 echo "Done: $OUT/rec.onnx and $OUT/dict.txt"
