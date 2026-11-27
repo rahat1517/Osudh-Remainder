@@ -19,9 +19,10 @@ mkdir -p "$WORK" "$OUT"
 WORK=$(realpath "$WORK"); OUT=$(realpath "$OUT")
 
 # 1. PaddleOCR 2.9 (the commands below match that release) and the GPU build of PaddlePaddle
-pip install -q "paddlepaddle-gpu==2.6.2" paddle2onnx==1.3.1
+# PaddlePaddle 2.6 is built against NumPy 1.x; Colab ships NumPy 2, so keep it below 2 throughout
+pip install -q "numpy<2" "paddlepaddle-gpu==2.6.2" paddle2onnx==1.3.1
 [ -d "$WORK/PaddleOCR" ] || git clone -q --depth 1 -b release/2.9 https://github.com/PaddlePaddle/PaddleOCR "$WORK/PaddleOCR"
-pip install -q -r "$WORK/PaddleOCR/requirements.txt"
+pip install -q -r "$WORK/PaddleOCR/requirements.txt" "numpy<2"
 
 # 2. Merge datasets (absolute image paths) and build the character dictionary from all labels
 TRAIN="$WORK/train.txt"; VAL="$WORK/val.txt"; : > "$TRAIN"; : > "$VAL"
@@ -52,6 +53,7 @@ python tools/train.py -c configs/rec/PP-OCRv4/en_PP-OCRv4_rec.yml -o \
   Global.pretrained_model="$WORK/en_PP-OCRv4_rec_train/best_accuracy" \
   Global.character_dict_path="$OUT/dict.txt" \
   Global.use_space_char=true \
+  Global.max_text_length=40 \
   Global.epoch_num="$EPOCHS" \
   Global.save_model_dir="$WORK/rec_output" \
   Train.dataset.data_dir=/ Train.dataset.label_file_list="[$TRAIN]" \
@@ -62,6 +64,7 @@ python tools/export_model.py -c configs/rec/PP-OCRv4/en_PP-OCRv4_rec.yml -o \
   Global.pretrained_model="$WORK/rec_output/best_accuracy" \
   Global.character_dict_path="$OUT/dict.txt" \
   Global.use_space_char=true \
+  Global.max_text_length=40 \
   Global.save_inference_dir="$WORK/rec_inference"
 paddle2onnx --model_dir "$WORK/rec_inference" --model_filename inference.pdmodel \
   --params_filename inference.pdiparams --save_file "$OUT/rec.onnx" --opset_version 11
