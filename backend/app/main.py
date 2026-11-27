@@ -113,6 +113,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     app.state.prescription_service = None
     app.state.assistant_service = None
     app.state.training_service = build_training_service(settings)
+    warming: list = []
     cloud = None
     if settings.anthropic_api_key:
         client = anthropic.Anthropic(api_key=settings.anthropic_api_key)
@@ -129,9 +130,13 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         logger.info("Prescription reader: %s", type(reader).__name__)
         for r in (reader, getattr(reader, "_local", None)):
             if isinstance(r, OcrPrescriptionReader):
-                r.warm_up_in_background()
+                warming.append(r.warm_up_in_background())
         app.state.prescription_service = PrescriptionService(reader, PrescriptionVerifier(matcher))
     yield
+    # Let a model load that is still running finish, so shutdown never aborts mid-load
+    for thread in warming:
+        if thread is not None:
+            thread.join(timeout=60)
 
 
 def create_app() -> FastAPI:

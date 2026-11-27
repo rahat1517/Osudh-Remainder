@@ -165,3 +165,17 @@ def test_warm_up_loads_the_models_once(monkeypatch):
     engine.warm_up()
     engine.warm_up()
     assert loads == [1]
+
+
+def test_shutdown_waits_for_the_model_warm_up():
+    # Regression: the process aborted ("terminate called without an active exception") when the
+    # app stopped while ONNX Runtime was still loading the models in the warm-up thread
+    from fastapi.testclient import TestClient
+
+    from app.main import create_app
+
+    with TestClient(create_app()) as client:
+        assert client.get("/health").status_code == 200
+    import threading
+
+    assert not [t for t in threading.enumerate() if t.name == "ocr-warm-up"]

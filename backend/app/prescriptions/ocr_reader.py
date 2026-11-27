@@ -133,10 +133,15 @@ class OcrPrescriptionReader:
     def __init__(self, engine: OcrEngine):
         self._engine = engine
 
-    def warm_up_in_background(self) -> None:
+    def warm_up_in_background(self) -> threading.Thread | None:
+        """Starts loading the models; join the returned thread before the process exits (an ONNX
+        Runtime load cut short at interpreter shutdown aborts the process)."""
         warm = getattr(self._engine, "warm_up", None)
-        if warm:
-            threading.Thread(target=warm, name="ocr-warm-up", daemon=True).start()
+        if not warm:
+            return None
+        thread = threading.Thread(target=warm, name="ocr-warm-up", daemon=True)
+        thread.start()
+        return thread
 
     def read(self, image: PreparedImage) -> PrescriptionExtraction:
         try:
