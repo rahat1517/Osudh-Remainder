@@ -19,6 +19,7 @@ import 'package:oshudh_reminder/alarms/alarm_service.dart';
 import 'package:oshudh_reminder/alarms/dose_log.dart';
 import 'package:oshudh_reminder/alarms/local_store.dart';
 import 'package:oshudh_reminder/alarms/speaker.dart';
+import 'package:oshudh_reminder/alarms/voice.dart';
 import 'package:oshudh_reminder/assistant/voice_input.dart';
 import 'package:oshudh_reminder/caregivers/caregiver_models.dart';
 import 'package:oshudh_reminder/caregivers/caregiver_repository.dart';
@@ -307,6 +308,7 @@ void main() {
         ]),
         service: state.alarms!,
         speaker: SilentSpeaker(),
+        voice: RecordingVoicePlayer(),
       ),
     );
     await _shot(tester, '22_alarm');

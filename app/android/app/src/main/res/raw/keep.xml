@@ -2,4 +2,4 @@
 <!-- Resources referenced only from Dart code (by name) must not be removed by resource shrinking:
      a missing notification icon makes notifications fail silently. -->
 <resources xmlns:tools="http://schemas.android.com/tools"
-    tools:keep="@drawable/ic_stat_alarm,@mipmap/ic_launcher" />
+    tools:keep="@drawable/ic_stat_alarm,@mipmap/ic_launcher,@raw/alarm_ring" />

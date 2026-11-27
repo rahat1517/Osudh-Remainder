@@ -7,6 +7,7 @@ import 'package:oshudh_reminder/alarms/alarm_service.dart';
 import 'package:oshudh_reminder/alarms/dose_log.dart';
 import 'package:oshudh_reminder/alarms/local_store.dart';
 import 'package:oshudh_reminder/alarms/speaker.dart';
+import 'package:oshudh_reminder/alarms/voice.dart';
 import 'package:oshudh_reminder/l10n/generated/app_localizations.dart';
 import 'package:oshudh_reminder/screens/alarm_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -39,7 +40,12 @@ void main() {
           AppLocalizations.delegate,
           ...GlobalMaterialLocalizations.delegates,
         ],
-        home: AlarmScreen(payload: payload, service: service, speaker: speaker),
+        home: AlarmScreen(
+          payload: payload,
+          service: service,
+          speaker: speaker,
+          voice: RecordingVoicePlayer(),
+        ),
       ),
     );
     await tester.pumpAndSettle();

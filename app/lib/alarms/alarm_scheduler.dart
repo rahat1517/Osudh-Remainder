@@ -21,8 +21,8 @@ abstract interface class AlarmScheduler {
 }
 
 /// A channel's sound and importance cannot change once Android has created it, so a new id is
-/// needed whenever they change (v2: the phone's alarm tone, repeating, instead of one beep).
-const doseChannelId = 'dose_alarms_v2';
+/// needed whenever they change (v2: alarm tone, repeating; v3: the recorded voice alarm).
+const doseChannelId = 'dose_alarms_v3';
 
 /// Android's FLAG_INSISTENT: the sound repeats until the notification is answered or removed.
 const _flagInsistent = 4;
@@ -112,11 +112,10 @@ class NotificationAlarmScheduler implements AlarmScheduler {
           priority: Priority.max,
           category: AndroidNotificationCategory.alarm,
           fullScreenIntent: true,
-          // Ring like an alarm clock: the phone's alarm tone, on the alarm volume, repeating
-          // until answered. One notification beep is easy to miss with the phone in a pocket.
-          sound: const UriAndroidNotificationSound(
-            'content://settings/system/alarm_alert',
-          ),
+          // Ring like an alarm clock, on the alarm volume, repeating until answered: the recorded
+          // voice "ওষুধ খাওয়ার সময় হয়েছে..." (res/raw/alarm_ring.ogg). One notification beep is
+          // easy to miss with the phone in a pocket.
+          sound: const RawResourceAndroidNotificationSound('alarm_ring'),
           audioAttributesUsage: AudioAttributesUsage.alarm,
           additionalFlags: Int32List.fromList([_flagInsistent]),
           enableVibration: true,

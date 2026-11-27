@@ -1,10 +1,14 @@
+import 'dart:async';
+
 import 'package:material_ui/material_ui.dart';
 
 import '../l10n/format.dart';
 import '../alarms/alarm_payload.dart';
 import '../alarms/alarm_service.dart';
 import '../alarms/dose_log.dart';
+import '../alarms/alarm_scheduler.dart' show ringFor;
 import '../alarms/speaker.dart';
+import '../alarms/voice.dart';
 import '../l10n/generated/app_localizations.dart';
 import 'home_screen.dart' show formatClock;
 
@@ -15,11 +19,19 @@ class AlarmScreen extends StatefulWidget {
     required this.payload,
     required this.service,
     required this.speaker,
-  });
+    VoicePlayer? voice,
+    this.repeatEvery = const Duration(seconds: 4),
+  }) : _voice = voice;
 
   final AlarmPayload payload;
   final AlarmService service;
+
+  /// The phone's text-to-speech, used when there is no recording.
   final Speaker speaker;
+  final VoicePlayer? _voice;
+
+  /// Pause between repeats of the spoken reminder while nobody has answered.
+  final Duration repeatEvery;
 
   @override
   State<AlarmScreen> createState() => _AlarmScreenState();
@@ -27,40 +39,84 @@ class AlarmScreen extends StatefulWidget {
 
 class _AlarmScreenState extends State<AlarmScreen> {
   bool _busy = false;
-  bool _spoken = false;
+  bool _started = false;
+  Timer? _next;
+  late final VoicePlayer _voice = widget._voice ?? AssetVoicePlayer();
+  late final DateTime _until = DateTime.now().add(ringFor);
+
+  bool get _isTest =>
+      widget.payload.items.any((i) => i.medicineId == testAlarmMedicineId);
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    if (!_spoken) {
-      _spoken = true;
-      final names = widget.payload.items.map((i) => i.label).join(', ');
-      widget.speaker.speak(AppLocalizations.of(context).alarmSpeech(names));
+    if (_started) return;
+    _started = true;
+    // The screen now does the reminding (the recorded voice, repeated): stop the ringing
+    // notification so the two do not play over each other
+    unawaited(widget.service.dismiss(widget.payload));
+    unawaited(_announce());
+  }
+
+  /// Says the reminder, then again every few seconds until a button is pressed (up to [ringFor]).
+  Future<void> _announce() async {
+    if (!mounted || _busy || DateTime.now().isAfter(_until)) return;
+    final again =
+        widget.service.store.snoozeCount(widget.payload.reminderKey) > 0;
+    final clip = _isTest
+        ? VoiceClip.testAlarm
+        : again
+        ? VoiceClip.reminderAgain
+        : VoiceClip.alarmOpen;
+    var played = await _voice.play(clip);
+    if (!played && clip != VoiceClip.alarmOpen) {
+      played = await _voice.play(VoiceClip.alarmOpen);
     }
+    if (!played && mounted) {
+      final names = widget.payload.items.map((i) => i.label).join(', ');
+      await widget.speaker.speak(
+        AppLocalizations.of(context).alarmSpeech(names),
+      );
+    }
+    if (!mounted || _busy) return;
+    _next = Timer(widget.repeatEvery, _announce);
   }
 
   @override
   void dispose() {
+    _next?.cancel();
     widget.speaker.stop();
+    _voice.stop();
     super.dispose();
   }
 
-  Future<void> _act(Future<void> Function() action) async {
-    setState(() => _busy = true);
+  Future<void> _quiet() async {
+    _next?.cancel();
     await widget.speaker.stop();
+    await _voice.stop();
+  }
+
+  Future<void> _act(Future<void> Function() action, VoiceClip reply) async {
+    setState(() => _busy = true);
+    await _quiet();
     await action();
+    await _voice.play(reply); // "ধন্যবাদ..." etc.; nothing if not recorded
     if (mounted) Navigator.of(context).maybePop();
   }
 
   Future<void> _snooze() async {
     final l = AppLocalizations.of(context);
     final messenger = ScaffoldMessenger.of(context);
+    setState(() => _busy = true);
+    await _quiet();
     final result = await widget.service.snooze(widget.payload);
     if (result == SnoozeResult.limitReached) {
       messenger.showSnackBar(SnackBar(content: Text(l.snoozeLimit)));
       setState(() => _busy = false);
+      unawaited(_announce());
       return;
     }
+    await _voice.play(VoiceClip.snoozed);
     if (mounted) Navigator.of(context).maybePop();
   }
 
@@ -92,7 +148,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
                     leading: const Icon(Icons.medication, size: 36),
                     title: Text(item.label, style: big),
                     trailing: Text(
-                      '× ${formatAmount(item.amount)}',
+                      '×\u00A0${formatAmount(item.amount)}',
                       style: big,
                     ),
                   ),
@@ -110,6 +166,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
                           widget.payload,
                           DoseStatus.taken,
                         ),
+                        VoiceClip.taken,
                       ),
                 icon: const Icon(Icons.check_circle, size: 32),
                 label: Text(l.alarmTaken),
@@ -141,6 +198,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
                                 widget.payload,
                                 DoseStatus.skipped,
                               ),
+                              VoiceClip.skipped,
                             ),
                       child: Text(l.alarmSkip),
                     ),
