@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Notification icon: a single-colour silhouette (Android draws coloured icons as a white square).
+     A medicine bottle with a cross, matching the app icon. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M7,2h10v3h-10z M6,6h12a1,1 0,0 1,1 1v13a2,2 0,0 1,-2 2h-10a2,2 0,0 1,-2 -2v-13a1,1 0,0 1,1 -1z M11,10v3h-3v2h3v3h2v-3h3v-2h-3v-3z"
+        android:fillType="evenOdd" />
+</vector>

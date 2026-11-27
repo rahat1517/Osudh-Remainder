@@ -130,4 +130,32 @@ void main() {
     expect(scheduler.extra.single.items.single.medicineId, testAlarmMedicineId);
     expect(find.textContaining('এক মিনিটের মধ্যে'), findsOneWidget);
   });
+
+  test('answering an alarm stops its ringing notification', () async {
+    // The notification is "ongoing" and repeats its sound until answered: answering in the app
+    // must remove it, or it rings on and stays stuck in the tray
+    final spec = AlarmSpec(
+      id: 4242,
+      at: _doseAt,
+      items: const [AlarmItem('seclo', 'Seclo 20 mg', '1')],
+    );
+    final payload = AlarmPayload.decode(AlarmPayload.fromSpec(spec).encode());
+    expect(payload.notificationId, 4242);
+    await service.record(payload, DoseStatus.taken);
+    expect(scheduler.cancelled, [4242]);
+    await service.snooze(payload);
+    expect(scheduler.cancelled, [4242, 4242]);
+  });
+
+  test('payloads from older builds (no notification id) still work', () async {
+    final old = AlarmPayload.decode(
+      '{"at":"2026-11-26T21:00:00","items":[{"id":"seclo","label":"S","amount":"1"}]}',
+    );
+    expect(old.notificationId, isNull);
+    await service.record(old, DoseStatus.taken);
+    expect(scheduler.cancelled, isEmpty);
+    expect(store.logs(), hasLength(1));
+  });
 }
+
+final _doseAt = DateTime.utc(2026, 11, 26, 21);

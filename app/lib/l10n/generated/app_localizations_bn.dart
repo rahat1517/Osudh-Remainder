@@ -747,4 +747,11 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get testAlarmLabel => 'পরীক্ষা: অ্যালার্ম ঠিকমতো বাজছে';
+
+  @override
+  String get alarmsBlockedTitle => 'অ্যালার্ম বাজবে না';
+
+  @override
+  String get alarmsBlockedBody =>
+      'নোটিফিকেশন বা ঠিক সময়ের অ্যালার্মের অনুমতি বন্ধ আছে। এখানে চেপে চালু করুন।';
 }

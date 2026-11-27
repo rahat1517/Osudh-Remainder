@@ -751,4 +751,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get testAlarmLabel => 'Test: the alarm works';
+
+  @override
+  String get alarmsBlockedTitle => 'Alarms will not ring';
+
+  @override
+  String get alarmsBlockedBody =>
+      'Notifications or exact alarms are not allowed. Tap here to turn them on.';
 }

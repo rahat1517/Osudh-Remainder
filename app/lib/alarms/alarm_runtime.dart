@@ -15,7 +15,7 @@ import 'local_store.dart';
 final notificationsPlugin = FlutterLocalNotificationsPlugin();
 
 const _initSettings = InitializationSettings(
-  android: AndroidInitializationSettings('@mipmap/ic_launcher'),
+  android: AndroidInitializationSettings('ic_stat_alarm'),
 );
 
 Future<AlarmService> createAlarmService(
