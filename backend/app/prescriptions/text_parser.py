@@ -261,11 +261,16 @@ def _dose_confidence(base: Confidence, pattern: str | None, explicit: bool) -> C
     return base
 
 
-def _build(form: str | None, rest: str, lines: list[TextLine]) -> ExtractedMedicine:
+def _build(
+    form: str | None,
+    rest: str,
+    lines: list[TextLine],
+    ceiling: Confidence = Confidence.HIGH,
+) -> ExtractedMedicine:
     raw_text = " ".join(line.text for line in lines)
     text = _unglue(raw_text)
     score = min(line.score for line in lines)
-    base = _base_confidence(score)
+    base = _cap(_base_confidence(score), ceiling)
     name, strength = _split_name(rest)
     as_needed = bool(_AS_NEEDED_RE.search(text))
     dose_raw, dose_pattern, explicit = _find_dose(text)
@@ -300,8 +305,13 @@ def _build(form: str | None, rest: str, lines: list[TextLine]) -> ExtractedMedic
     )
 
 
-def parse_lines(lines: list[TextLine], *, blurry: bool = False) -> PrescriptionExtraction:
+def parse_lines(
+    lines: list[TextLine], *, blurry: bool = False, soft: bool = False
+) -> PrescriptionExtraction:
     """Lines in reading order (top to bottom) → extraction.
+
+    `soft`: the photo is not crisp (see `ocr_reader.is_soft`). OCR can then misread a digit with
+    full confidence ("7 days" as "1 days"), so no field is marked certain: the user checks each.
 
     `blurry`: the photo itself is out of focus (see `ocr_reader.is_blurry`). With nothing found in
     it, it is reported as a poor photo to retake, never as "not a prescription".
@@ -321,6 +331,7 @@ def parse_lines(lines: list[TextLine], *, blurry: bool = False) -> PrescriptionE
         else ImageQuality.POOR
     )
 
+    ceiling = Confidence.MEDIUM if (soft or blurry) else Confidence.HIGH
     medicines: list[ExtractedMedicine] = []
     current: tuple[str | None, str, list[TextLine]] | None = None
     for line in lines:
@@ -328,20 +339,20 @@ def parse_lines(lines: list[TextLine], *, blurry: bool = False) -> PrescriptionE
         if _STOP_RE.match(line.text):
             start = None
             if current:
-                medicines.append(_build(*current))
+                medicines.append(_build(*current, ceiling))
                 current = None
             continue
         if start:
             if current:
-                medicines.append(_build(*current))
+                medicines.append(_build(*current, ceiling))
             current = (start[0], start[1], [line])
         elif current and _is_instruction(line.text):
             current[2].append(line)
         elif current:
-            medicines.append(_build(*current))
+            medicines.append(_build(*current, ceiling))
             current = None
     if current:
-        medicines.append(_build(*current))
+        medicines.append(_build(*current, ceiling))
 
     looks_like_prescription = bool(medicines) or any(
         _PRESCRIPTION_HINTS.search(line.text) for line in lines

@@ -17,21 +17,21 @@
 
 | Field | Accuracy | Correct among HIGH | Wrong but HIGH |
 |---|---|---|---|
-| name | 29/30 (97%) | 15/15 (100%) | 0 |
-| strength | 25/27 (93%) | 14/14 (100%) | 0 |
-| dose | 9/29 (31%) | 4/4 (100%) | 0 |
-| timing | 15/28 (54%) | 5/5 (100%) | 0 |
-| duration | 9/29 (31%) | 9/9 (100%) | 0 |
+| name | 29/30 (97%) | 6/6 (100%) | 0 |
+| strength | 25/27 (93%) | 4/4 (100%) | 0 |
+| dose | 9/29 (31%) | — | 0 |
+| timing | 15/28 (54%) | 2/2 (100%) | 0 |
+| duration | 9/29 (31%) | 3/3 (100%) | 0 |
 
 ## gallery
 
 | Field | Accuracy | Correct among HIGH | Wrong but HIGH |
 |---|---|---|---|
-| name | 28/30 (93%) | 8/8 (100%) | 0 |
-| strength | 24/27 (89%) | 10/10 (100%) | 0 |
-| dose | 9/29 (31%) | 4/4 (100%) | 0 |
-| timing | 15/28 (54%) | 5/5 (100%) | 0 |
-| duration | 9/29 (31%) | 8/8 (100%) | 0 |
+| name | 28/30 (93%) | — | 0 |
+| strength | 24/27 (89%) | — | 0 |
+| dose | 9/29 (31%) | — | 0 |
+| timing | 15/28 (54%) | — | 0 |
+| duration | 9/29 (31%) | — | 0 |
 
 ## Details
 
@@ -159,7 +159,7 @@
 - WRONG (low) `rx08-syrup-child/gallery` **Napa** dose: got `None`, expected `{'brand': 'Napa', 'strength': '120 mg/5 ml', 'dose': '1+1+1', 'days': 3}`
 - WRONG (medium) `rx08-syrup-child/gallery` **Napa** duration: got `days=None continue_indefinitely=False`, expected `{'brand': 'Napa', 'strength': '120 mg/5 ml', 'dose': '1+1+1', 'days': 3}`
 - MISSING `rx08-syrup-child/gallery` **Orsaline-N**: not found
-- EXTRA `rx08-syrup-child/gallery`: `2.Syp.Ace Plus` (name confidence high)
+- EXTRA `rx08-syrup-child/gallery`: `2.Syp.Ace Plus` (name confidence medium)
 - WRONG (low) `rx09-four-times/clean` **Zimax** dose: got `None`, expected `{'brand': 'Zimax', 'strength': '500 mg', 'dose': '1+0+0', 'timing': 'empty_stomach', 'days': 3}`
 - WRONG (low) `rx09-four-times/clean` **Zimax** timing: got `not_specified`, expected `{'brand': 'Zimax', 'strength': '500 mg', 'dose': '1+0+0', 'timing': 'empty_stomach', 'days': 3}`
 - WRONG (medium) `rx09-four-times/clean` **Zimax** duration: got `days=None continue_indefinitely=False`, expected `{'brand': 'Zimax', 'strength': '500 mg', 'dose': '1+0+0', 'timing': 'empty_stomach', 'days': 3}`

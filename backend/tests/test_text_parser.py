@@ -273,3 +273,18 @@ def test_doctor_header_or_dose_pattern_marks_a_prescription():
     assert parse_lines(header).is_prescription
     dose = [TextLine(t, 0.95) for t in ["Unreadable name", "1 + 0 + 1", "after meal"]]
     assert parse_lines(dose).is_prescription
+
+
+def test_a_soft_photo_marks_nothing_certain():
+    lines = [TextLine("Tab. Alatrol 10 mg", 0.99), TextLine("0+0+1  7 days", 0.99)]
+    sharp = parse_lines(lines).medicines[0]
+    assert sharp.duration_confidence == Confidence.HIGH
+    soft = parse_lines(lines, soft=True).medicines[0]
+    assert soft.duration_days == 7
+    assert Confidence.HIGH not in {
+        soft.name_confidence,
+        soft.strength_confidence,
+        soft.dose_confidence,
+        soft.timing_confidence,
+        soft.duration_confidence,
+    }
