@@ -27,6 +27,7 @@ class LocalStore {
   static const _settingsKey = 'settings_v1';
   static const _logsKey = 'dose_logs_v1';
   static const _snoozeKey = 'snoozes_v1';
+  static const _cloudReaderKey = 'cloud_reader_consent_v1';
 
   /// Logs older than this are pruned once synced.
   static const logRetention = Duration(days: 90);
@@ -197,6 +198,12 @@ class LocalStore {
   String get district => _prefs.getString(_districtKey) ?? 'dhaka';
 
   Future<void> setDistrict(String key) => _prefs.setString(_districtKey, key);
+
+  /// Whether hard-to-read photos may be read by Google's AI; null until the user has been asked.
+  bool? get cloudReaderConsent => _prefs.getBool(_cloudReaderKey);
+
+  Future<void> setCloudReaderConsent(bool allowed) =>
+      _prefs.setBool(_cloudReaderKey, allowed);
 
   Future<void> clear() => _prefs.clear();
 }
