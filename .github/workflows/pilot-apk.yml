@@ -5,8 +5,9 @@ name: Pilot APK
 # can be downloaded on a phone from one fixed link (sign in to GitHub first; the repository is private):
 #   https://github.com/rahat1517/Osudh-Remainder/releases/download/pilot/oshudh-reminder.apk
 # The values below are public by design (the app ships them); secrets never go here.
-# Signed with the debug key unless release signing is configured: fine for sharing with pilot
-# testers, never for Play Store upload.
+# Signed with the shared pilot key (app/android/pilot.keystore), so every pilot APK installs as an
+# update over the previous one and keeps the user's sign-in and data. That key is deliberately not
+# secret: never use it for the Play Store, which needs its own private upload key.
 on:
   workflow_dispatch:
 
@@ -34,9 +35,19 @@ jobs:
           channel: stable
           flutter-version: 3.50.1
           cache: true
+      - name: Use the shared pilot signing key
+        run: |
+          cat > android/key.properties <<'PROPS'
+          storeFile=../pilot.keystore
+          storePassword=oshudh-pilot
+          keyAlias=pilot
+          keyPassword=oshudh-pilot
+          PROPS
       - name: Build release APK
+        # A rising build number lets Android install each build as an update
         run: >-
           flutter build apk --release
+          --build-number=${{ github.run_number }}
           --dart-define=SUPABASE_URL=$SUPABASE_URL
           --dart-define=SUPABASE_PUBLISHABLE_KEY=$SUPABASE_PUBLISHABLE_KEY
           --dart-define=BACKEND_URL=$BACKEND_URL

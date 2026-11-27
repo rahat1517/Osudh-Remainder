@@ -12,3 +12,6 @@ GeneratedPluginRegistrant.java
 key.properties
 **/*.keystore
 **/*.jks
+
+# Shared pilot signing key (not secret; never for Play Store)
+!pilot.keystore

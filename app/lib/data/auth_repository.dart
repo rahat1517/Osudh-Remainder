@@ -6,6 +6,9 @@ abstract interface class AuthRepository {
   /// Bearer token for backend calls.
   String? get accessToken;
 
+  /// Fires when the user signs in or out, or the saved session is restored or expires.
+  Stream<void> get changes;
+
   Future<void> sendCode(String phoneE164);
 
   /// Throws [AuthException] with code `invalid_code` on a wrong or expired code.
@@ -36,6 +39,9 @@ class SupabaseAuthRepository implements AuthRepository {
 
   @override
   String? get accessToken => _client.auth.currentSession?.accessToken;
+
+  @override
+  Stream<void> get changes => _client.auth.onAuthStateChange.map((_) {});
 
   @override
   Future<void> sendCode(String phoneE164) async {
@@ -79,6 +85,9 @@ class DemoAuthRepository implements AuthRepository {
 
   @override
   String? get accessToken => null;
+
+  @override
+  Stream<void> get changes => const Stream.empty();
 
   @override
   Future<void> sendCode(String phoneE164) async {}

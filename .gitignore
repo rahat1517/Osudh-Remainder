@@ -97,3 +97,6 @@ Thumbs.db
 .idea/
 .vscode/
 *.log
+
+# Shared signing key for pilot APKs only: deliberately public, never for Play Store uploads
+!app/android/pilot.keystore
