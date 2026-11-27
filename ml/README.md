@@ -98,8 +98,10 @@ real prescriptions (a few thousand lines) are what make handwriting work.
 
 **Easiest: the self-contained notebook.** Open `ml/paddleocr/train_bangla_ocr_colab.ipynb` in
 Google Colab (File → Upload notebook), choose Runtime → Change runtime type → T4 GPU, then
-Runtime → Run all. It downloads Bangla fonts, generates the synthetic lines, fine-tunes the model,
-checks it on unseen lines and downloads `oshudh_ocr_model.zip` (`rec.onnx` + `dict.txt`). It needs
+Runtime → Run all, and allow Google Drive when asked. It downloads Bangla and handwriting fonts,
+generates the synthetic lines, fine-tunes the whole model, checks it on unseen lines and fonts, and
+saves `oshudh_ocr_model.zip` (`rec.onnx` + `dict.txt`) to My Drive as well as downloading it, so
+the result survives the Colab session ending. It needs
 no access to this private repository: the generator and training script are inside it
 (rebuild it with `python ml/paddleocr/make_colab_notebook.py` after changing either).
 
