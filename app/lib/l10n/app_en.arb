@@ -402,5 +402,8 @@
     }
   },
   "stopShort": "Stop",
-  "reportNoDoses": "No doses were due in the last 7 days yet."
+  "reportNoDoses": "No doses were due in the last 7 days yet.",
+  "updateTitle": "A new version is available",
+  "updateBody": "Tap the button. When the download finishes, open the file and tap \"Install\". Your medicines and sign-in stay as they are.",
+  "updateButton": "Update"
 }

@@ -1345,6 +1345,24 @@ abstract class AppLocalizations {
   /// In bn, this message translates to:
   /// **'গত ৭ দিনে এখনো কোনো ডোজের সময় হয়নি।'**
   String get reportNoDoses;
+
+  /// No description provided for @updateTitle.
+  ///
+  /// In bn, this message translates to:
+  /// **'নতুন সংস্করণ এসেছে'**
+  String get updateTitle;
+
+  /// No description provided for @updateBody.
+  ///
+  /// In bn, this message translates to:
+  /// **'নিচের বোতামে চাপুন। ডাউনলোড শেষ হলে ফাইলটি খুলে \"Install\" চাপুন। আপনার ওষুধ ও সাইন ইন ঠিক থাকবে।'**
+  String get updateBody;
+
+  /// No description provided for @updateButton.
+  ///
+  /// In bn, this message translates to:
+  /// **'আপডেট করুন'**
+  String get updateButton;
 }
 
 class _AppLocalizationsDelegate

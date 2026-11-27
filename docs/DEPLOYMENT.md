@@ -70,4 +70,14 @@ uses different field names, add an adapter next to `backend/app/escalation/gatew
 
 ## App
 
-See [release/play-store.md](release/play-store.md).
+Pilot builds: `.github/workflows/pilot-apk.yml` builds on every push to `main` that changes the app
+(or by hand). Each build:
+
+- is published as the `pilot` GitHub release (universal APK, one fixed link);
+- with the `SUPABASE_SERVICE_ROLE_KEY` repository secret set, uploads one APK per processor type
+  plus `latest.json` to the public Supabase bucket `app-releases`. Installed pilot builds read
+  `latest.json` at start and show "নতুন সংস্করণ এসেছে" with a download button. Android then asks
+  the user to tap Install; apps from outside the Play Store cannot update silently.
+
+All pilot APKs share one signing key and a rising version code, so each one installs over the
+previous one and keeps the user's data. Store release: see [release/play-store.md](release/play-store.md).

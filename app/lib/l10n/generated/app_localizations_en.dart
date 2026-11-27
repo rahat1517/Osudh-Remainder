@@ -718,4 +718,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get reportNoDoses => 'No doses were due in the last 7 days yet.';
+
+  @override
+  String get updateTitle => 'A new version is available';
+
+  @override
+  String get updateBody =>
+      'Tap the button. When the download finishes, open the file and tap \"Install\". Your medicines and sign-in stay as they are.';
+
+  @override
+  String get updateButton => 'Update';
 }

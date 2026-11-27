@@ -714,4 +714,14 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get reportNoDoses => 'গত ৭ দিনে এখনো কোনো ডোজের সময় হয়নি।';
+
+  @override
+  String get updateTitle => 'নতুন সংস্করণ এসেছে';
+
+  @override
+  String get updateBody =>
+      'নিচের বোতামে চাপুন। ডাউনলোড শেষ হলে ফাইলটি খুলে \"Install\" চাপুন। আপনার ওষুধ ও সাইন ইন ঠিক থাকবে।';
+
+  @override
+  String get updateButton => 'আপডেট করুন';
 }
