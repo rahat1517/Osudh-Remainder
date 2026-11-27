@@ -4,6 +4,9 @@
 /// alarm buttons while the app is closed.
 library;
 
+import 'alarm_payload.dart';
+import 'alarm_planner.dart';
+
 import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
@@ -104,6 +107,47 @@ class LocalStore {
       for (final l in logs()) done.contains(l.key) ? l.markSynced() : l,
     ]);
   }
+
+  static const _extraAlarmsKey = 'extra_alarms_v1';
+
+  /// One-off alarms (snoozes, the test alarm) that are not part of the plan. Re-syncing replaces
+  /// every scheduled alarm, so these are kept here and scheduled again.
+  List<AlarmSpec> extraAlarms() {
+    final raw = _prefs.getString(_extraAlarmsKey);
+    if (raw == null) return const [];
+    return [
+      for (final e in jsonDecode(raw) as List)
+        () {
+          final p = AlarmPayload.decode(e['payload'] as String);
+          return AlarmSpec(
+            id: e['id'] as int,
+            at: DateTime.parse('${e['at']}Z'),
+            items: p.items,
+            doseAt: p.at,
+          );
+        }(),
+    ];
+  }
+
+  /// Adds [alarm] and drops the ones already past [wallNow].
+  Future<void> addExtraAlarm(AlarmSpec alarm, {required DateTime wallNow}) =>
+      _saveExtraAlarms([
+        for (final a in extraAlarms())
+          if (a.at.isAfter(wallNow) && a.id != alarm.id) a,
+        alarm,
+      ]);
+
+  Future<void> _saveExtraAlarms(List<AlarmSpec> alarms) => _prefs.setString(
+    _extraAlarmsKey,
+    jsonEncode([
+      for (final a in alarms)
+        {
+          'id': a.id,
+          'at': a.at.toIso8601String().substring(0, 19),
+          'payload': AlarmPayload.fromSpec(a).encode(),
+        },
+    ]),
+  );
 
   Map<String, int> _snoozes() {
     final raw = _prefs.getString(_snoozeKey);

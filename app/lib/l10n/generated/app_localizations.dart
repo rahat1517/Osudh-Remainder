@@ -1363,6 +1363,48 @@ abstract class AppLocalizations {
   /// In bn, this message translates to:
   /// **'আপডেট করুন'**
   String get updateButton;
+
+  /// No description provided for @setupOn.
+  ///
+  /// In bn, this message translates to:
+  /// **'চালু আছে'**
+  String get setupOn;
+
+  /// No description provided for @setupAlreadyOn.
+  ///
+  /// In bn, this message translates to:
+  /// **'এটা আগে থেকেই চালু আছে ✓'**
+  String get setupAlreadyOn;
+
+  /// No description provided for @setupTryAgain.
+  ///
+  /// In bn, this message translates to:
+  /// **'এখন খোলা যায়নি। একটু পরে আবার চাপুন।'**
+  String get setupTryAgain;
+
+  /// No description provided for @setupTestAlarm.
+  ///
+  /// In bn, this message translates to:
+  /// **'পরীক্ষামূলক অ্যালার্ম দিন'**
+  String get setupTestAlarm;
+
+  /// No description provided for @setupTestAlarmHelp.
+  ///
+  /// In bn, this message translates to:
+  /// **'সব ঠিক আছে কিনা দেখতে একটা পরীক্ষামূলক অ্যালার্ম দিন। এটা কোনো ডোজ হিসেবে লেখা হবে না।'**
+  String get setupTestAlarmHelp;
+
+  /// No description provided for @setupTestAlarmScheduled.
+  ///
+  /// In bn, this message translates to:
+  /// **'এক মিনিটের মধ্যে অ্যালার্ম বাজবে। ফোন লক করে অপেক্ষা করুন।'**
+  String get setupTestAlarmScheduled;
+
+  /// No description provided for @testAlarmLabel.
+  ///
+  /// In bn, this message translates to:
+  /// **'পরীক্ষা: অ্যালার্ম ঠিকমতো বাজছে'**
+  String get testAlarmLabel;
 }
 
 class _AppLocalizationsDelegate

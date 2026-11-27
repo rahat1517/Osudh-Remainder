@@ -5,6 +5,9 @@ import 'dose_log.dart';
 import 'local_store.dart';
 
 const snoozeMinutes = 10;
+
+/// Medicine id of the test alarm from Reminder settings; it is never recorded as a dose.
+const testAlarmMedicineId = '__test_alarm__';
 const maxSnoozes = 3;
 
 enum SnoozeResult { snoozed, limitReached }
@@ -45,13 +48,18 @@ class AlarmService {
       wallNow: wallNow,
       utcOffset: utcOffset,
     );
-    await scheduler.replaceAll([...alarms, ...refills]);
+    final extras = [
+      for (final a in store.extraAlarms())
+        if (a.at.isAfter(wallNow)) a,
+    ];
+    await scheduler.replaceAll([...alarms, ...refills, ...extras]);
     return alarms.where((a) => !a.isNotice).length;
   }
 
   Future<void> record(AlarmPayload payload, DoseStatus status) async {
     final now = _clock().toUtc();
     for (final item in payload.items) {
+      if (item.medicineId == testAlarmMedicineId) continue;
       await store.addLog(
         DoseLog(
           medicineId: item.medicineId,
@@ -65,19 +73,34 @@ class AlarmService {
     await sync();
   }
 
+  /// A real dose alarm about a minute from now, so the user can check that alarms ring on this
+  /// phone (locked screen, silent mode, battery saver). Answering it records nothing.
+  Future<DateTime> scheduleTestAlarm(String label) async {
+    final at = wallNow.add(const Duration(minutes: 1));
+    final alarm = AlarmSpec(
+      id: stableAlarmId('test|${at.toIso8601String()}'),
+      at: at,
+      items: [AlarmItem(testAlarmMedicineId, label, '1')],
+    );
+    await store.addExtraAlarm(alarm, wallNow: wallNow);
+    await scheduler.scheduleOne(alarm);
+    return at;
+  }
+
   Future<SnoozeResult> snooze(AlarmPayload payload) async {
     if (store.snoozeCount(payload.reminderKey) >= maxSnoozes) {
       return SnoozeResult.limitReached;
     }
     final n = await store.incrementSnooze(payload.reminderKey);
-    await scheduler.scheduleOne(
-      AlarmSpec(
-        id: stableAlarmId('snooze|${payload.reminderKey}|$n'),
-        at: wallNow.add(const Duration(minutes: snoozeMinutes)),
-        // The snoozed alarm still refers to the original dose time
-        items: payload.items,
-      ),
+    final alarm = AlarmSpec(
+      id: stableAlarmId('snooze|${payload.reminderKey}|$n'),
+      at: wallNow.add(const Duration(minutes: snoozeMinutes)),
+      items: payload.items,
+      // Still about the original dose: answering records it, and the snooze limit counts it
+      doseAt: payload.at,
     );
+    await store.addExtraAlarm(alarm, wallNow: wallNow);
+    await scheduler.scheduleOne(alarm);
     return SnoozeResult.snoozed;
   }
 

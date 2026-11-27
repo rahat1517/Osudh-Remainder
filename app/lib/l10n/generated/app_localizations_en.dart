@@ -728,4 +728,27 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get updateButton => 'Update';
+
+  @override
+  String get setupOn => 'On';
+
+  @override
+  String get setupAlreadyOn => 'This is already on ✓';
+
+  @override
+  String get setupTryAgain => 'Could not open it now. Try again in a moment.';
+
+  @override
+  String get setupTestAlarm => 'Set a test alarm';
+
+  @override
+  String get setupTestAlarmHelp =>
+      'Set a test alarm to check that everything works. It is not recorded as a dose.';
+
+  @override
+  String get setupTestAlarmScheduled =>
+      'The alarm will ring within a minute. Lock the phone and wait.';
+
+  @override
+  String get testAlarmLabel => 'Test: the alarm works';
 }

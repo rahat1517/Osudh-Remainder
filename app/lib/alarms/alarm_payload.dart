@@ -6,7 +6,8 @@ import 'alarm_planner.dart';
 class AlarmPayload {
   const AlarmPayload(this.at, this.items);
 
-  factory AlarmPayload.fromSpec(AlarmSpec s) => AlarmPayload(s.at, s.items);
+  factory AlarmPayload.fromSpec(AlarmSpec s) =>
+      AlarmPayload(s.doseAt ?? s.at, s.items);
 
   factory AlarmPayload.decode(String raw) {
     final j = jsonDecode(raw) as Map<String, dynamic>;
