@@ -252,3 +252,20 @@ def test_bundled_bangla_model_reads_bangla_instructions():
         Timing.BEFORE_MEAL,
         7,
     )
+
+
+def test_the_same_photo_is_not_read_twice(monkeypatch):
+    # Reading a photo and then redacting it before Gemini need the same OCR: done once
+    engine = RapidOcrEngine()
+    runs = []
+
+    def fake_engine(image):
+        runs.append(image)
+        return [[[[0, 0], [10, 0], [10, 10], [0, 10]], "Tab. Napa", 0.9]], None
+
+    monkeypatch.setattr(engine, "_load", lambda: fake_engine)
+    first = engine.lines(b"photo-1")
+    assert engine.lines(b"photo-1") == first
+    assert len(runs) == 1
+    engine.lines(b"photo-2")
+    assert len(runs) == 2
