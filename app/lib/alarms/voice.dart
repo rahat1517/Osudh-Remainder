@@ -1,7 +1,9 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/services.dart';
 
-/// Recorded voice lines (assets/voice/<file>.ogg). The alarm sound itself is a notification sound
+import '../schedule/schedule_models.dart';
+
+/// Recorded voice lines (`assets/voice/<file>.ogg`). The alarm sound itself is a notification sound
 /// (android/app/src/main/res/raw/alarm_ring.ogg), so it also rings with the app closed.
 enum VoiceClip {
   alarmOpen('alarm_open'), // the alarm screen opened
@@ -9,7 +11,20 @@ enum VoiceClip {
   testAlarm('test_alarm'), // the test alarm from Reminder settings
   taken('taken'),
   snoozed('snoozed'),
-  skipped('skipped');
+  skipped('skipped'),
+  beforeMeal('before_meal'),
+  afterMeal('after_meal'),
+  emptyStomach('empty_stomach'),
+  bedtime('bedtime');
+
+  /// The spoken instruction for a timing, if there is one.
+  static VoiceClip? forTiming(Timing? timing) => switch (timing) {
+    Timing.beforeMeal => beforeMeal,
+    Timing.afterMeal => afterMeal,
+    Timing.emptyStomach => emptyStomach,
+    Timing.bedtime => bedtime,
+    _ => null,
+  };
 
   const VoiceClip(this.file);
   final String file;

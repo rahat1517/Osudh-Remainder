@@ -19,16 +19,18 @@ class AlarmScreen extends StatefulWidget {
     required this.payload,
     required this.service,
     required this.speaker,
-    VoicePlayer? voice,
+    this.voice,
     this.repeatEvery = const Duration(seconds: 4),
-  }) : _voice = voice;
+  });
 
   final AlarmPayload payload;
   final AlarmService service;
 
   /// The phone's text-to-speech, used when there is no recording.
   final Speaker speaker;
-  final VoicePlayer? _voice;
+
+  /// Recorded voice lines; [AssetVoicePlayer] when not given.
+  final VoicePlayer? voice;
 
   /// Pause between repeats of the spoken reminder while nobody has answered.
   final Duration repeatEvery;
@@ -41,7 +43,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
   bool _busy = false;
   bool _started = false;
   Timer? _next;
-  late final VoicePlayer _voice = widget._voice ?? AssetVoicePlayer();
+  late final VoicePlayer _voice = widget.voice ?? AssetVoicePlayer();
   late final DateTime _until = DateTime.now().add(ringFor);
 
   bool get _isTest =>
@@ -71,6 +73,13 @@ class _AlarmScreenState extends State<AlarmScreen> {
     var played = await _voice.play(clip);
     if (!played && clip != VoiceClip.alarmOpen) {
       played = await _voice.play(VoiceClip.alarmOpen);
+    }
+    // "খাবারের আগে খাবেন" when every medicine due now has the same instruction
+    final timings = {for (final i in widget.payload.items) i.timing};
+    if (played && timings.length == 1 && !_busy && mounted) {
+      if (VoiceClip.forTiming(timings.single) case final t?) {
+        await _voice.play(t);
+      }
     }
     if (!played && mounted) {
       final names = widget.payload.items.map((i) => i.label).join(', ');

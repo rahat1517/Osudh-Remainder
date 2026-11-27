@@ -18,11 +18,14 @@ const maxAlarms = 150;
 const horizonNoticeId = 1;
 
 class AlarmItem {
-  const AlarmItem(this.medicineId, this.label, this.amount);
+  const AlarmItem(this.medicineId, this.label, this.amount, {this.timing});
 
   final String medicineId;
   final String label;
   final String amount;
+
+  /// Before/after food etc., for the spoken "খাবারের আগে খাবেন".
+  final Timing? timing;
 }
 
 class AlarmSpec {
@@ -124,7 +127,12 @@ List<AlarmSpec> planAlarms({
         at: r.at,
         items: [
           for (final o in r.items)
-            AlarmItem(o.medicineId, byId[o.medicineId]!.label, o.amount),
+            AlarmItem(
+              o.medicineId,
+              byId[o.medicineId]!.label,
+              o.amount,
+              timing: byId[o.medicineId]!.timing,
+            ),
         ],
       ),
     );

@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import '../schedule/schedule_models.dart';
 import 'alarm_planner.dart';
 
 /// Data carried inside a notification, so an alarm can be handled with the app closed.
@@ -21,6 +22,7 @@ class AlarmPayload {
           i['id'] as String,
           i['label'] as String,
           i['amount'] as String,
+          timing: _timing(i['timing']),
         ),
     ], notificationId: j['nid'] as int?);
   }
@@ -38,7 +40,30 @@ class AlarmPayload {
     'nid': ?notificationId,
     'items': [
       for (final i in items)
-        {'id': i.medicineId, 'label': i.label, 'amount': i.amount},
+        {
+          'id': i.medicineId,
+          'label': i.label,
+          'amount': i.amount,
+          'timing': ?_timingJson[i.timing],
+        },
     ],
   });
+}
+
+const _timingJson = {
+  Timing.beforeMeal: 'before_meal',
+  Timing.afterMeal: 'after_meal',
+  Timing.withMeal: 'with_meal',
+  Timing.emptyStomach: 'empty_stomach',
+  Timing.bedtime: 'bedtime',
+  Timing.notSpecified: 'not_specified',
+};
+
+Timing? _timing(Object? value) {
+  if (value is! String) return null; // older payloads have none
+  try {
+    return timingFromJson(value);
+  } on ArgumentError {
+    return null;
+  }
 }

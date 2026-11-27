@@ -10,6 +10,7 @@ import 'package:oshudh_reminder/alarms/local_store.dart';
 import 'package:oshudh_reminder/alarms/speaker.dart';
 import 'package:oshudh_reminder/alarms/voice.dart';
 import 'package:oshudh_reminder/l10n/generated/app_localizations.dart';
+import 'package:oshudh_reminder/schedule/schedule_models.dart';
 import 'package:oshudh_reminder/screens/alarm_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -123,4 +124,38 @@ void main() {
       expect(voice.played, [VoiceClip.alarmOpen]);
     },
   );
+
+  testWidgets(
+    'says when to take it, if every medicine due has the same instruction',
+    (tester) async {
+      final p = AlarmPayload(DateTime.utc(2026, 11, 26, 21), const [
+        AlarmItem('seclo', 'Seclo 20 mg', '1', timing: Timing.beforeMeal),
+        AlarmItem('pantonix', 'Pantonix 20 mg', '1', timing: Timing.beforeMeal),
+      ], notificationId: 78);
+      // The timing survives the trip through the notification payload
+      final decoded = AlarmPayload.decode(p.encode());
+      expect(
+        decoded.items.map((i) => i.timing),
+        everyElement(Timing.beforeMeal),
+      );
+      await open(
+        tester,
+        p: decoded,
+        recorded: const {VoiceClip.alarmOpen, VoiceClip.beforeMeal},
+      );
+      expect(voice.played, [VoiceClip.alarmOpen, VoiceClip.beforeMeal]);
+    },
+  );
+
+  testWidgets('no timing line when the medicines differ', (tester) async {
+    await open(
+      tester,
+      p: AlarmPayload(DateTime.utc(2026, 11, 26, 21), const [
+        AlarmItem('seclo', 'Seclo', '1', timing: Timing.beforeMeal),
+        AlarmItem('napa', 'Napa', '1', timing: Timing.afterMeal),
+      ]),
+      recorded: VoiceClip.values.toSet(),
+    );
+    expect(voice.played, [VoiceClip.alarmOpen]);
+  });
 }
