@@ -83,10 +83,15 @@ _STRENGTH_RE = re.compile(
 # --- Dose ---------------------------------------------------------------------------------------
 # Characters OCR confuses with digits, only replaced inside a dose-shaped token
 _DIGIT_LIKE = "0-9০-৯½¼¾lIi|oO"
+_DOSE_PART = rf"[{_DIGIT_LIKE}.]+(?:/[0-9]+)?"
+# One separator throughout: "1+0+1" or "1-0-1". A dash after a "+" pattern starts something else
+# ("১+০+০ — ২ মাস" is 1+0+0 for 2 months, not the dose 1+0+0+2).
+# Never stop inside a longer pattern: "1+0+1AC" must not be read as "1+0".
 _DOSE_RE = re.compile(
-    rf"(?<![\w/])([{_DIGIT_LIKE}.]+(?:/[0-9]+)?(?:\s*[+\-–—]\s*[{_DIGIT_LIKE}.]+(?:/[0-9]+)?){{1,3}})"
-    # Never stop inside a longer pattern: "1+0+1AC" must not be read as "1+0"
-    rf"(?![{_DIGIT_LIKE}./]|\s*[+\-–—])"
+    rf"(?<![\w/])("
+    rf"{_DOSE_PART}(?:\s*\+\s*{_DOSE_PART}){{1,3}}(?![{_DIGIT_LIKE}./]|\s*\+)"
+    rf"|{_DOSE_PART}(?:\s*[\-–—]\s*{_DOSE_PART}){{1,3}}(?![{_DIGIT_LIKE}./]|\s*[\-–—])"
+    rf")"
 )
 _LOOKALIKES = str.maketrans({"l": "1", "I": "1", "i": "1", "|": "1", "o": "0", "O": "0"})
 

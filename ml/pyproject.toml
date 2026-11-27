@@ -53,5 +53,7 @@ select = ["E", "F", "I", "B", "UP", "SIM"]
 "oshudh_ml/train_lora.py" = ["E501"]
 "tests/*.py" = ["E501"]
 "oshudh_ml/synth_rec.py" = ["E501"]
+# Run in PaddlePaddle's own Python 3.11 environment; PaddleOCR goes on sys.path first
+"paddleocr/cpu/*.py" = ["E402", "E501", "E741", "B905", "SIM115"]
 "oshudh_ml/export_rec.py" = ["E501"]
 "paddleocr/make_colab_notebook.py" = ["E501"]
