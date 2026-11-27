@@ -7,8 +7,9 @@ finds is labelled with `rec_dataset.label_line` (confident reads that agree with
 or names corrected from them) and cropped. Lines that cannot be labelled safely are skipped, and
 listed in `skipped.tsv` with their crops so a reviewer can type the correct text and add them.
 
-Needs DATABASE_URL (privileged) and SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY. Examples are not
-marked as exported (that is done by `oshudh_ml.export`), so this can be re-run after every model.
+Needs SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY (rows are read through Supabase's API with it), or
+DATABASE_URL (privileged) for the rows. Examples are not marked as exported (that is done by
+`oshudh_ml.export`), so this can be re-run after every model.
 """
 
 import argparse
@@ -91,9 +92,29 @@ def export(
     return stats
 
 
+def approved_via_api(client, base: str) -> list[tuple[str, str, str, dict]]:
+    """APPROVED through Supabase's REST API (the service role bypasses row-level security)."""
+    r = client.get(
+        f"{base}/rest/v1/training_examples",
+        params={"select": "id,user_id,image_path,group_key,label", "review_status": "eq.approved"},
+    )
+    r.raise_for_status()
+    examples = r.json()
+    r = client.get(
+        f"{base}/rest/v1/training_consents",
+        params={"select": "user_id", "revoked_at": "is.null"},
+    )
+    r.raise_for_status()
+    consented = {c["user_id"] for c in r.json()}
+    return [
+        (e["id"], e["image_path"], e["group_key"], e["label"])
+        for e in examples
+        if e["user_id"] in consented
+    ]
+
+
 def main(argv: list[str] | None = None) -> int:
     import httpx2
-    import psycopg
     from rapidocr_onnxruntime import RapidOCR
 
     p = argparse.ArgumentParser()
@@ -101,12 +122,23 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--seed", default="oshudh")
     p.add_argument("--bucket", default="training-examples")
     p.add_argument("--rec-model", help="Current fine-tuned recognition model (ONNX), if any")
+    p.add_argument("--rec-keys", help="Its character list (dict.txt); needed with --rec-model")
     args = p.parse_args(argv)
 
     base = os.environ["SUPABASE_URL"].rstrip("/")
     key = os.environ["SUPABASE_SERVICE_ROLE_KEY"]
     client = httpx2.Client(timeout=30, headers={"Authorization": f"Bearer {key}", "apikey": key})
-    engine = RapidOCR(**({"rec_model_path": args.rec_model} if args.rec_model else {}))
+    if args.rec_model and not args.rec_keys:
+        p.error(
+            "--rec-model needs --rec-keys: a model read with the wrong character list is garbage"
+        )
+    engine = RapidOCR(
+        **(
+            {"rec_model_path": args.rec_model, "rec_keys_path": args.rec_keys}
+            if args.rec_model
+            else {}
+        )
+    )
 
     def download(path: str) -> bytes:
         r = client.get(f"{base}/storage/v1/object/{args.bucket}/{path}")
@@ -117,8 +149,13 @@ def main(argv: list[str] | None = None) -> int:
         result, _ = engine(raw)
         return result or []
 
-    with psycopg.connect(os.environ["DATABASE_URL"]) as conn:
-        rows = conn.execute(APPROVED).fetchall()
+    if os.environ.get("DATABASE_URL"):
+        import psycopg
+
+        with psycopg.connect(os.environ["DATABASE_URL"]) as conn:
+            rows = conn.execute(APPROVED).fetchall()
+    else:
+        rows = approved_via_api(client, base)
     stats = export((Example(*row) for row in rows), args.out, download, ocr, args.seed)
     print(f"{len(rows)} examples → {dict(stats)} in {args.out}")
     return 0
