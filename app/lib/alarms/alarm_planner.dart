@@ -32,7 +32,12 @@ class AlarmSpec {
     required this.items,
     this.isHorizonNotice = false,
     this.refillFor,
+    this.doseAt,
   });
+
+  /// The dose time this alarm is about, when it fires at another time (a snooze). Answering a
+  /// snoozed alarm must record the original dose, not the snooze time.
+  final DateTime? doseAt;
 
   final int id;
 

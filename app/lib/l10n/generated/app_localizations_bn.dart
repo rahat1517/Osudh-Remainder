@@ -724,4 +724,27 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get updateButton => 'আপডেট করুন';
+
+  @override
+  String get setupOn => 'চালু আছে';
+
+  @override
+  String get setupAlreadyOn => 'এটা আগে থেকেই চালু আছে ✓';
+
+  @override
+  String get setupTryAgain => 'এখন খোলা যায়নি। একটু পরে আবার চাপুন।';
+
+  @override
+  String get setupTestAlarm => 'পরীক্ষামূলক অ্যালার্ম দিন';
+
+  @override
+  String get setupTestAlarmHelp =>
+      'সব ঠিক আছে কিনা দেখতে একটা পরীক্ষামূলক অ্যালার্ম দিন। এটা কোনো ডোজ হিসেবে লেখা হবে না।';
+
+  @override
+  String get setupTestAlarmScheduled =>
+      'এক মিনিটের মধ্যে অ্যালার্ম বাজবে। ফোন লক করে অপেক্ষা করুন।';
+
+  @override
+  String get testAlarmLabel => 'পরীক্ষা: অ্যালার্ম ঠিকমতো বাজছে';
 }

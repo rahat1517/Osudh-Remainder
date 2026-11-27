@@ -405,5 +405,12 @@
   "reportNoDoses": "No doses were due in the last 7 days yet.",
   "updateTitle": "A new version is available",
   "updateBody": "Tap the button. When the download finishes, open the file and tap \"Install\". Your medicines and sign-in stay as they are.",
-  "updateButton": "Update"
+  "updateButton": "Update",
+  "setupOn": "On",
+  "setupAlreadyOn": "This is already on ✓",
+  "setupTryAgain": "Could not open it now. Try again in a moment.",
+  "setupTestAlarm": "Set a test alarm",
+  "setupTestAlarmHelp": "Set a test alarm to check that everything works. It is not recorded as a dose.",
+  "setupTestAlarmScheduled": "The alarm will ring within a minute. Lock the phone and wait.",
+  "testAlarmLabel": "Test: the alarm works"
 }
