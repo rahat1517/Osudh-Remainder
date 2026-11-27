@@ -1,7 +1,10 @@
 name: Pilot APK
 
-# Builds an installable APK wired to the production Supabase project and backend.
-# Run it from Actions → Pilot APK → Run workflow. The APK is published as the `pilot` release, so it
+# Builds an installable APK wired to the production Supabase project and backend. Runs on every push
+# to main that changes the app, or by hand from Actions → Pilot APK → Run workflow.
+# In-app updates: per-phone-type APKs and latest.json go to the public Supabase bucket
+# `app-releases` (needs the SUPABASE_SERVICE_ROLE_KEY repository secret); installed pilot builds
+# read latest.json and offer the update. Without the secret, that step is skipped. The APK is published as the `pilot` release, so it
 # can be downloaded on a phone from one fixed link (sign in to GitHub first; the repository is private):
 #   https://github.com/rahat1517/Osudh-Remainder/releases/download/pilot/oshudh-reminder.apk
 # The values below are public by design (the app ships them); secrets never go here.
@@ -10,6 +13,13 @@ name: Pilot APK
 # secret: never use it for the Play Store, which needs its own private upload key.
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ["app/**", ".github/workflows/pilot-apk.yml"]
+
+concurrency:
+  group: pilot-apk
+  cancel-in-progress: true
 
 permissions:
   contents: write   # publish the APK as the `pilot` release
@@ -43,11 +53,61 @@ jobs:
           keyAlias=pilot
           keyPassword=oshudh-pilot
           PROPS
-      - name: Build release APK
-        # A rising build number lets Android install each build as an update
+      - name: Build per-phone-type APKs (small enough for the free storage plan)
+        # A rising build number lets Android install each build as an update and lets the app
+        # know which build it is (BUILD_NUMBER)
+        run: >-
+          flutter build apk --release --split-per-abi
+          --android-project-arg=force-version-code-ignoring-abi=true
+          --build-number=${{ github.run_number }}
+          --dart-define=BUILD_NUMBER=${{ github.run_number }}
+          --dart-define=SUPABASE_URL=$SUPABASE_URL
+          --dart-define=SUPABASE_PUBLISHABLE_KEY=$SUPABASE_PUBLISHABLE_KEY
+          --dart-define=BACKEND_URL=$BACKEND_URL
+      - name: Publish for in-app updates
+        env:
+          SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          BUILD: ${{ github.run_number }}
+          NOTES: ${{ github.event.head_commit.message }}
+        run: |
+          if [ -z "$SERVICE_KEY" ]; then
+            echo "SUPABASE_SERVICE_ROLE_KEY secret not set; skipping in-app update publishing."
+            exit 0
+          fi
+          base="$SUPABASE_URL/storage/v1/object"
+          upload() {  # upload <file> <path> <content type>
+            curl -fsS -X POST "$base/app-releases/$2" \
+              -H "Authorization: Bearer $SERVICE_KEY" -H "apikey: $SERVICE_KEY" \
+              -H "x-upsert: true" -H "cache-control: max-age=60" \
+              -H "Content-Type: $3" --data-binary "@$1" > /dev/null
+          }
+          out=build/app/outputs/flutter-apk
+          uploaded=0
+          for abi in arm64-v8a armeabi-v7a x86_64; do
+            f="$out/app-$abi-release.apk"
+            [ -f "$f" ] || continue
+            echo "$abi: $(du -h "$f" | cut -f1)"
+            upload "$f" "builds/$BUILD/oshudh-reminder-$abi.apk" application/vnd.android.package-archive
+            uploaded=$((uploaded + 1))
+          done
+          # Never announce a build whose files are missing
+          [ "$uploaded" -ge 2 ] || { echo "expected per-ABI APKs in $out"; ls -la "$out"; exit 1; }
+          public="$base/public/app-releases/builds/$BUILD"
+          python3 - "$BUILD" "$public" "${NOTES%%$'\n'*}" > latest.json <<'PY'
+          import json, sys
+          build, public, notes = int(sys.argv[1]), sys.argv[2], sys.argv[3][:200]
+          apks = {abi: f"{public}/oshudh-reminder-{abi}.apk"
+                  for abi in ("arm64-v8a", "armeabi-v7a", "x86_64")}
+          print(json.dumps({"build": build, "notes": notes, "apks": apks}))
+          PY
+          cat latest.json
+          # latest.json last: phones only see a build once all of its files are uploaded
+          upload latest.json latest.json application/json
+      - name: Build the universal APK (for the GitHub release link)
         run: >-
           flutter build apk --release
           --build-number=${{ github.run_number }}
+          --dart-define=BUILD_NUMBER=${{ github.run_number }}
           --dart-define=SUPABASE_URL=$SUPABASE_URL
           --dart-define=SUPABASE_PUBLISHABLE_KEY=$SUPABASE_PUBLISHABLE_KEY
           --dart-define=BACKEND_URL=$BACKEND_URL

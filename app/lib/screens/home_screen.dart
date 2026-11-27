@@ -12,6 +12,7 @@ import 'confirm_screen.dart';
 import 'family_screen.dart';
 import 'medicines_screen.dart';
 import '../widgets/insights_section.dart';
+import '../widgets/update_banner.dart';
 import 'scan_screen.dart';
 import 'settings_screen.dart';
 import 'setup_screen.dart';
@@ -97,6 +98,7 @@ class HomeScreen extends StatelessWidget {
             ? ListView(
                 padding: const EdgeInsets.all(32),
                 children: [
+                  if (state.update case final u?) UpdateBanner(update: u),
                   Text(
                     l.homeEmpty,
                     textAlign: TextAlign.center,
@@ -108,6 +110,7 @@ class HomeScreen extends StatelessWidget {
                 // Room at the bottom so the floating buttons never cover the last reminder
                 padding: const EdgeInsets.fromLTRB(16, 16, 16, 160),
                 children: [
+                  if (state.update case final u?) UpdateBanner(update: u),
                   const InsightsSection(),
                   if (state.offline)
                     Card(

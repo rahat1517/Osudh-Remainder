@@ -17,6 +17,7 @@ import '../insights/insights.dart';
 import '../data/models.dart';
 import '../schedule/schedule_engine.dart';
 import '../schedule/schedule_models.dart';
+import '../updates/update_checker.dart';
 
 /// One reminder today: a wall-clock time and the medicines due then.
 class TodayReminder {
@@ -36,6 +37,7 @@ class AppState extends ChangeNotifier {
     this.caregivers,
     this.channels,
     this.trainingConsent,
+    this.updates,
     this.logSync,
     DateTime Function()? clock,
     this.utcOffset = const Duration(hours: 6),
@@ -59,6 +61,19 @@ class AppState extends ChangeNotifier {
   void dispose() {
     _authChanges.cancel();
     super.dispose();
+  }
+
+  /// Checks for a newer pilot build; [update] is set when one exists.
+  final UpdateChecker? updates;
+  AppUpdate? update;
+
+  /// Looks for a newer version once; never throws.
+  Future<void> checkForUpdate() async {
+    final found = await updates?.check();
+    if (found != null) {
+      update = found;
+      notifyListeners();
+    }
   }
 
   /// Opt-in for sharing confirmed scans (Phase 11).

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -23,6 +25,7 @@ import 'screens/home_screen.dart';
 import 'screens/welcome_screen.dart';
 import 'state/app_state.dart';
 import 'theme/app_theme.dart';
+import 'updates/update_checker.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -50,6 +53,12 @@ Future<void> main() async {
       caregivers: SupabaseCaregiverRepository(client),
       channels: SupabaseReminderChannelsRepository(client),
       trainingConsent: SupabaseTrainingConsentRepository(client),
+      updates: config.updateManifestUrl == null
+          ? null
+          : UpdateChecker(
+              manifestUrl: config.updateManifestUrl!,
+              installedBuild: config.buildNumber,
+            ),
     );
     final push = config.hasFirebase
         ? FirebasePushRegistration(
@@ -109,6 +118,7 @@ Future<void> main() async {
     },
   );
   await state.refresh();
+  unawaited(state.checkForUpdate());
   runApp(
     OshudhApp(state: state, navigatorKey: navigatorKey, alarmService: alarms),
   );
