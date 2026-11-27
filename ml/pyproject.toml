@@ -41,6 +41,8 @@ pythonpath = ["."]
 
 [tool.ruff]
 line-length = 100
+# Generated from oshudh_ml/synth_rec.py and paddleocr/train_rec_colab.sh, which are checked
+extend-exclude = ["paddleocr/*.ipynb"]
 target-version = "py312"
 
 [tool.ruff.lint]
