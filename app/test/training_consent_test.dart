@@ -98,6 +98,10 @@ void main() {
       200,
       scrollable: find.byType(Scrollable).last,
     );
+    await tester.ensureVisible(
+      tile,
+    ); // the tile is tall: bring all of it on screen
+    await tester.pumpAndSettle();
     expect(tester.widget<SwitchListTile>(tile).value, isFalse);
     await tester.tap(tile);
     await tester.pumpAndSettle();

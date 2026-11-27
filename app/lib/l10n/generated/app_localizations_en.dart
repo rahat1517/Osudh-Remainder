@@ -696,4 +696,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get errInvalidLabel => 'The prescription details could not be shared.';
+
+  @override
+  String get mealTimesTitle => 'Meal times';
+
+  @override
+  String get mealTimesHelp =>
+      'Reminder times are calculated from these. Before-meal medicines are reminded 30 minutes before, after-meal ones 15 minutes after.';
+
+  @override
+  String get mealTimesSaveFailed =>
+      'Could not save the time. Check the internet connection and try again.';
 }

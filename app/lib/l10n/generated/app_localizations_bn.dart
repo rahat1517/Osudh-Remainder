@@ -692,4 +692,15 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get errInvalidLabel => 'প্রেসক্রিপশনের তথ্য শেয়ার করা যায়নি।';
+
+  @override
+  String get mealTimesTitle => 'খাবারের সময়';
+
+  @override
+  String get mealTimesHelp =>
+      'রিমাইন্ডারের সময় এগুলো থেকে হিসাব হয়। খাবারের আগের ওষুধ ৩০ মিনিট আগে, পরের ওষুধ ১৫ মিনিট পরে মনে করানো হয়।';
+
+  @override
+  String get mealTimesSaveFailed =>
+      'সময় সেভ করা যায়নি। ইন্টারনেট দেখে আবার চেষ্টা করুন।';
 }
