@@ -33,7 +33,7 @@ Environment variables (see `.env.example`):
 | `ANTHROPIC_API_KEY` | yes | prescription reading |
 | `SENTRY_DSN` | optional | error monitoring (scrubbed) |
 | `READER_MODE`, `LOCAL_READER_URL`, `LOCAL_READER_MODEL` | optional | `hybrid` routes to a self-hosted model first (Phase 11) |
-| `DATABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `TRAINING_PEPPER` | optional | collect consented training examples (Phase 11) |
+| `DATABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `TRAINING_PEPPER` | optional | collect consented training examples (Phase 11). `DATABASE_URL` logs in as `oshudh_backend` (can only check consent and add examples) through the pooler: `postgresql://oshudh_backend.<project-ref>:<password>@aws-0-<region>.pooler.supabase.com:6543/postgres?sslmode=require`. Keep `TRAINING_PEPPER` unchanged once set |
 
 ```bash
 docker build -t oshudh-api -f backend/Dockerfile .
