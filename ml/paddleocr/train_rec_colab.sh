@@ -27,7 +27,8 @@ PY="$VENV/bin/python"
 PIP=(uv pip install -q --python "$PY")
 # PaddlePaddle 2.6 is built against NumPy 1.x and dlopens cuDNN 8, which newer Colab images lack:
 # install both into the environment and put cuDNN on the library path
-"${PIP[@]}" "numpy<2" "paddlepaddle-gpu==2.6.2" paddle2onnx==1.3.1 "nvidia-cudnn-cu12==8.9.7.29"
+# setuptools: PaddlePaddle imports it at start-up, and uv environments do not include it
+"${PIP[@]}" "numpy<2" "paddlepaddle-gpu==2.6.2" paddle2onnx==1.3.1 "nvidia-cudnn-cu12==8.9.7.29" setuptools
 CUDNN_LIB=$("$PY" -c "import nvidia.cudnn, os; print(os.path.join(nvidia.cudnn.__path__[0], 'lib'))")
 export LD_LIBRARY_PATH="$CUDNN_LIB:${LD_LIBRARY_PATH:-}"
 [ -d "$WORK/PaddleOCR" ] || git clone -q --depth 1 -b release/2.9 https://github.com/PaddlePaddle/PaddleOCR "$WORK/PaddleOCR"
