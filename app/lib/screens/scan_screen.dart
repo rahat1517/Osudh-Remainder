@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:image_picker/image_picker.dart';
@@ -48,6 +49,13 @@ class _ScanScreenState extends State<ScanScreen> {
 
   /// The photo of a failed attempt, so "Try again" needs no new photo.
   Uint8List? _retryImage;
+
+  @override
+  void initState() {
+    super.initState();
+    // Wake the server while the user frames the photo (it sleeps when idle on the free plan)
+    unawaited(context.read<AppState>().api.wakeUp());
+  }
 
   Future<void> _scan({required bool camera}) async {
     final bytes = await widget.pickImage(camera: camera);
