@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:image_picker/image_picker.dart';
@@ -49,14 +50,53 @@ class _ScanScreenState extends State<ScanScreen> {
   /// The photo of a failed attempt, so "Try again" needs no new photo.
   Uint8List? _retryImage;
 
+  @override
+  void initState() {
+    super.initState();
+    // Wake the server while the user frames the photo (it sleeps when idle on the free plan)
+    unawaited(context.read<AppState>().api.wakeUp());
+  }
+
   Future<void> _scan({required bool camera}) async {
+    await _askAboutCloudReaderOnce();
+    if (!mounted) return;
     final bytes = await widget.pickImage(camera: camera);
     if (bytes == null || !mounted) return;
     await _read(bytes);
   }
 
+  /// Before the first scan: may photos the server's own reader is unsure of (often handwriting)
+  /// be read by Google's AI? Asked once; changeable in Settings.
+  Future<void> _askAboutCloudReaderOnce() async {
+    final state = context.read<AppState>();
+    if (state.store == null || state.cloudReaderConsent != null) return;
+    final l = AppLocalizations.of(context);
+    final allowed = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        title: Text(l.cloudReaderTitle),
+        content: SingleChildScrollView(child: Text(l.cloudReaderBody)),
+        actions: [
+          TextButton(
+            key: const Key('cloudReaderDeny'),
+            onPressed: () => Navigator.of(context).pop(false),
+            child: Text(l.cloudReaderDeny),
+          ),
+          FilledButton(
+            key: const Key('cloudReaderAllow'),
+            onPressed: () => Navigator.of(context).pop(true),
+            child: Text(l.cloudReaderAllow),
+          ),
+        ],
+      ),
+    );
+    if (allowed != null) await state.setCloudReaderConsent(allowed);
+  }
+
   Future<void> _read(Uint8List bytes) async {
     final api = context.read<AppState>().api;
+    final cloudOk = context.read<AppState>().cloudReaderConsent ?? false;
     final l = AppLocalizations.of(context);
     setState(() {
       _reading = true;
@@ -66,13 +106,13 @@ class _ScanScreenState extends State<ScanScreen> {
     try {
       PrescriptionScan scan;
       try {
-        scan = await api.extractPrescription(bytes);
+        scan = await api.extractPrescription(bytes, cloudOk: cloudOk);
       } on ApiException catch (e) {
         if (!_transientCodes.contains(e.code)) rethrow;
         // Try once more on its own before bothering the user
         await Future<void>.delayed(widget.retryDelay);
         if (!mounted) return;
-        scan = await api.extractPrescription(bytes);
+        scan = await api.extractPrescription(bytes, cloudOk: cloudOk);
       }
       if (!mounted) return;
       await Navigator.of(context).pushReplacement(

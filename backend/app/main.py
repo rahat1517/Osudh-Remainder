@@ -1,4 +1,5 @@
 import logging
+import threading
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
@@ -21,6 +22,7 @@ from app.config import Settings, get_settings
 from app.drugs.catalog import load_csv
 from app.drugs.matcher import DrugMatcher
 from app.observability import RequestIdMiddleware, init_sentry
+from app.prescriptions.gemini_reader import GeminiPrescriptionReader
 from app.prescriptions.local_reader import HybridReader, LocalModelReader
 from app.prescriptions.ocr_reader import OcrPrescriptionReader, RapidOcrEngine
 from app.prescriptions.reader import ClaudePrescriptionReader
@@ -57,17 +59,31 @@ def build_ocr_reader(settings: Settings):
     )
 
 
-def build_reader(settings: Settings, cloud):
+def _redactor(ocr_reader: OcrPrescriptionReader):
+    """Blacks out personal lines (name, phone, age, address) using the OCR engine's lines."""
+    from app.training.deid import OcrLineDetector, redact
+
+    detector = OcrLineDetector(ocr_reader._engine)
+    return lambda image: redact(image, detector.detect(image))[0]
+
+
+def build_reader(settings: Settings, cloud, *, cloud_needs_consent: bool = False):
     """The prescription reader for `settings.reader_mode`; None if reading is unavailable.
 
-    `cloud` is the Claude reader, or None without an API key.
+    `cloud` is the cloud reader (Claude, or Gemini), or None without an API key.
+    `cloud_needs_consent`: it may keep what it is sent (Gemini's free tier), so it is used only as
+    a second reader, for users who agreed, on a redacted photo.
     """
     mode = settings.reader_mode
     if mode not in READER_MODES:
         raise RuntimeError(f"READER_MODE must be one of {sorted(READER_MODES)}, not {mode!r}")
     if mode == "auto":
-        return cloud or build_ocr_reader(settings)
+        if cloud and not cloud_needs_consent:
+            return cloud
+        mode = "hybrid"  # own model first; the consent-only cloud reader when it is unsure
     if mode == "cloud":
+        if cloud_needs_consent:
+            raise RuntimeError("READER_MODE=cloud needs a cloud reader that does not need consent")
         return cloud
     if mode == "ocr":
         return build_ocr_reader(settings)
@@ -81,7 +97,13 @@ def build_reader(settings: Settings, cloud):
         if settings.local_reader_url
         else build_ocr_reader(settings)
     )
-    return HybridReader(local, cloud) if cloud else local
+    if not cloud:
+        return local
+    redact = _redactor(local) if isinstance(local, OcrPrescriptionReader) else None
+    if cloud_needs_consent and redact is None:
+        # Never send an unredacted photo to a service that may keep it
+        redact = _redactor(build_ocr_reader(settings))
+    return HybridReader(local, cloud, needs_consent=cloud_needs_consent, redact=redact)
 
 
 def build_training_service(settings: Settings, ocr_engine=None):
@@ -137,13 +159,26 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         )
     else:
         logger.warning("ANTHROPIC_API_KEY is not set: the assistant is disabled")
-    reader = build_reader(settings, cloud)
+    cloud_needs_consent = False
+    if cloud is None and settings.gemini_api_key:
+        cloud = GeminiPrescriptionReader(settings.gemini_api_key, settings.gemini_model)
+        cloud_needs_consent = True
+        logger.warning("Second reader: Gemini %s, for users who agreed", cloud.models)
+        # Which models this key may use: names change as Google retires models (see GEMINI_MODEL)
+        threading.Thread(
+            target=lambda r=cloud: logger.warning(
+                "Gemini models for this key: %s", ", ".join(r.available_models()) or "unknown"
+            ),
+            daemon=True,
+        ).start()
+    reader = build_reader(settings, cloud, cloud_needs_consent=cloud_needs_consent)
     ocr_engine = None
     if reader is None:
         logger.warning("No prescription reader for READER_MODE=%s", settings.reader_mode)
     else:
         logger.info("Prescription reader: %s", type(reader).__name__)
         for r in (reader, getattr(reader, "_local", None)):
+            # (the hybrid's own OCR reader; a redactor's engine is shared with it)
             if isinstance(r, OcrPrescriptionReader):
                 warming.append(r.warm_up_in_background())
                 ocr_engine = r._engine

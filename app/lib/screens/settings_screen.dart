@@ -52,7 +52,7 @@ class SettingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
-    final state = context.read<AppState>();
+    final state = context.watch<AppState>();
     return Scaffold(
       appBar: AppBar(title: Text(l.settingsTitle)),
       body: ListView(
@@ -74,6 +74,16 @@ class SettingsScreen extends StatelessWidget {
             ReminderChannelsTile(
               repository: state.channels!,
               patientId: state.auth.currentUserId!,
+            ),
+          if (state.store != null)
+            SwitchListTile(
+              key: const Key('cloudReaderConsent'),
+              secondary: const Icon(Icons.auto_awesome_outlined),
+              title: Text(l.cloudReaderTitle),
+              subtitle: Text(l.cloudReaderSetting),
+              isThreeLine: true,
+              value: state.cloudReaderConsent ?? false,
+              onChanged: state.setCloudReaderConsent,
             ),
           if (state.trainingConsent != null)
             TrainingConsentTile(repository: state.trainingConsent!),

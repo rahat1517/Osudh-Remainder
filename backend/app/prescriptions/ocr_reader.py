@@ -8,6 +8,7 @@ a fine-tuned recognition model (see ml/README.md, "PaddleOCR fine-tuning"), whic
 
 import contextlib
 import ctypes
+import hashlib
 import io
 import logging
 import threading
@@ -124,6 +125,9 @@ class RapidOcrEngine:
         self._rec_keys_path = rec_keys_path
         self._engine = None
         self._lock = threading.Lock()
+        # The last photo's lines: reading a photo and then blacking out its personal lines (before
+        # it goes to Gemini) need the same OCR, which takes seconds on a small CPU
+        self._last: tuple[bytes, list[OcrLine]] | None = None
 
     def _load(self):
         from rapidocr_onnxruntime import RapidOCR
@@ -151,15 +155,22 @@ class RapidOcrEngine:
         _release_memory()
 
     def lines(self, image: bytes) -> list[OcrLine]:
+        key = hashlib.sha256(image).digest()
         with self._lock:  # ONNX sessions are shared; keep memory flat on a small instance
+            if self._last and self._last[0] == key:
+                return list(self._last[1])
             if self._engine is None:
                 self._engine = self._load()
             result, _ = self._engine(image)
+            lines = [
+                OcrLine(
+                    text=text, score=float(score), box=tuple((float(x), float(y)) for x, y in box)
+                )
+                for box, text, score in (result or [])
+            ]
+            self._last = (key, lines)
         _release_memory()
-        return [
-            OcrLine(text=text, score=float(score), box=tuple((float(x), float(y)) for x, y in box))
-            for box, text, score in (result or [])
-        ]
+        return list(lines)
 
 
 # Variance of the Laplacian (edge strength) below which a photo counts as out of focus. Sharp text

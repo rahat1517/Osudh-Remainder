@@ -689,6 +689,23 @@ class AppLocalizationsEn extends AppLocalizations {
       'When on, photos of prescriptions you scan and confirm are shared to train our reader. Names, ages, phone numbers and addresses are blacked out, and a person checks every photo before use. You can turn this off at any time; unused photos are then deleted.';
 
   @override
+  String get cloudReaderTitle => 'Read hard prescriptions with Google\'s AI';
+
+  @override
+  String get cloudReaderBody =>
+      'Handwritten or unclear prescriptions are hard for our own reader. If you allow it, a photo our reader is unsure of is also read by Google\'s free AI (Gemini). Names, ages, phone numbers and addresses are blacked out before it is sent. Google may keep what it is sent and use it to improve its services. Clear printed prescriptions are read on our own server only. You check every medicine before any reminder is set. You can change this at any time in Settings.';
+
+  @override
+  String get cloudReaderAllow => 'Allow';
+
+  @override
+  String get cloudReaderDeny => 'No, our reader only';
+
+  @override
+  String get cloudReaderSetting =>
+      'Photos our own reader is unsure of (often handwriting) are also read by Google\'s AI, with personal details blacked out. Google may keep what it is sent.';
+
+  @override
   String get errTrainingDisabled => 'Sharing is not available right now.';
 
   @override

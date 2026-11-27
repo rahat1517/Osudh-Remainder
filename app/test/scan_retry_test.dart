@@ -20,6 +20,7 @@ class FlakyApi extends FakeBackendApi {
   Future<PrescriptionScan> extractPrescription(
     Uint8List image, {
     String filename = 'rx.jpg',
+    bool cloudOk = false,
   }) async {
     extractCalls++;
     if (failures > 0) {
@@ -46,6 +47,15 @@ Future<void> openScan(WidgetTester tester, FakeBackendApi api) async {
 }
 
 void main() {
+  testWidgets('opening the scan screen wakes the server once', (tester) async {
+    // On the free plan the server sleeps when idle; waking it while the user frames the photo
+    // keeps the first scan from timing out
+    final api = FlakyApi(0);
+    await openScan(tester, api);
+    expect(api.wakeUps, 1);
+    expect(api.extractCalls, 0);
+  });
+
   testWidgets('one dropped connection is retried without asking', (
     tester,
   ) async {

@@ -31,6 +31,13 @@ class FakeBackendApi implements BackendApi {
   Map<int, DrugAlternatives> alternatives;
   int extractCalls = 0;
   int alternativesCalls = 0;
+  int wakeUps = 0;
+
+  /// The `cloudOk` of each scan, in order.
+  final List<bool> cloudOks = [];
+
+  @override
+  Future<void> wakeUp() async => wakeUps++;
 
   @override
   Future<DrugAlternatives> drugAlternatives(int drugId) async {
@@ -45,8 +52,10 @@ class FakeBackendApi implements BackendApi {
   Future<PrescriptionScan> extractPrescription(
     Uint8List image, {
     String filename = 'rx.jpg',
+    bool cloudOk = false,
   }) async {
     extractCalls++;
+    cloudOks.add(cloudOk);
     if (error != null) throw error!;
     return scan ?? PrescriptionScan.fromJson(exampleScanJson());
   }

@@ -14,6 +14,7 @@ format: `images/*.jpg` and `train.txt` / `val.txt` lines of `images/name.jpg<TAB
 import argparse
 import io
 import random
+import re
 from collections.abc import Iterator
 from pathlib import Path
 
@@ -26,6 +27,7 @@ BRANDS = [
     "Fexo", "Alatrol", "Monas", "Zimax", "Azithrocin", "Cef-3", "Moxacil", "Ciprocin", "Filmet",
     "Amdocal", "Camlodin", "Osartil", "Angilock", "Comet", "Rosuva", "Atova", "Ecosprin",
     "Calbo D", "Rolac", "Sedil", "Disopan", "Orsaline-N", "Losectil", "Finix", "Tridosil",
+    "Indever", "Bislol", "Concor", "Neuro-B", "Vonal", "Omidon", "Motigut", "Flugal",
 ]  # fmt: skip
 STRENGTHS = [
     "5 mg",
@@ -44,7 +46,7 @@ TIMINGS_BN = ["খাবারের আগে", "খাবারের পর�
 TIMINGS_LATIN = ["khabar age", "khabarer pore", "before meal", "after meal", "AC", "PC", "HS"]
 DURATIONS_BN = ["দিন", "মাস", "সপ্তাহ"]
 DURATIONS_LATIN = ["days", "din", "month", "weeks"]
-EXTRAS_BN = ["চলবে", "প্রয়োজনে", "জ্বর হলে", "ব্যথা হলে"]
+EXTRAS_BN = ["চলবে", "প্রয়োজনে", "জ্বর হলে", "ব্যথা হলে", "জ্বর হলে খাবেন", "ব্যথা হলে খাবেন"]
 FREQUENCIES = ["BD", "TDS", "QID", "OD", "HS", "SOS"]
 # Common courses first, plus values that use every digit (০-৯): a digit never seen in training is
 # a digit the model cannot read
@@ -71,8 +73,12 @@ def sample_line(rng: random.Random) -> str:
 def _sample_line(rng: random.Random) -> str:
     kind = rng.random()
     if kind < 0.3:  # medicine line
-        number = f"{rng.randint(1, 6)}. " if rng.random() < 0.6 else ""
-        strength = f" {rng.choice(STRENGTHS)}" if rng.random() < 0.8 else ""
+        # Handwritten lists often use a dot instead of a number, and put the strength in brackets
+        number = rng.choice([f"{rng.randint(1, 6)}. ", f"{rng.randint(1, 6)}. ", ". ", ""])
+        strength = rng.choice(STRENGTHS)
+        strength = rng.choice(
+            [f" {strength}", f" {strength}", f" ({strength.replace(' ', '')})", ""]
+        )
         return f"{number}{rng.choice(FORMS)} {rng.choice(BRANDS)}{strength}"
     pattern = rng.choice(PATTERNS)
     days = str(rng.choice(DAYS))
@@ -84,9 +90,13 @@ def _sample_line(rng: random.Random) -> str:
             parts.append(f"{to_bangla_digits(days)} {rng.choice(DURATIONS_BN)}")
         elif rng.random() < 0.3:
             parts.append(rng.choice(EXTRAS_BN))
-        return "  ".join(parts)
+        if rng.random() < 0.15:
+            parts[0] += "-"  # "১+০+১-": a dash before the rest of the instruction
+        return "  ".join(parts) + (";" if rng.random() < 0.1 else "")
     # Latin instruction line
     first = pattern if rng.random() < 0.7 else f"1 {rng.choice(FREQUENCIES)}"
+    if rng.random() < 0.15:
+        first += "-"
     parts = [first]
     if rng.random() < 0.7:
         parts.append(rng.choice(TIMINGS_LATIN))
@@ -98,14 +108,35 @@ def _sample_line(rng: random.Random) -> str:
 def render(text: str, font: ImageFont.FreeTypeFont, rng: random.Random) -> Image.Image:
     """The line as a phone camera might capture it: tilt, blur, uneven light, noise, and the low
     resolution and heavy JPEG compression of a picture forwarded on a messenger and picked from the
-    gallery."""
-    left, top, right, bottom = font.getbbox(text)
+    gallery; and, as handwriting often is, with wide gaps between words, slanted and with a thicker
+    pen."""
+    _, top, _, bottom = font.getbbox(text)
     pad = rng.randint(6, 16)
-    w, h = right - left + 2 * pad, bottom - top + 2 * pad
+    # Words drawn one by one, so gaps can be wider than a space (the label keeps single spaces)
+    spread = rng.uniform(1.5, 3.5) if rng.random() < 0.35 else 1.0
+    pieces = [p for p in re.split(r"( +)", text) if p]
+    widths = [font.getlength(p) * (spread if p.isspace() else 1) for p in pieces]
+    w, h = int(sum(widths)) + 2 * pad, bottom - top + 2 * pad
     paper = rng.randint(215, 255)
     img = Image.new("L", (max(w, 8), max(h, 8)), paper)
     ink = rng.randint(0, 80)
-    ImageDraw.Draw(img).text((pad - left, pad - top), text, fill=ink, font=font)
+    draw = ImageDraw.Draw(img)
+    x = float(pad)
+    for piece, width in zip(pieces, widths, strict=True):
+        if not piece.isspace():
+            draw.text((x, pad - top), piece, fill=ink, font=font)
+        x += width
+    if rng.random() < 0.3:  # slant
+        shear = rng.uniform(-0.25, 0.25)
+        extra = int(abs(shear) * img.height) + 1
+        img = img.transform(
+            (img.width + extra, img.height),
+            Image.Transform.AFFINE,
+            (1, shear, -extra / 2 if shear > 0 else 0, 0, 1, 0),
+            fillcolor=paper,
+        )
+    if rng.random() < 0.2:  # thicker pen (ink is dark: spread the minimum)
+        img = img.filter(ImageFilter.MinFilter(3))
     if rng.random() < 0.7:
         img = img.rotate(rng.uniform(-3, 3), expand=True, fillcolor=paper)
     blur = rng.random()
